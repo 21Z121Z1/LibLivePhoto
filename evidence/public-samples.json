@@ -1,0 +1,57 @@
+{
+  "repository": "NightMean/MotionPhotoSamples",
+  "revision": "f2f1f93db1d01bbdb8d71122d3bbe2dba59a2a78",
+  "purpose": "format analysis only; no redistribution license found",
+  "fixtures": [
+    {
+      "path": "Apple Live Photo/Apple iPhone 15 - photo.HEIC",
+      "sha256": "7db0c63e7e04fcff26b9af6a4f039f8a35cb58fe288d99b147448e5862c06e73",
+      "bytes": 5120446
+    },
+    {
+      "path": "Apple Live Photo/Apple iPhone 15 - video.MOV",
+      "sha256": "7602b94a3de6f0aa1723c940145c57a426616aae3afcea4df4cccb025375df9e",
+      "bytes": 3922900
+    },
+    {
+      "path": "Google Motion Photo/Pixel 9 Pro XL - Ultra HDR.jpg",
+      "sha256": "ac0d8ac4560aa2137316678058c6723aa8a72d009475f0aa1fff87cb7dd8a4e7",
+      "bytes": 4776912
+    },
+    {
+      "path": "Samsung Motion Photo/Galaxy A34 5G - MP, no HDR, Google MP header, Samsung mpv2 trailer.jpg",
+      "sha256": "8b4de80def81867630fe0f28c3051053ff0b76b7249f91b9d515a2e67ba04a8a",
+      "bytes": 7630687
+    },
+    {
+      "path": "Samsung Motion Photo/Galaxy S20 - MP, no HDR, Only Samsung versionless trailer.heic",
+      "sha256": "f2dbe60e0402479f3c0d4246f30756fc73a416cdd9c64509c9767b070e22660e",
+      "bytes": 5755343
+    },
+    {
+      "path": "Samsung Motion Photo/Galaxy S20FE - MP, no HDR, Google MP header, Samsung mpv2 trailer.heif",
+      "sha256": "3b9da515a1ddf66910397c7f9165e254b8022fc82b0d0436bfc91952c26e7baf",
+      "bytes": 3366300
+    },
+    {
+      "path": "Samsung Motion Photo/Galaxy S20FE - MP, no HDR, Google MP header, Samsung mpv2 trailer.jpg",
+      "sha256": "8676244eb21226043f4af46336e028e537a4f64895600c178efc5592dd2b547e",
+      "bytes": 5417157
+    },
+    {
+      "path": "Samsung Motion Photo/Galaxy S23 Ultra - MP, no HDR, Google MP header, Samsung mpv3 trailer.heic",
+      "sha256": "0f6afcca1755df94834b9ec93b0622b2eb027d17b1a981b232603a63b4ffb2cb",
+      "bytes": 5339603
+    },
+    {
+      "path": "Samsung Motion Photo/Galaxy Tab S9 - MP, no HDR, Google MP header, Samsung mpv3 trailer.heic",
+      "sha256": "23e9f77624a870e2f70c31b68b6986893345fd805eb319bfe26114fbe4e461b3",
+      "bytes": 7432675
+    },
+    {
+      "path": "Samsung Motion Photo/Galaxy Tab S9 - MP, no HDR, Google MP header, Samsung mpv3 trailer.jpg",
+      "sha256": "3304d46313fbb39ab002ac04882e1198b5f148f5028abf58e938d5c0b5413cb1",
+      "bytes": 7657252
+    }
+  ]
+}

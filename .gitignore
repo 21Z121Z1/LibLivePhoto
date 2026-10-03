@@ -1,0 +1,8 @@
+/target/
+**/target/
+/fixtures/cache/
+/fuzz/corpus/
+/fuzz/artifacts/
+/evidence/local/
+/research/private/
+/.codex/
