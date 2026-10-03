@@ -10,10 +10,23 @@ fn main() -> std::io::Result<()> {
         for (name, bytes) in [
             ("single-track", common::input(123, 1)),
             ("secondary-track", common::input(1_234_567, 2)),
+            ("ambiguous-tracks", common::input(123, 3)),
             ("movie", common::movie(1000, 2)),
             ("overflow-box", vec![255; 32]),
             ("truncated-xml", common::jpeg("<x:xmpmeta><rdf:RDF>")),
             ("empty", vec![]),
+            (
+                "nested-xml",
+                common::jpeg(&format!("{}{}", "<a>".repeat(140), "</a>".repeat(140))),
+            ),
+            (
+                "vendor-trailers",
+                [
+                    common::input(123, 1),
+                    b"JXRS\0\0\0\xffLPEX lpexLivePhotoExtension {\"coverFramePts\":123.9}".to_vec(),
+                ]
+                .concat(),
+            ),
         ] {
             std::fs::write(dir.join(name), bytes)?;
         }

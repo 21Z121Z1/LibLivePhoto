@@ -123,6 +123,32 @@ fn exact_writer_rescales_fractional_ticks_and_rejects_overflow() {
 }
 
 #[test]
+fn presentation_at_or_beyond_movie_end_is_rejected_before_writing() {
+    for value in [2_000_000, 2_000_001] {
+        let input = common::input(value, 1);
+        let photo = MotionPhoto::parse(Input::SingleFile(&input), ParseOptions::strict()).unwrap();
+        assert!(photo
+            .diagnostics()
+            .contains(&Diagnostic::PresentationOutsideMovieHeader));
+        let plan = photo.plan(
+            TargetProfile::ApplePair,
+            WritePolicy {
+                pairing: PairingPolicy::Set("BOUNDARY".into()),
+                ..WritePolicy::default()
+            },
+        );
+        assert!(!plan.can_execute());
+        assert!(plan.execute().is_err());
+        assert!(apple::remux_movie(
+            &common::movie(1000, 1),
+            "BOUNDARY",
+            MediaTime::new(value, 1_000_000).unwrap()
+        )
+        .is_err());
+    }
+}
+
+#[test]
 fn unknown_suffix_requires_an_explicit_sidecar_or_drop_policy() {
     let v = [common::movie(1000, 1), b"unknown-vendor-data".to_vec()].concat();
     let input = [common::jpeg(&common::xmp(v.len(), 123_000, "")), v].concat();

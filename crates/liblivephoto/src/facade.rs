@@ -917,6 +917,12 @@ impl<'a> MotionPhoto<'a> {
             self.asset.dialect == VendorDialect::AndroidStandard,
         )?;
         self.asset.containers.push(video);
+        if let Some(time) = self.presentation_time() {
+            if !crate::timeline::presentation_in_movie_header(self.motion_video_bytes()?, time)? {
+                self.diagnostics
+                    .push(Diagnostic::PresentationOutsideMovieHeader);
+            }
+        }
         let auxiliary: Vec<_> = self
             .asset
             .auxiliary

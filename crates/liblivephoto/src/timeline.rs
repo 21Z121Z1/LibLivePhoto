@@ -24,6 +24,39 @@ fn version(data: &[u8], b: &BoxHeader) -> Result<u8> {
         _ => Err(Error::InvalidPresentation),
     }
 }
+
+fn check_time_bounds(p: &[u8], v: u8, scale: u32, time: MediaTime) -> Result<bool> {
+    let duration = match v {
+        0 => u64::from(u32_at(p, 16)?),
+        1 => u64::from_be_bytes(
+            p.get(24..32)
+                .and_then(|b| b.try_into().ok())
+                .ok_or(Error::InvalidPresentation)?,
+        ),
+        _ => return Err(Error::InvalidPresentation),
+    };
+    if scale == 0 || time.timescale == 0 || time.value < 0 {
+        return Err(Error::InvalidPresentation);
+    }
+    Ok(i128::from(time.value) * i128::from(scale)
+        < i128::from(duration) * i128::from(time.timescale))
+}
+
+pub(crate) fn presentation_in_movie_header(movie: &[u8], time: MediaTime) -> Result<bool> {
+    let top = parse_boxes(movie, 0..movie.len()).map_err(|_| Error::InvalidPresentation)?;
+    let moov = top
+        .iter()
+        .find(|b| b.kind.as_bytes() == b"moov")
+        .ok_or(Error::InvalidPresentation)?;
+    let bs = children(movie, moov)?;
+    let mvhd = bs
+        .iter()
+        .find(|b| b.kind.as_bytes() == b"mvhd")
+        .ok_or(Error::InvalidPresentation)?;
+    let v = version(movie, mvhd)?;
+    let p = &movie[mvhd.data_start..mvhd.data_end];
+    check_time_bounds(p, v, u32_at(p, if v == 0 { 12 } else { 20 })?, time)
+}
 fn duration_patch(
     data: &[u8],
     b: &BoxHeader,
@@ -72,6 +105,9 @@ pub(crate) fn patches(movie: &[u8], time: MediaTime) -> Result<Vec<(usize, Vec<u
     let scale_pos = if v == 0 { 12 } else { 20 };
     let p = &movie[mvhd.data_start..mvhd.data_end];
     let scale = u32_at(p, scale_pos)?;
+    if !check_time_bounds(p, v, scale, time)? {
+        return Err(Error::InvalidPresentation);
+    }
     if scale == 0 {
         return Err(Error::InvalidPresentation);
     }
@@ -87,13 +123,13 @@ pub(crate) fn patches(movie: &[u8], time: MediaTime) -> Result<Vec<(usize, Vec<u
     {
         return Err(Error::InvalidPresentation);
     }
-    if new_scale == scale {
-        return Ok(Vec::new());
-    }
     if top.iter().any(|b| b.kind.as_bytes() == b"moof")
         || bs.iter().any(|b| b.kind.as_bytes() == b"mvex")
     {
         return Err(Error::InvalidPresentation);
+    }
+    if new_scale == scale {
+        return Ok(Vec::new());
     }
     let factor = u64::from(new_scale / scale);
     let mut patches = vec![(

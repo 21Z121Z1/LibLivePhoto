@@ -66,6 +66,16 @@ fn number_as_i64(value: Option<&Value>) -> Option<i64> {
     }
 }
 
+fn exact_timestamp(value: Option<&Value>) -> Option<i64> {
+    match value? {
+        Value::Number(n) => n
+            .as_i64()
+            .or_else(|| n.as_u64().and_then(|n| i64::try_from(n).ok())),
+        Value::String(s) if s.len() <= 32 => s.parse().ok(),
+        _ => None,
+    }
+}
+
 fn number_as_f64(value: Option<&Value>) -> Option<f64> {
     match value? {
         Value::Number(number) => number.as_f64(),
@@ -137,7 +147,7 @@ fn parse_json(raw: &[u8]) -> Option<OppoMetadata> {
     }
 
     Some(OppoMetadata {
-        cover_frame_pts_us: number_as_i64(dictionary.get("coverFramePts")),
+        cover_frame_pts_us: exact_timestamp(dictionary.get("coverFramePts")),
         version: number_as_i64(dictionary.get("version")).unwrap_or(0),
         matrix_count: number_as_i64(dictionary.get("matrixCount")).unwrap_or(0),
         photo_crop_matrix: matrix(dictionary.get("photoCropMatrix")),
@@ -192,6 +202,19 @@ pub fn parse_first_lpex_object(data: &[u8]) -> Option<OppoMetadata> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fractional_or_overflowing_vendor_time_is_not_truncated_into_an_exact_timestamp() {
+        for value in ["123.9", "9223372036854775808"] {
+            let input = format!("lpexLivePhotoExtension {{\"coverFramePts\":{value}}}");
+            assert_eq!(
+                parse_first_lpex_object(input.as_bytes())
+                    .unwrap()
+                    .cover_frame_pts_us,
+                None
+            );
+        }
+    }
 
     #[test]
     fn parses_swift_contract_fields_without_normalizing_matrix_keys() {

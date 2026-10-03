@@ -65,6 +65,12 @@ are recorded in [public-samples.json](public-samples.json). The owned XDRemux co
 is referenced by a pinned revision and exact digests. No personal metadata is copied
 into the evidence documents.
 
+The original Galaxy A34 file declares presentation 2507944/1000000. Its `mvhd`
+duration is 25028/10000. The difference is 5144 microseconds. The reader retains
+the declared time and reports the header discrepancy. Android remux preserves that
+value. Apple composition rejects a marker outside the declared movie timeline.
+No Gallery clamping or sample timestamp interpretation is inferred from this file.
+
 ## Required missing evidence
 
 No local or searched public corpus contains `MVIMG_194659`, `MVIMG_194654` or

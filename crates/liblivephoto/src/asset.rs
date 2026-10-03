@@ -252,6 +252,9 @@ pub struct MotionAsset {
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum Diagnostic {
+    /// The declared time is outside mvhd duration. Sample timestamp semantics
+    /// and original consumer behavior require separate evidence.
+    PresentationOutsideMovieHeader,
     VendorCompatibility,
     RecoveredWithoutDirectory,
     RecoveredAfterParseError {
