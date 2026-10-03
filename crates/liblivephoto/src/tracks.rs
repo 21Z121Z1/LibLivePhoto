@@ -67,7 +67,7 @@ fn validate_samples(
         return Err(Error::InvalidResource);
     }
     let mut timed = 0u64;
-    for e in t[8..].chunks_exact(8) {
+    for e in t[8..].as_chunks::<8>().0 {
         timed = timed
             .checked_add(u64::from(u32_at(e, 0)?))
             .ok_or(Error::InvalidResource)?;
@@ -82,7 +82,9 @@ fn validate_samples(
         return Err(Error::InvalidResource);
     }
     let map = s[8..]
-        .chunks_exact(12)
+        .as_chunks::<12>()
+        .0
+        .iter()
         .map(|e| Ok((u32_at(e, 0)?, u32_at(e, 4)?, u32_at(e, 8)?)))
         .collect::<Result<Vec<_>>>()?;
     if map.iter().any(|e| e.0 == 0 || e.1 == 0 || e.2 == 0)

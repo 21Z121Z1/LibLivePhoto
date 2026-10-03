@@ -278,7 +278,11 @@ fn validate_boxes(data: &[u8], heif: bool) -> ReadResult<()> {
             };
             if heif
                 && !brand_is_heif(&payload[..4])
-                && !payload[8..].chunks_exact(4).any(brand_is_heif)
+                && !payload[8..]
+                    .as_chunks::<4>()
+                    .0
+                    .iter()
+                    .any(|b| brand_is_heif(b))
             {
                 return Err(MotionPhotoReadError::InvalidStill);
             }
