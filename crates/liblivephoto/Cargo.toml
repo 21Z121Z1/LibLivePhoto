@@ -1,0 +1,14 @@
+[package]
+name = "liblivephoto"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+
+[dependencies]
+little_exif = "=0.6.23"
+quick-xml = "0.42"
+serde_json = "1.0"
+xdremux-format = { package = "liblivephoto-format", path = "../liblivephoto-format" }
+
+[lints]
+workspace = true
