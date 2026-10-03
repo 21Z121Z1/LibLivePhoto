@@ -106,7 +106,7 @@ pub(crate) fn parse(d: &[u8]) -> Result<Option<Sef>> {
         return Ok(None);
     };
     for r in &records {
-        if r.kind != 0x0a30
+        if !(r.kind == 0x0a30 && r.name == "MotionPhoto_Data")
             && r.raw.lower_bound < motion.upper_bound
             && motion.lower_bound < r.raw.upper_bound
         {

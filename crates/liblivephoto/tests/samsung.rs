@@ -83,3 +83,20 @@ fn malformed_sef_lengths_offsets_overlap_and_duplicate_primary_fail() {
         MotionPhoto::parse(Input::SingleFile(&duplicated), ParseOptions::compatible()).is_err()
     );
 }
+
+#[test]
+fn sef_pointer_cannot_alias_an_unknown_record_with_the_primary_type_number() {
+    let video = common::movie(1000, 1);
+    let mut pointer = b"mpv2".to_vec();
+    pointer.extend_from_slice(&0_u32.to_be_bytes());
+    pointer.extend_from_slice(&(video.len() as u32).to_be_bytes());
+    let mut input = common::sef(&[
+        (0x0a30, "MotionPhoto_Data", pointer),
+        (0x0a30, "UnspecifiedVideo", video),
+    ]);
+    let video_start = input.windows(4).position(|b| b == b"ftyp").unwrap() - 4;
+    let pointer_start = 4 + 8 + "MotionPhoto_Data".len();
+    input[pointer_start + 4..pointer_start + 8]
+        .copy_from_slice(&(video_start as u32).to_be_bytes());
+    assert!(MotionPhoto::parse(Input::SingleFile(&input), ParseOptions::compatible()).is_err());
+}
