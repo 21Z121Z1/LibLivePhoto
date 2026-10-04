@@ -7,7 +7,7 @@ An unknown version remains unknown until a component package or runtime identifi
 | Family and version | Producer evidence | Consumer evidence | Original byte evidence | Limit |
 | --- | --- | --- | --- | --- |
 | Apple iPhone 15; component version unknown | Original HEIC/MOV pair | Public Photos resource-pair API | Matching identity, 820/600 time, five tracks | No Photos import/edit/export run |
-| Android format 1.0; Pixel 9 Pro XL components unknown | Official format contract and original file | Official substitution and presentation contract | JPEG, gain map, primary/secondary video and audio | No Google Photos device run |
+| Android format 1.0; Pixel 9 Pro XL components unknown | Official format contract and original file | Official contract; Media3 1.3.1/1.8.0 source comparison | JPEG, gain map, primary/secondary video and audio | Reference extractor is not Google Photos acceptance |
 | Samsung Galaxy S20/S20 FE; components unknown | Original SEF 106/107 files | Official Motion Photo playback/export procedures | Direct SEF video and HEIF pointer; versionless file | Camera/Gallery implementation and acceptance missing |
 | Samsung A34/S23 Ultra/Tab S9; components unknown | Original SEF 107 files | Same documented feature; version-specific behavior unresolved | Direct JPEG and HEIF `mpvd`; `mpv3` record independent of `mpv2` pointer | No claim of identical firmware behavior |
 | Samsung XDRemux JPEG corpus; components unknown | Original bytes | Selection between two videos unresolved | Primary `MotionPhoto_Data` and complete `MotionPhoto_AutoPlay` | Unknown generic purpose |
@@ -15,7 +15,7 @@ An unknown version remains unknown until a component package or runtime identifi
 | OPlus ColorOS 16 | Original source fixtures and LPEX | Gallery component missing | Two concatenated videos, vendor raw fields | Stream 2 purpose unresolved |
 | Xiaomi SDK 0.0.1–0.0.4 snapshots | Official release history | Header/MediaStore detection and extraction APIs | One Android-style original | SDK binary requires authorized repository access |
 | Xiaomi SDK 1.0.0–1.0.3 | Official client guide and release history | HyperOS Gallery and MediaStore requirements | Same original; no portrait/depth corpus | No independent depth/subvideo mapping |
-| vivo Android-style single file; versions unknown | Two original fixtures | No original Gallery component | Standard directory plus opaque vendor bytes | Dual-file and portrait modes missing |
+| vivo Android-style single file; versions unknown | Two originals; official capture procedure | Official press-to-play procedure; no Gallery component | Standard directory plus opaque vendor bytes | Dual-file and portrait modes missing |
 | HarmonyOS/OpenHarmony MovingPhoto | Official Camera/Media Library platform contracts | MovingPhotoView and MediaAssetManager APIs | No private on-disk original | Platform boundary only |
 | Huawei/Honor private dialect | No sufficient file evidence | User guides describe product behavior | No matching original | No vendor parser or writer added |
 
@@ -41,6 +41,13 @@ An unknown version remains unknown until a component package or runtime identifi
   and [MovingPhotoView](https://github.com/openharmony/docs/blob/master/en/application-dev/media/medialibrary/movingphotoview-guidelines.md):
   the application constructs a MovingPhoto object and the platform selects resources.
   This does not establish a Huawei private file trailer.
+- [vivo capture and playback procedure](https://kefu.vivo.com.cn/robot/imgmsgData/711f0a0b5d2346698d9c1ed297c94c5d/index_1.html),
+  dated 2021-05-05: Camera records around the shutter event; Gallery plays the
+  video when the user presses the photo. No component version or byte layout is given.
+
+The [versioned reference-consumer comparison](ANDROID_CONSUMER.md) records Media3
+source identities and its JPEG resource-selection limits. It does not specify an
+OEM Gallery contract.
 
 ## Independent and binary research
 
@@ -58,6 +65,13 @@ The user-provided `OPCameraPro_v3.1.10.apk` identifies package
 or Gallery. A partial jadx result has 17 decompilation errors. It cannot establish
 the firmware producer/consumer contract. Decompiled source and APK bytes remain
 in an ignored research directory. No code is translated into Rust.
+
+The public Xiaomi Gallery listing identifies 4.2.2.4-global (528452), package
+`com.miui.gallery`, and a 2025-06-05 upload. It also lists 4.3.1.15-global
+(4030115), uploaded 2026-07-02. The ordinary download returned HTTP 403 on
+2026-10-04. No binary was obtained or analyzed; these are listing observations,
+not verified package identities or consumer behavior. The attempted source is
+[the versioned listing](https://www.apkmirror.com/apk/xiaomi-inc/miui-gallery/xiaomi-gallery-4-2-2-4-global-release/xiaomi-gallery-4-2-2-4-global-android-apk-download/).
 
 The public sample repository permits analysis in its README but has no general
 redistribution license. Its files remain outside Git; only paths and SHA-256 values
