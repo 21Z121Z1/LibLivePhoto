@@ -1,0 +1,20 @@
+[package]
+name = "liblivephoto"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Portable resource-based Live Photo and Motion Photo format library"
+
+[dependencies]
+quick-xml = "0.42"
+serde_json = "1.0"
+liblivephoto-format = { version = "0.1.0", path = "../liblivephoto-format" }
+
+[features]
+default = []
+# Transitional XDRemux interfaces. These interfaces are not stable contracts.
+xdremux-compat = []
+
+[lints]
+workspace = true
