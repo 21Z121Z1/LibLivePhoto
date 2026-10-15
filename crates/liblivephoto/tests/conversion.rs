@@ -2,6 +2,128 @@ mod common;
 use liblivephoto::*;
 
 #[test]
+fn android_apple_android_apple_preserves_encoded_media_and_exact_time() {
+    let input = common::input(123, 2);
+    let source = MotionPhoto::parse(Input::SingleFile(&input), ParseOptions::strict()).unwrap();
+    let apple_policy = WritePolicy {
+        pairing: PairingPolicy::Set("INTEROP-PAIR".into()),
+        unmapped: UnmappedPolicy::PreserveSidecars,
+    };
+    let first = source
+        .plan(TargetProfile::ApplePair, apple_policy.clone())
+        .execute()
+        .unwrap();
+    let pair = MotionPhoto::parse(
+        Input::ApplePair {
+            still: &first.files[0].bytes,
+            movie: &first.files[1].bytes,
+        },
+        ParseOptions::strict(),
+    )
+    .unwrap();
+    let android = pair
+        .plan(
+            TargetProfile::AndroidJpeg,
+            WritePolicy {
+                unmapped: UnmappedPolicy::PreserveSidecars,
+                ..WritePolicy::default()
+            },
+        )
+        .execute()
+        .unwrap();
+    let single = MotionPhoto::parse(
+        Input::SingleFile(&android.files[0].bytes),
+        ParseOptions::strict(),
+    )
+    .unwrap();
+    assert_eq!(
+        single.motion_video_bytes().unwrap(),
+        pair.motion_video_bytes().unwrap()
+    );
+    let second = single
+        .plan(TargetProfile::ApplePair, apple_policy)
+        .execute()
+        .unwrap();
+    let returned = MotionPhoto::parse(
+        Input::ApplePair {
+            still: &second.files[0].bytes,
+            movie: &second.files[1].bytes,
+        },
+        ParseOptions::strict(),
+    )
+    .unwrap();
+    assert!(returned
+        .presentation_time()
+        .unwrap()
+        .equivalent(source.presentation_time().unwrap()));
+    assert_eq!(
+        apple::media_payloads(returned.motion_video_bytes().unwrap()).unwrap(),
+        apple::media_payloads(source.motion_video_bytes().unwrap()).unwrap()
+    );
+    assert_eq!(
+        returned.asset().pairing.identifier.as_deref(),
+        Some("INTEROP-PAIR")
+    );
+    assert_eq!(
+        returned.asset().containers[1]
+            .tracks
+            .iter()
+            .filter(|t| t.kind == TrackKind::Video)
+            .count(),
+        2
+    );
+}
+
+#[test]
+fn apple_time_without_an_exact_microsecond_mapping_blocks_android_writers() {
+    let input = common::input(123_000, 1);
+    let source = MotionPhoto::parse(Input::SingleFile(&input), ParseOptions::strict()).unwrap();
+    let movie = apple::remux_movie(
+        source.motion_video_bytes().unwrap(),
+        "THIRDS",
+        MediaTime::new(1, 3).unwrap(),
+    )
+    .unwrap();
+    let pair_bytes = source
+        .plan(
+            TargetProfile::ApplePair,
+            WritePolicy {
+                pairing: PairingPolicy::Set("THIRDS".into()),
+                ..WritePolicy::default()
+            },
+        )
+        .execute()
+        .unwrap();
+    let pair = MotionPhoto::parse(
+        Input::ApplePair {
+            still: &pair_bytes.files[0].bytes,
+            movie: &movie,
+        },
+        ParseOptions::strict(),
+    )
+    .unwrap();
+    for target in [TargetProfile::AndroidJpeg, TargetProfile::AndroidHeif] {
+        let plan = pair.plan(
+            target,
+            WritePolicy {
+                unmapped: UnmappedPolicy::PreserveSidecars,
+                ..WritePolicy::default()
+            },
+        );
+        assert!(!plan.can_execute());
+        assert!(plan
+            .compatibility()
+            .blockers
+            .iter()
+            .any(|s| s.contains("exact integer microsecond")));
+        assert!(matches!(
+            plan.execute(),
+            Err(MotionPhotoReadError::ConversionBlocked(_))
+        ));
+    }
+}
+
+#[test]
 fn source_preservation_is_byte_verified_for_every_resource() {
     let video = [common::movie(1000, 2), b"vendor-unknown".to_vec()].concat();
     let data = [common::jpeg(&common::xmp(video.len(), 123_000, "")), video].concat();

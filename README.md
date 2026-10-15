@@ -27,6 +27,16 @@ The default library has no XDRemux, Apple framework, codec or image processing
 dependency. `liblivephoto-format` provides the small shared binary-format boundary.
 The optional `xdremux-compat` module is an unstable migration interface.
 
+A runnable public-API converter is available without XDRemux:
+
+```sh
+cargo run -p liblivephoto --example convert -- apple new-output source.jpg --pair-id CALLER-UNIQUE-ID --sidecars
+```
+
+Use an identifier unique to the output asset. See the cross-format execution
+contracts in [compatibility](COMPATIBILITY.md) for all profiles, preservation
+policies and exact-time limits.
+
 Read [format support](FORMAT_SUPPORT.md), [compatibility](COMPATIBILITY.md),
 [asset model](ASSET_MODEL.md), [architecture](ARCHITECTURE.md) and
 [vendor evidence](evidence/VENDORS.md) before making a compatibility claim.
