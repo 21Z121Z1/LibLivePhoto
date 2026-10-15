@@ -378,6 +378,7 @@ pub(crate) fn encoded_payload(jpeg: &[u8]) -> Result<Vec<u8>> {
 pub(crate) fn android_description(
     video_len: usize,
     mime: &str,
+    video_mime: &str,
     time: Option<MediaTime>,
     items: &[(String, String, u64)],
 ) -> Result<String> {
@@ -391,7 +392,7 @@ pub(crate) fn android_description(
     for (mime, semantic, len) in items {
         d.push_str(&format!("<rdf:li rdf:parseType=\"Resource\"><Container:Item Item:Mime=\"{}\" Item:Semantic=\"{}\" Item:Length=\"{len}\"/></rdf:li>",esc(mime),esc(semantic)));
     }
-    d.push_str(&format!("<rdf:li rdf:parseType=\"Resource\"><Container:Item Item:Mime=\"video/mp4\" Item:Semantic=\"MotionPhoto\" Item:Length=\"{video_len}\"/></rdf:li></rdf:Seq></Container:Directory></rdf:Description>"));
+    d.push_str(&format!("<rdf:li rdf:parseType=\"Resource\"><Container:Item Item:Mime=\"{}\" Item:Semantic=\"MotionPhoto\" Item:Length=\"{video_len}\"/></rdf:li></rdf:Seq></Container:Directory></rdf:Description>", esc(video_mime)));
     Ok(d)
 }
 

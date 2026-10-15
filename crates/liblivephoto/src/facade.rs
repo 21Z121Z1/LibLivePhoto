@@ -327,6 +327,8 @@ impl<'a> MotionPhoto<'a> {
             } => Self::parse_parts(still, movie, presentation)?,
         };
         photo.complete_model()?;
+        photo.asset.motion.mime =
+            crate::motion_video::container_mime(photo.motion_video_bytes()?)?.into();
         photo.validate()?;
         Ok(photo)
     }

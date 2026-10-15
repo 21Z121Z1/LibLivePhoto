@@ -56,6 +56,19 @@ allowed. Those policies do not authorize changing a known time. A still-containe
 change also blocks until the caller supplies transcoded input. No codec backend,
 HDR conversion, implicit timestamp rounding or vendor field inference runs here.
 
+The Android directory declares the supported movie container's MIME type from its
+`ftyp` major brand. A `qt  ` movie uses `video/quicktime`; the MP4 profile uses
+`video/mp4`. JPEG and HEIF writers retain the movie bytes. Synthetic QuickTime
+round trips and an HEIF-still fixture contract check the actual XMP value, movie
+bytes and exact time. A successful BMFF parse alone does not prove codec or
+Gallery compatibility. The permitted types are defined by the official
+[Motion Photo 1.0 MIME table](https://developer.android.com/media/platform/motion-photo-format#item-mime-type-values).
+The Android targets currently validate container, resource and time structure.
+They do not establish the specification's video codec or AAC channel/sample-rate
+requirements. The `google-*` example names select these directory writers; they
+do not certify full Google codec conformance or Google Photos acceptance. Callers
+must check those media capabilities. Explicit codec negotiation is follow-up work.
+
 `cargo run -p liblivephoto --example convert -- PROFILE NEW_OUTPUT_DIR STILL
 [MOVIE] [--pair-id ID] [--sidecars|--allow-drop]` is a complete standalone consumer.
 Profiles are `preserve`, `google-jpeg`, `google-heif`, `apple` and

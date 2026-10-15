@@ -1,5 +1,56 @@
+mod common;
 use liblivephoto::*;
 use std::{fs, path::PathBuf};
+
+#[test]
+#[ignore = "requires the exact public fixture corpus; run scripts/fixtures.py first"]
+fn heif_writer_declares_quicktime_for_a_caller_supplied_quicktime_movie() {
+    let root = std::env::var_os("LIBLIVEPHOTO_FIXTURE_ROOT")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/cache"));
+    let original = fs::read(root.join("motion-photo/samsung/heif-ultrahdr-01.heic")).unwrap();
+    let photo =
+        MotionPhoto::parse(Input::SingleFile(&original), ParseOptions::compatible()).unwrap();
+    // This is a synthetic association using a real still container, not a claim
+    // that the source camera produced QuickTime or this presentation timestamp.
+    let mut movie = common::movie(1000, 1);
+    movie[8..12].copy_from_slice(b"qt  ");
+    movie[16..20].copy_from_slice(b"qt  ");
+    let parts = MotionPhoto::parse(
+        Input::Parts {
+            still: photo.still_bytes().unwrap(),
+            movie: &movie,
+            presentation: MediaTime::new(123_000, 1_000_000),
+        },
+        ParseOptions::compatible(),
+    )
+    .unwrap();
+    let out = parts
+        .plan(
+            TargetProfile::AndroidHeif,
+            WritePolicy {
+                unmapped: UnmappedPolicy::PreserveSidecars,
+                ..WritePolicy::default()
+            },
+        )
+        .execute()
+        .unwrap();
+    let parsed = MotionPhoto::parse(
+        Input::SingleFile(&out.files[0].bytes),
+        ParseOptions::strict(),
+    )
+    .unwrap();
+    let xmp = parsed
+        .resources()
+        .find(|r| r.provenance.evidence == "HEIF primary XMP item")
+        .unwrap();
+    let mut bytes = Vec::new();
+    parsed.extract(xmp, &mut bytes).unwrap();
+    assert!(String::from_utf8_lossy(&bytes).contains("Item:Mime=\"video/quicktime\""));
+    assert_eq!(parsed.motion_video().mime, "video/quicktime");
+    assert_eq!(parsed.motion_video_bytes().unwrap(), movie);
+    assert_eq!(parsed.presentation_time(), parts.presentation_time());
+}
 
 #[test]
 #[ignore = "requires the exact public fixture corpus; run scripts/fixtures.py first"]

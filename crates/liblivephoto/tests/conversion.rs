@@ -2,6 +2,63 @@ mod common;
 use liblivephoto::*;
 
 #[test]
+fn quicktime_movie_keeps_its_mime_and_bytes_through_apple_and_android() {
+    let mut movie = common::movie(1000, 1);
+    movie[8..12].copy_from_slice(b"qt  ");
+    movie[16..20].copy_from_slice(b"qt  ");
+    let xmp = common::xmp(movie.len(), 123_000, "").replace("video/mp4", "video/quicktime");
+    let input = [common::jpeg(&xmp), movie.clone()].concat();
+    let source = MotionPhoto::parse(Input::SingleFile(&input), ParseOptions::strict()).unwrap();
+    assert_eq!(source.motion_video().mime, "video/quicktime");
+    let apple = source
+        .plan(
+            TargetProfile::ApplePair,
+            WritePolicy {
+                pairing: PairingPolicy::Set("QUICKTIME-CONTRACT".into()),
+                unmapped: UnmappedPolicy::PreserveSidecars,
+            },
+        )
+        .execute()
+        .unwrap();
+    let pair = MotionPhoto::parse(
+        Input::ApplePair {
+            still: &apple.files[0].bytes,
+            movie: &apple.files[1].bytes,
+        },
+        ParseOptions::strict(),
+    )
+    .unwrap();
+    for photo in [&source, &pair] {
+        let out = photo
+            .plan(
+                TargetProfile::AndroidJpeg,
+                WritePolicy {
+                    unmapped: UnmappedPolicy::PreserveSidecars,
+                    ..WritePolicy::default()
+                },
+            )
+            .execute()
+            .unwrap();
+        let parsed = MotionPhoto::parse(
+            Input::SingleFile(&out.files[0].bytes),
+            ParseOptions::strict(),
+        )
+        .unwrap();
+        assert!(String::from_utf8_lossy(parsed.still_bytes().unwrap())
+            .contains("Item:Mime=\"video/quicktime\""));
+        assert_eq!(parsed.motion_video().mime, "video/quicktime");
+        assert_eq!(
+            parsed.motion_video_bytes().unwrap(),
+            photo.motion_video_bytes().unwrap()
+        );
+        assert!(parsed
+            .presentation_time()
+            .unwrap()
+            .equivalent(photo.presentation_time().unwrap()));
+    }
+}
+
+#[test]
 fn android_apple_android_apple_preserves_encoded_media_and_exact_time() {
     let input = common::input(123, 2);
     let source = MotionPhoto::parse(Input::SingleFile(&input), ParseOptions::strict()).unwrap();

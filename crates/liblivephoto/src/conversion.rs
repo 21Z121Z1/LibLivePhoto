@@ -396,6 +396,7 @@ impl ConversionPlan<'_, '_> {
             let description = crate::jpeg_write::android_description(
                 video.len(),
                 "image/jpeg",
+                &self.photo.motion_video().mime,
                 self.photo.presentation_time(),
                 &items,
             )?;
@@ -429,6 +430,7 @@ impl ConversionPlan<'_, '_> {
             let description = crate::jpeg_write::android_description(
                 video.len(),
                 "image/heic",
+                &self.photo.motion_video().mime,
                 self.photo.presentation_time(),
                 &[],
             )?;

@@ -37,6 +37,24 @@ fn top_level_box_size(data: &[u8], offset: usize) -> Option<(usize, [u8; 4])> {
     Some((size, kind))
 }
 
+/// Identify the physical video container, independently of Apple pairing or XMP.
+pub(crate) fn container_mime(data: &[u8]) -> Result<&'static str> {
+    let (size, kind) = top_level_box_size(data, 0).ok_or(MotionPhotoError::InvalidVideoPayload)?;
+    if kind != *b"ftyp" {
+        return Err(MotionPhotoError::InvalidVideoPayload);
+    }
+    let header = if data[..4] == [0, 0, 0, 1] { 16 } else { 8 };
+    let payload = &data[header..size];
+    if payload.len() < 8 || !(payload.len() - 8).is_multiple_of(4) {
+        return Err(MotionPhotoError::InvalidVideoPayload);
+    }
+    Ok(if &payload[..4] == b"qt  " {
+        "video/quicktime"
+    } else {
+        "video/mp4"
+    })
+}
+
 /// Return the complete standalone BMFF prefix of an embedded Motion Photo video.
 ///
 /// ColorOS 16 Stream 1 may append opaque vendor bytes after a complete `ftyp` /
@@ -93,6 +111,29 @@ pub fn normalize_embedded_video(data: &[u8]) -> Result<NormalizedVideo<'_>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn container_mime_uses_major_brand_and_handles_extended_headers() {
+        assert_eq!(
+            container_mime(&boxed(b"ftyp", b"isom\0\0\0\0qt  ")).unwrap(),
+            "video/mp4"
+        );
+        assert_eq!(
+            container_mime(&boxed(b"ftyp", b"qt  \0\0\0\0qt  ")).unwrap(),
+            "video/quicktime"
+        );
+        let large = [
+            1u32.to_be_bytes().as_slice(),
+            b"ftyp",
+            28u64.to_be_bytes().as_slice(),
+            b"qt  \0\0\0\0qt  ",
+        ]
+        .concat();
+        assert_eq!(container_mime(&large).unwrap(), "video/quicktime");
+        for data in [&large[..15], &large[..27], b"\0\0\0\x0cftypqt  ".as_slice()] {
+            assert!(container_mime(data).is_err());
+        }
+    }
 
     fn boxed(kind: &[u8; 4], payload: &[u8]) -> Vec<u8> {
         let size = u32::try_from(payload.len() + 8).unwrap();
