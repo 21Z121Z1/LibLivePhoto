@@ -111,6 +111,13 @@ def verify_scope(scope, text):
                            str(SCOPES[scope]) + ' assertions and INSTRUMENTATION_CODE: -1')
 
 
+def diagnostic_snapshot(adb, filename, label, command, timeout):
+    result = adb.command(command, timeout=timeout)
+    text = result['stdout'][-24000:] + '\nSTDERR:\n' + result['stderr'][-4000:]
+    (adb.out / filename).write_text(text)
+    print(label + '\n' + text, flush=True)
+
+
 def diagnostics(adb):
     states = []
     for tail in [['shell', 'getprop', 'sys.boot_completed'],
@@ -118,11 +125,16 @@ def diagnostics(adb):
                  ['shell', 'service', 'check', 'activity']]:
         states.append(adb.command(tail, timeout=10))
     print('ANDROID_HARNESS_SERVICE_DIAGNOSTIC ' + json.dumps(states)[-24000:], flush=True)
-    result = adb.command(['logcat', '-d', '-t', '200', '-s', 'LibLivePhotoAcceptance:*',
-                          'AndroidRuntime:E', 'libc:F'], timeout=20)
-    (adb.out / 'logcat.log').write_text(result['stdout'] + '\nSTDERR:\n' + result['stderr'])
-    print('ANDROID_HARNESS_GUEST_LOGCAT\n' + result['stdout'][-24000:] +
-          '\nSTDERR:\n' + result['stderr'][-4000:], flush=True)
+    diagnostic_snapshot(adb, 'logcat.log', 'ANDROID_HARNESS_GUEST_LOGCAT',
+                        ['logcat', '-d', '-t', '200', '-s', 'LibLivePhotoAcceptance:*',
+                         'AndroidRuntime:E', 'libc:F'], 20)
+    # The newest main-buffer rows can contain none of the selected tags after
+    # instrumentation reports "Process crashed". Preserve the dedicated crash
+    # buffer and this package's exit history before uninstall removes evidence.
+    diagnostic_snapshot(adb, 'logcat-crash.log', 'ANDROID_HARNESS_CRASH_LOGCAT',
+                        ['logcat', '-b', 'crash', '-d', '-t', '200', '*:V'], 20)
+    diagnostic_snapshot(adb, 'process-exit-info.log', 'ANDROID_HARNESS_EXIT_INFO',
+                        ['shell', 'dumpsys', '-t', '8', 'activity', 'exit-info', PACKAGE], 10)
 
 
 def main(argv=None):
@@ -190,6 +202,7 @@ def main(argv=None):
                     failure = RuntimeError(receipt['cleanup_error'])
         receipt['result'] = 'passed' if failure is None and receipt['assertions'] == 65 and receipt['owned_package_removed'] else 'failed'
         path.write_text(json.dumps(receipt, indent=2) + '\n')
+        print('ANDROID_HARNESS_RUNTIME_RECEIPT ' + json.dumps(receipt), flush=True)
     if failure is not None:
         raise failure
 

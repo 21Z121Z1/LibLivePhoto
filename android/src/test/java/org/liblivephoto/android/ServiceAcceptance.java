@@ -14,6 +14,15 @@ public final class ServiceAcceptance extends Instrumentation {
     private int assertions;
     private String phase = "instrumentation startup";
     private String scope = "all";
+    private void markPhase(String value) {
+        phase = value;
+        android.util.Log.i("LibLivePhotoAcceptance", phase);
+        Bundle progress = new Bundle();
+        progress.putString("phase", phase);
+        progress.putString("scope", scope);
+        progress.putInt("assertions", assertions);
+        sendStatus(1, progress);
+    }
     private void check(boolean condition, String message) {
         if (!condition) throw new AssertionError(message);
         assertions++;
@@ -42,14 +51,12 @@ public final class ServiceAcceptance extends Instrumentation {
         return file;
     }
     private NativeResult invoke(MotionPhotoClient client, Request request, MotionPhotoClient.Source p, MotionPhotoClient.Source m) throws Exception {
-        phase="operation "+request.toJson();
-        android.util.Log.i("LibLivePhotoAcceptance",phase);
+        markPhase("operation "+request.toJson());
         return client.execute(request,p,m,null).result().get(40,TimeUnit.SECONDS);
     }
     private boolean scenario(String name) { return "all".equals(scope)||name.equals(scope); }
     private MotionPhotoClient connect(Class<? extends MotionPhotoService> type) throws Exception {
-        phase="connect "+type.getSimpleName();
-        android.util.Log.i("LibLivePhotoAcceptance",phase);
+        markPhase("connect "+type.getSimpleName());
         MotionPhotoClient client=new MotionPhotoClient(getTargetContext(),type);
         try {
             client.ready().get(20,TimeUnit.SECONDS);
@@ -59,6 +66,7 @@ public final class ServiceAcceptance extends Instrumentation {
         } catch(Exception | Error error) {client.close();throw error;}
     }
     private void runChecks() throws Exception {
+        markPhase("instrumentation running");
         if(!Arrays.asList("all","core","metadata","lifecycle","concurrency").contains(scope))throw new IllegalArgumentException("unknown acceptance scope");
         byte[] still=asset("cover.jpg"), movie=asset("motion.mp4"), motion=asset("motion-photo.jpg");
         File stillFile=file("own-still.bin",still,0), movieFile=file("own-movie.bin",movie,0), motionFile=file("own-motion-range.bin",motion,13);
@@ -73,7 +81,7 @@ public final class ServiceAcceptance extends Instrumentation {
             MotionPhotoClient.Source source=MotionPhotoClient.Source.range(motionFD,13,motion.length);
             if(scenario("core")) {
             AtomicInteger readProgress=new AtomicInteger();
-            phase="isolated metadata pipe/read progress";
+            markPhase("isolated metadata pipe/read progress");
             NativeResult metadata=parser.execute(new Request("metadata"),source,null,(p,n,t)->{if("read".equals(p)&&n>0)readProgress.incrementAndGet();}).result().get(40,TimeUnit.SECONDS);
             check(metadata.success,"isolated metadata result");
             check(readProgress.get()>0,"actual FD read progress crosses Binder");
@@ -99,13 +107,14 @@ public final class ServiceAcceptance extends Instrumentation {
             for (int i=0;i<8;i++) check(invoke(parser,new Request("parse"),source,null).success,"repeated service response/descriptor lifetime");
             }
             if(scenario("concurrency")) {
-            phase="concurrent reads and queued service operations";
+            markPhase("concurrent reads and queued service operations");
             List<MotionPhotoClient.Operation> concurrent=new ArrayList<>();
             for(int i=0;i<3;i++) concurrent.add(parser.execute(new Request("parse"),source,null,null));
             for(MotionPhotoClient.Operation operation:concurrent) check(operation.result().get(40,TimeUnit.SECONDS).success,"concurrent bounded pipe readers and service queue drain");
             check(Os.lseek(motionFD.getFileDescriptor(),0,OsConstants.SEEK_CUR)==7,"concurrent reads preserve caller cursor");
             }
             if(scenario("metadata")) {
+            markPhase("metadata binding assets");
             byte[] agtmBytes=asset("bindings/agtm-video.mp4"), rawAgtm=asset("bindings/agtm-raw.bin"), collectionBytes=asset("bindings/collection.json");
             File agtmFile=file("own-agtm.bin",agtmBytes,11),collectionFile=file("own-collection.bin",collectionBytes,0);
             try(ParcelFileDescriptor agtmFD=ParcelFileDescriptor.open(agtmFile,ParcelFileDescriptor.MODE_READ_ONLY);
@@ -125,12 +134,12 @@ public final class ServiceAcceptance extends Instrumentation {
             try (RandomAccessFile fill=new RandomAccessFile(large,"rw")) { fill.setLength(32L*1024*1024); }
             try (ParcelFileDescriptor fd=ParcelFileDescriptor.open(large,ParcelFileDescriptor.MODE_READ_ONLY)) {
                 MotionPhotoClient.Operation pending=parser.execute(new Request("parse"),MotionPhotoClient.Source.whole(fd),null,null);
-                phase="cancel actual service read";
+                markPhase("cancel actual service read");
                 check(pending.cancel(),"cancel an actual service read immediately");
                 try { pending.result().get(5,TimeUnit.SECONDS); throw new AssertionError("cancel returned success"); }
                 catch (CancellationException expected) { assertions++; }
                 check(Os.fstat(fd.getFileDescriptor()).st_size==32L*1024*1024,"cancel keeps caller-owned FD open");
-                phase="concurrent cancellation versus completion";
+                markPhase("concurrent cancellation versus completion");
                 MotionPhotoClient.Operation race=parser.execute(new Request("version"),null,null,null);
                 AtomicInteger winners=new AtomicInteger();
                 CountDownLatch startCancel=new CountDownLatch(1);

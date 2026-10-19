@@ -84,3 +84,14 @@ Failed ADB commands and bounded post-failure service/logcat snapshots also appea
 in CI stdout, so a failed artifact transfer cannot hide installation stderr.
 Host fault injection suppresses its synthetic service-success markers; only the
 installed-device phase and its runtime receipt can establish service acceptance.
+Instrumentation phases also travel through status bundles, so the last completed
+phase remains visible if the process dies before returning a failure bundle.
+The harness retains a separate bounded crash-buffer snapshot and this package's
+`dumpsys activity exit-info` before cleanup; unavailable diagnostic commands
+remain visible and never imply a pass. It changes no log-buffer sizes or device
+permissions. [Android logcat](https://developer.android.com/tools/logcat) describes
+the separate crash buffer; the [API35 ActivityManager implementation](https://raw.githubusercontent.com/aosp-mirror/platform_frameworks_base/android15-release/services/core/java/com/android/server/am/ActivityManagerService.java)
+supports package-scoped exit history. Exit descriptions are diagnostic text, not
+a stable machine-readable protocol or an inferred root cause.
+The final runtime receipt is also printed to CI stdout, including completed
+scopes, exact assertion total and confirmed owned-package cleanup.

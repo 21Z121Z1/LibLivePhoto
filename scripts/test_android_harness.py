@@ -94,6 +94,31 @@ class Readiness(unittest.TestCase):
 
 
 class RuntimeGates(unittest.TestCase):
+    def test_empty_filtered_log_still_captures_bounded_crash_and_package_exit_history(self):
+        with tempfile.TemporaryDirectory() as directory:
+            calls = []
+
+            class Adb:
+                out = Path(directory)
+
+                def command(self, tail, timeout):
+                    calls.append((tail, timeout))
+                    if tail[:3] == ['logcat', '-b', 'crash']:
+                        return result('x' * 30000 + 'synthetic native crash')
+                    if 'exit-info' in tail:
+                        return result('synthetic exit reason', 'unsupported-or-timeout', timeout=True)
+                    return result()
+
+            with contextlib.redirect_stdout(io.StringIO()) as output:
+                harness.diagnostics(Adb())
+            self.assertIn('ANDROID_HARNESS_CRASH_LOGCAT', output.getvalue())
+            self.assertIn('synthetic native crash', output.getvalue())
+            self.assertIn('unsupported-or-timeout', output.getvalue())
+            self.assertLess(len((Path(directory) / 'logcat-crash.log').read_text()), 24100)
+            self.assertIn('STDERR:', (Path(directory) / 'process-exit-info.log').read_text())
+            self.assertIn((['shell', 'dumpsys', '-t', '8', 'activity', 'exit-info', harness.PACKAGE], 10), calls)
+            self.assertTrue(all(command[0] in ['shell', 'logcat'] and timeout <= 20 for command, timeout in calls))
+
     def test_terminal_instrumentation_failure_cannot_be_masked_by_a_pass_marker(self):
         for suffix in ['INSTRUMENTATION_CODE: 0\n', '', 'INSTRUMENTATION_CODE: -1\nINSTRUMENTATION_CODE: 0\n']:
             with self.assertRaises(RuntimeError):
