@@ -12,7 +12,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --locked -p liblivephoto-native
       - run: swift test --package-path apple
+        env:
+          LIBLIVEPHOTO_NATIVE_LIBRARY: ${{ github.workspace }}/target/debug/liblivephoto_native.dylib
       - name: Compile iOS native adapters against the simulator SDK
         working-directory: apple
         run: xcodebuild -scheme LibLivePhotoApple -destination 'generic/platform=iOS Simulator' -derivedDataPath ../evidence/local/apple-build CODE_SIGNING_ALLOWED=NO build

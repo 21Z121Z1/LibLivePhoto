@@ -8,9 +8,7 @@ Apple SDK branches; the development container has no Swift/Xcode installation.
 The host validates files with the Rust core, retains the original manifest bytes
 and files, and may decode manifest v1 through `InspectionManifest.decode`.
 The fixture is actual output from `liblivephoto-bridge` on the included synthetic
-Apple pair, not hand-authored metadata. This package does not yet provide a
-native Rust C/Swift binary bridge; host integration uses the versioned manifest
-and local resource URLs. WASM is the implemented direct Rust binding for the web.
+Apple pair, not hand-authored metadata. The package also has the real native RustCoreBridge described below; host integration retains the versioned manifest and local resource URLs. WASM remains the direct Rust binding for the web.
 
 Use `PhotoKitAdapter.load` for local paired resources, `resources(for:)` to retain
 the complete native resource inventory, `export` for an explicitly selected
@@ -31,3 +29,19 @@ new output. Import copies original files and does not move them.
 CaptureContract is only host-session/settings validation, not a camera system.
 Capture and private Photos effects are explicitly unavailable in portable APIs.
 See the [public API mapping](../APPLE_API_ARCHITECTURE.md) for limits and evidence.
+
+`RustCoreBridge` now invokes the real isolated C ABI from a caller-supplied local
+native library. It copies the LLP1 response before freeing the Rust-owned handle,
+retains authoritative JSON bytes and decodes the exact inspection contract. Its
+async wrapper suppresses cancelled/stale completions without claiming synchronous
+native work was interrupted. Build `cargo build -p liblivephoto-native` and set
+`LIBLIVEPHOTO_NATIVE_LIBRARY` to the dylib for actual macOS bridge tests. iOS hosts
+must embed a correctly built/signed native library in their app; simulator-SDK
+compilation alone does not validate device linking or runtime policy. No library
+code is downloaded or loaded from a remote URL.
+
+The native test suite now attempts valid project-generated local-pair loading and
+resource export byte comparison, independent of Photo Library import permission.
+Only exact CI/test receipts establish whether these gates passed. Import/editing
+and physical playback/HDR acceptance still require an appropriate permitted asset
+and Apple device; these tests do not bypass privacy permission.

@@ -111,7 +111,7 @@ No deployment or publication has been performed.
 
 The [Google inventory](evidence/GOOGLE_COMPLETE_INVENTORY.md) retains every open
 Google interface/provider/remux/wrapper item. Moments construction is excluded.
-Native valid-pair PhotoKit import/export/edit/playback and Gallery/Photos UX need
+Native valid-pair loading/export now has actual tests plus a real RustCoreBridge C ABI client; the next CI receipt must establish their outcome. Native valid-pair PhotoKit import/edit/playback and Gallery/Photos UX still need
 permissioned Apple device/corpus runs. Apple SDK runtime behavior, full official
 document bodies, LivePhotosKit runtime, Safari/Firefox behavior and hardware
 capture remain separate verification work. This is an implemented architecture
