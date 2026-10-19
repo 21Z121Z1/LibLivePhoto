@@ -21,3 +21,23 @@ separate research-source licenses are in
 `scripts/test_syntax_contracts.py` exercises the real CLI and independently uses
 ffprobe for each packet's SHA256, exact DTS/PTS/duration and file index target.
 This does not establish audio/colour rendering or device/Gallery acceptance.
+
+The round4 acceptance manifest is [cases.json](cases.json):42 cases with exact
+field expectations, classified errors/Unsupported reports, original media and
+transport parity goldens. Every source/golden has a SHA256 in the manifest.
+The added direct AAC file uses the same owned video plus newly encoded silence,
+without `-aac_pce`. Its malformed derivatives change only descriptor syntax.
+The compact-index input adds103actual unreferenced bytes to its single mdat;
+the compact golden discards those bytes while preserving all17packets. Import,
+removal and legacy stsz goldens are also independently demuxed by ffprobe.
+The AGTM vector derives solely from the existing owned bindings fixture, with
+compact sizes and relocated chunk offsets; its original raw bytes are retained.
+The goldens alone establish transport parity; they are not an independent format
+oracle. Eight output movies receive independent per-packet hash, exact DTS/PTS/
+duration and mdat-index checks (198 output packets altogether).
+
+Reproduce the added manifest and data into another new directory using
+`python3 scripts/create_acceptance_fixtures.py --out NEW_DIRECTORY` after building
+`liblivephoto-native`. It never overwrites an existing directory. The same
+FFmpeg build is needed for byte-identical encoder output; the cross-platform CI
+uses these committed, hashed owned inputs rather than regenerating them.

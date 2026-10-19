@@ -1,6 +1,14 @@
 import XCTest
 @testable import LibLivePhotoApple
 final class CoreBridgeTests: XCTestCase {
+    func testSyntaxVectorsThroughActualNativeBridge() throws {
+        guard let library = ProcessInfo.processInfo.environment["LIBLIVEPHOTO_NATIVE_LIBRARY"],
+              let fixtures = ProcessInfo.processInfo.environment["LIBLIVEPHOTO_SYNTAX_FIXTURES"] else {
+            throw XCTSkip("requires built Rust library and syntax fixtures; CI sets both mandatory paths")
+        }
+        let core = try RustCoreBridge(libraryURL: URL(fileURLWithPath: library))
+        XCTAssertEqual(try runSyntaxContracts(core: core, directory: URL(fileURLWithPath: fixtures), label: "macos-swift-c-abi"), 42)
+    }
     func testActuallyLoadsRustAndParsesExactResourcesAndErrors() throws {
         guard let path = ProcessInfo.processInfo.environment["LIBLIVEPHOTO_NATIVE_LIBRARY"] else { throw XCTSkip("requires the built native Rust library; CI sets this mandatory path") }
         let bridge = try RustCoreBridge(libraryURL: URL(fileURLWithPath: path))

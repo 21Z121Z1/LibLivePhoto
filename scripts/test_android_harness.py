@@ -164,12 +164,12 @@ class RuntimeGates(unittest.TestCase):
             self.assertEqual(json.loads((old / 'runtime-receipt.json').read_text())['old'], True)
             return receipt, calls, error
 
-    def test_all_65_assertions_and_cleanup_are_required(self):
+    def test_original_65_plus_50_syntax_assertions_and_cleanup_are_required(self):
         receipt, _, error = self.scenario()
         self.assertIsNone(error)
         self.assertEqual(receipt['result'], 'passed')
         self.assertEqual(receipt['completed_scopes'], list(harness.SCOPES))
-        self.assertEqual(receipt['assertions'], 65)
+        self.assertEqual(receipt['assertions'], 115)
         self.assertTrue(receipt['owned_package_removed'])
 
     def test_preinstall_failure_has_receipt_and_diagnostics_without_mutation(self):
@@ -207,7 +207,7 @@ class RuntimeGates(unittest.TestCase):
     def test_cleanup_failure_does_not_leave_a_passed_receipt(self):
         receipt, _, error = self.scenario(cleanup_failure=True)
         self.assertIsInstance(error, RuntimeError)
-        self.assertEqual(receipt['assertions'], 65)
+        self.assertEqual(receipt['assertions'], 115)
         self.assertEqual(receipt['result'], 'failed')
 
     def test_uncertain_install_does_not_uninstall_an_unconfirmed_package(self):

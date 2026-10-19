@@ -304,3 +304,141 @@ fn matching_44100_declarations_are_retained_and_public_44khz_ambiguity_stays_uns
         .iter()
         .any(|i| i.kind == FormatIssueKind::Unsupported && i.message.contains("QuickTime v2")));
 }
+
+#[test]
+fn existing_direct_lc_with_sl_config_remains_compatible_with_strict_capabilities() {
+    let config = [vec![0x40, 0x15], vec![0; 11], descriptor(5, &[0x11, 0x90])].concat();
+    let direct = common::full(
+        b"esds",
+        &descriptor(
+            3,
+            &[vec![0, 1, 0], descriptor(4, &config), descriptor(6, &[2])].concat(),
+        ),
+    );
+    let bytes = movie(&direct, 0);
+    let parsed = inspect(&bytes).unwrap();
+    assert_eq!(parsed.object_type, 2);
+    assert_eq!(parsed.sample_rate, 48000);
+    assert_eq!(parsed.channels, Some(2));
+    assert_eq!(parsed.channel_configuration, 2);
+    assert_eq!(parsed.program_config, None);
+    assert_eq!(parsed.raw, [0x11, 0x90]);
+    // The pre-existing non-PCE path reports declarations and retains later
+    // raw syntax; it is not a complete GASpecificConfig/extension validator.
+    assert_eq!(
+        inspect(&movie(&esds(&[0x11, 0x90, 0xff]), 0)).unwrap().raw,
+        [0x11, 0x90, 0xff]
+    );
+    let source = MotionPhoto::parse(
+        Input::Parts {
+            still: &[255, 216, 255, 217],
+            movie: &bytes,
+            presentation: MediaTime::new(1, 10),
+        },
+        ParseOptions::strict(),
+    )
+    .unwrap();
+    let caps = MediaCapabilities {
+        video_sample_entries: vec![*b"avc1"],
+        audio_sample_entries: vec![*b"mp4a"],
+        aac_object_types: vec![2],
+        max_audio_channels: 2,
+        audio_sample_rates: vec![48000],
+    };
+    let built = source
+        .plan_with_capabilities(TargetProfile::AndroidJpeg, WritePolicy::default(), &caps)
+        .execute()
+        .unwrap();
+    let reopened = MotionPhoto::parse(
+        Input::SingleFile(&built.files[0].bytes),
+        ParseOptions::strict(),
+    )
+    .unwrap();
+    assert_eq!(reopened.motion_video_bytes().unwrap(), bytes);
+    assert_eq!(
+        reopened.presentation_time(),
+        MediaTime::new(100_000, 1_000_000)
+    );
+}
+
+#[test]
+fn strict_direct_esds_rejections_do_not_disable_default_lossless_preservation() {
+    let config = [vec![0x40, 0x15], vec![0; 11], descriptor(5, &[0x11, 0x90])].concat();
+    let decoder = descriptor(4, &config);
+    let mut version = esds(&[0x11, 0x90]);
+    version[8] = 1;
+    let duplicate = common::full(
+        b"esds",
+        &descriptor(
+            3,
+            &[vec![0, 1, 0], decoder.clone(), decoder.clone()].concat(),
+        ),
+    );
+    let extension = common::full(
+        b"esds",
+        &descriptor(
+            3,
+            &[vec![0, 1, 0], decoder, descriptor(7, &[1, 2])].concat(),
+        ),
+    );
+    let caps = MediaCapabilities {
+        video_sample_entries: vec![*b"avc1"],
+        audio_sample_entries: vec![*b"mp4a"],
+        aac_object_types: vec![2],
+        max_audio_channels: 2,
+        audio_sample_rates: vec![48000],
+    };
+    for (children, mismatch) in [(version, false), (duplicate, true), (extension, false)] {
+        let bytes = movie(&children, 0);
+        let error = inspect(&bytes).unwrap_err();
+        assert_eq!(
+            matches!(error, MotionPhotoReadError::MetadataMismatch(_)),
+            mismatch
+        );
+        assert!(matches!(
+            error,
+            MotionPhotoReadError::MetadataMismatch(_) | MotionPhotoReadError::UnsupportedLayout(_)
+        ));
+        let source = MotionPhoto::parse(
+            Input::Parts {
+                still: &[255, 216, 255, 217],
+                movie: &bytes,
+                presentation: MediaTime::new(1, 10),
+            },
+            ParseOptions::strict(),
+        )
+        .unwrap();
+        let strict = source.plan_with_capabilities(
+            TargetProfile::AndroidJpeg,
+            WritePolicy::default(),
+            &caps,
+        );
+        assert!(!strict.can_execute());
+        assert!(strict
+            .report()
+            .resources
+            .iter()
+            .any(|r| r.disposition == Disposition::Unmapped));
+        assert!(strict.execute().is_err());
+        for target in [TargetProfile::PreserveSource, TargetProfile::AndroidJpeg] {
+            let output = source
+                .plan(target, WritePolicy::default())
+                .execute()
+                .unwrap();
+            if target == TargetProfile::PreserveSource {
+                assert!(output.files.iter().any(|f| f.bytes == bytes));
+            } else {
+                let reopened = MotionPhoto::parse(
+                    Input::SingleFile(&output.files[0].bytes),
+                    ParseOptions::strict(),
+                )
+                .unwrap();
+                assert_eq!(reopened.motion_video_bytes().unwrap(), bytes);
+                assert_eq!(
+                    reopened.presentation_time(),
+                    MediaTime::new(100_000, 1_000_000)
+                );
+            }
+        }
+    }
+}

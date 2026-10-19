@@ -1,0 +1,1770 @@
+{
+  "version": 1,
+  "scope": "Owned syntax/transport parity; ICC selected structure only, AAC declarations only, no native Gallery acceptance or rendering certification.",
+  "unused_media_bytes": 103,
+  "cases": [
+    {
+      "id": "icc-valid",
+      "request": {
+        "action": "conformance",
+        "profile": "icc-structure-v4.4"
+      },
+      "primary": "icc-structure-v4.4.icc",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "profile"
+          ],
+          "value": "icc.1-2022-v4.4-structure"
+        },
+        {
+          "path": [
+            "metadata",
+            "checkedRequiredRulesSatisfied"
+          ],
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "icc-unsupported",
+      "request": {
+        "action": "conformance",
+        "profile": "icc-structure-v4.4"
+      },
+      "primary": "icc-unsupported-v4.3.icc",
+      "success": false,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "issues",
+            0,
+            "kind"
+          ],
+          "value": "Unsupported"
+        }
+      ]
+    },
+    {
+      "id": "icc-truncated",
+      "request": {
+        "action": "conformance",
+        "profile": "icc-structure-v4.4"
+      },
+      "primary": "icc-truncated.icc",
+      "success": false,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "error",
+            "code"
+          ],
+          "value": "metadataMismatch"
+        }
+      ]
+    },
+    {
+      "id": "icc-budget",
+      "request": {
+        "action": "conformance",
+        "profile": "icc-structure-v4.4"
+      },
+      "primary": "icc-budget.icc",
+      "success": false,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "error",
+            "code"
+          ],
+          "value": "inputLimit"
+        }
+      ]
+    },
+    {
+      "id": "pce-wave",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channelConfiguration"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channels"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "sampleRate"
+          ],
+          "value": 48000
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "front"
+          ],
+          "value": [
+            {
+              "isPair": true,
+              "tag": 0
+            }
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "speakerPositionsInferred"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "renderingVerified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            1,
+            "time"
+          ],
+          "value": {
+            "value": "128000",
+            "timescale": 2048000
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            5,
+            "time"
+          ],
+          "value": {
+            "value": "768000",
+            "timescale": 2048000
+          }
+        }
+      ],
+      "movie": "aac-pce-wave.mov"
+    },
+    {
+      "id": "pce-stz2",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channelConfiguration"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channels"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "sampleRate"
+          ],
+          "value": 48000
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "front"
+          ],
+          "value": [
+            {
+              "isPair": true,
+              "tag": 0
+            }
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "speakerPositionsInferred"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "renderingVerified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            1,
+            "time"
+          ],
+          "value": {
+            "value": "128000",
+            "timescale": 2048000
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            5,
+            "time"
+          ],
+          "value": {
+            "value": "768000",
+            "timescale": 2048000
+          }
+        }
+      ],
+      "movie": "aac-pce-stz2.mov"
+    },
+    {
+      "id": "pce-stz2-unused",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channelConfiguration"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channels"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "sampleRate"
+          ],
+          "value": 48000
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "front"
+          ],
+          "value": [
+            {
+              "isPair": true,
+              "tag": 0
+            }
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "speakerPositionsInferred"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "renderingVerified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            1,
+            "time"
+          ],
+          "value": {
+            "value": "128000",
+            "timescale": 2048000
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            5,
+            "time"
+          ],
+          "value": {
+            "value": "768000",
+            "timescale": 2048000
+          }
+        }
+      ],
+      "movie": "aac-pce-stz2-unused.mov"
+    },
+    {
+      "id": "direct-aac",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channelConfiguration"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channels"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "sampleRate"
+          ],
+          "value": 48000
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        }
+      ],
+      "movie": "aac-direct.mp4"
+    },
+    {
+      "id": "direct-version",
+      "request": {
+        "action": "conformance",
+        "profile": "google-video-container-1.0",
+        "trackIds": [
+          1
+        ]
+      },
+      "primary": "aac-direct-version.mp4",
+      "success": false,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "issues",
+            0,
+            "kind"
+          ],
+          "value": "Unsupported"
+        }
+      ]
+    },
+    {
+      "id": "direct-version-inspect",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "metadata",
+            "diagnostics"
+          ],
+          "value": [
+            "sample descriptions unavailable: esds version/flags"
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        }
+      ],
+      "movie": "aac-direct-version.mp4"
+    },
+    {
+      "id": "direct-duplicate",
+      "request": {
+        "action": "conformance",
+        "profile": "google-video-container-1.0",
+        "trackIds": [
+          1
+        ]
+      },
+      "primary": "aac-direct-duplicate.mp4",
+      "success": false,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "error",
+            "code"
+          ],
+          "value": "metadataMismatch"
+        }
+      ]
+    },
+    {
+      "id": "direct-duplicate-inspect",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "metadata",
+            "diagnostics"
+          ],
+          "value": [
+            "sample descriptions unavailable: declared duplicate ES DecoderConfigDescriptor differs from the encoded container"
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        }
+      ],
+      "movie": "aac-direct-duplicate.mp4"
+    },
+    {
+      "id": "direct-extension",
+      "request": {
+        "action": "conformance",
+        "profile": "google-video-container-1.0",
+        "trackIds": [
+          1
+        ]
+      },
+      "primary": "aac-direct-extension.mp4",
+      "success": false,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "issues",
+            0,
+            "kind"
+          ],
+          "value": "Unsupported"
+        }
+      ]
+    },
+    {
+      "id": "direct-extension-inspect",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "metadata",
+            "diagnostics"
+          ],
+          "value": [
+            "sample descriptions unavailable: unsupported ES descriptor extension"
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        }
+      ],
+      "movie": "aac-direct-extension.mp4"
+    },
+    {
+      "id": "pce-truncated",
+      "request": {
+        "action": "conformance",
+        "profile": "google-video-container-1.0",
+        "trackIds": [
+          1
+        ]
+      },
+      "primary": "aac-pce-truncated.mov",
+      "success": false,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "error",
+            "code"
+          ],
+          "value": "invalidInput"
+        }
+      ]
+    },
+    {
+      "id": "mixed-sizes",
+      "request": {
+        "action": "optimize"
+      },
+      "primary": "aac-mixed-sizes.mov",
+      "success": false,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "error",
+            "code"
+          ],
+          "value": "metadataMismatch"
+        }
+      ]
+    },
+    {
+      "id": "stz2-preserve",
+      "request": {
+        "action": "optimize",
+        "compact": false
+      },
+      "primary": "aac-pce-stz2-unused.mov",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "discardedMediaBytes"
+          ],
+          "value": "0"
+        },
+        {
+          "path": [
+            "metadata",
+            "retainedUnknownMediaBytes"
+          ],
+          "value": "103"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedSamplesUnchanged"
+          ],
+          "value": true
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/quicktime",
+          "fixture": "golden-stz2-preserve-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "stz2-preserve-parse",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channelConfiguration"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channels"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "sampleRate"
+          ],
+          "value": 48000
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "front"
+          ],
+          "value": [
+            {
+              "isPair": true,
+              "tag": 0
+            }
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "speakerPositionsInferred"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "renderingVerified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            1,
+            "time"
+          ],
+          "value": {
+            "value": "128000",
+            "timescale": 2048000
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            5,
+            "time"
+          ],
+          "value": {
+            "value": "768000",
+            "timescale": 2048000
+          }
+        }
+      ],
+      "movie": {
+        "case": "stz2-preserve"
+      }
+    },
+    {
+      "id": "stz2-compact",
+      "request": {
+        "action": "optimize",
+        "compact": true
+      },
+      "primary": "aac-pce-stz2-unused.mov",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "discardedMediaBytes"
+          ],
+          "value": "103"
+        },
+        {
+          "path": [
+            "metadata",
+            "retainedUnknownMediaBytes"
+          ],
+          "value": "0"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedSamplesUnchanged"
+          ],
+          "value": true
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/quicktime",
+          "fixture": "golden-stz2-compact-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "stz2-compact-parse",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channelConfiguration"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channels"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "sampleRate"
+          ],
+          "value": 48000
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "front"
+          ],
+          "value": [
+            {
+              "isPair": true,
+              "tag": 0
+            }
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "speakerPositionsInferred"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig",
+            "renderingVerified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            1,
+            "time"
+          ],
+          "value": {
+            "value": "128000",
+            "timescale": 2048000
+          }
+        },
+        {
+          "path": [
+            "metadata",
+            "tracks",
+            0,
+            "frameTiming",
+            "frames",
+            5,
+            "time"
+          ],
+          "value": {
+            "value": "768000",
+            "timescale": 2048000
+          }
+        }
+      ],
+      "movie": {
+        "case": "stz2-compact"
+      }
+    },
+    {
+      "id": "stz2-remove-audio",
+      "request": {
+        "action": "remove-tracks",
+        "trackIds": [
+          2
+        ],
+        "compact": true
+      },
+      "primary": "aac-pce-stz2-unused.mov",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "removedTrackIds"
+          ],
+          "value": [
+            2
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedSamplesUnchanged"
+          ],
+          "value": true
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/quicktime",
+          "fixture": "golden-stz2-remove-audio-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "stz2-import-audio",
+      "request": {
+        "action": "import-tracks",
+        "trackIds": [
+          2
+        ]
+      },
+      "primary": "motion.mp4",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "encodedSamplesUnchanged"
+          ],
+          "value": true
+        }
+      ],
+      "movie": "aac-pce-stz2-unused.mov",
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "golden-stz2-import-audio-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "legacy-preserve",
+      "request": {
+        "action": "optimize",
+        "compact": false
+      },
+      "primary": "aac-direct.mp4",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "discardedMediaBytes"
+          ],
+          "value": "0"
+        },
+        {
+          "path": [
+            "metadata",
+            "retainedUnknownMediaBytes"
+          ],
+          "value": "0"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedSamplesUnchanged"
+          ],
+          "value": true
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "golden-legacy-preserve-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "legacy-preserve-parse",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channels"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        }
+      ],
+      "movie": {
+        "case": "legacy-preserve"
+      }
+    },
+    {
+      "id": "legacy-compact",
+      "request": {
+        "action": "optimize",
+        "compact": true
+      },
+      "primary": "aac-direct.mp4",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "discardedMediaBytes"
+          ],
+          "value": "0"
+        },
+        {
+          "path": [
+            "metadata",
+            "retainedUnknownMediaBytes"
+          ],
+          "value": "0"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedSamplesUnchanged"
+          ],
+          "value": true
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "golden-legacy-compact-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "legacy-compact-parse",
+      "request": {
+        "action": "parse",
+        "inputKind": "parts",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "channels"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "sampleDescriptions",
+            1,
+            "audio",
+            "aac",
+            "programConfig"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "1",
+            "timescale": 10
+          }
+        }
+      ],
+      "movie": {
+        "case": "legacy-compact"
+      }
+    },
+    {
+      "id": "legacy-remove-audio",
+      "request": {
+        "action": "remove-tracks",
+        "trackIds": [
+          2
+        ],
+        "compact": true
+      },
+      "primary": "aac-direct.mp4",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "removedTrackIds"
+          ],
+          "value": [
+            2
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedSamplesUnchanged"
+          ],
+          "value": true
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "golden-legacy-remove-audio-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "legacy-import-audio",
+      "request": {
+        "action": "import-tracks",
+        "trackIds": [
+          2
+        ]
+      },
+      "primary": "motion.mp4",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "encodedSamplesUnchanged"
+          ],
+          "value": true
+        }
+      ],
+      "movie": "aac-direct.mp4",
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "golden-legacy-import-audio-0.bin"
+        },
+        {
+          "mime": "application/octet-stream",
+          "fixture": "golden-legacy-import-audio-1.bin"
+        }
+      ]
+    },
+    {
+      "id": "agtm-stz2",
+      "request": {
+        "action": "agtm",
+        "videoInput": true,
+        "time": {
+          "value": "1",
+          "timescale": 1
+        }
+      },
+      "primary": "agtm-stz2.mp4",
+      "success": true,
+      "expect": [],
+      "files": [
+        {
+          "mime": "application/octet-stream",
+          "fixture": "agtm-raw.bin"
+        }
+      ]
+    },
+    {
+      "id": "pce-build",
+      "request": {
+        "action": "build",
+        "inputKind": "parts",
+        "target": "google-jpeg",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [],
+      "movie": "aac-pce-wave.mov",
+      "files": [
+        {
+          "mime": "image/jpeg",
+          "fixture": "golden-pce-build-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "pce-extract",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false
+      },
+      "primary": {
+        "case": "pce-build"
+      },
+      "success": true,
+      "expect": [],
+      "files": [
+        {
+          "mime": "video/quicktime",
+          "fixture": "aac-pce-wave.mov"
+        }
+      ]
+    },
+    {
+      "id": "pce-built-time",
+      "request": {
+        "action": "parse"
+      },
+      "primary": {
+        "case": "pce-build"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "100000",
+            "timescale": 1000000
+          }
+        }
+      ]
+    },
+    {
+      "id": "direct-build",
+      "request": {
+        "action": "build",
+        "inputKind": "parts",
+        "target": "google-jpeg",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [],
+      "movie": "aac-direct.mp4",
+      "files": [
+        {
+          "mime": "image/jpeg",
+          "fixture": "golden-direct-build-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "direct-extract",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false
+      },
+      "primary": {
+        "case": "direct-build"
+      },
+      "success": true,
+      "expect": [],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "aac-direct.mp4"
+        }
+      ]
+    },
+    {
+      "id": "direct-built-time",
+      "request": {
+        "action": "parse"
+      },
+      "primary": {
+        "case": "direct-build"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "photoTime"
+          ],
+          "value": {
+            "value": "100000",
+            "timescale": 1000000
+          }
+        }
+      ]
+    },
+    {
+      "id": "version-build",
+      "request": {
+        "action": "build",
+        "inputKind": "parts",
+        "target": "google-jpeg",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [],
+      "movie": "aac-direct-version.mp4",
+      "files": [
+        {
+          "mime": "image/jpeg",
+          "fixture": "golden-version-build-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "version-extract",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false
+      },
+      "primary": {
+        "case": "version-build"
+      },
+      "success": true,
+      "expect": [],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "aac-direct-version.mp4"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-build",
+      "request": {
+        "action": "build",
+        "inputKind": "parts",
+        "target": "google-jpeg",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [],
+      "movie": "aac-direct-duplicate.mp4",
+      "files": [
+        {
+          "mime": "image/jpeg",
+          "fixture": "golden-duplicate-build-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-extract",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false
+      },
+      "primary": {
+        "case": "duplicate-build"
+      },
+      "success": true,
+      "expect": [],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "aac-direct-duplicate.mp4"
+        }
+      ]
+    },
+    {
+      "id": "extension-build",
+      "request": {
+        "action": "build",
+        "inputKind": "parts",
+        "target": "google-jpeg",
+        "time": {
+          "value": "1",
+          "timescale": 10
+        }
+      },
+      "primary": "cover.jpg",
+      "success": true,
+      "expect": [],
+      "movie": "aac-direct-extension.mp4",
+      "files": [
+        {
+          "mime": "image/jpeg",
+          "fixture": "golden-extension-build-0.bin"
+        }
+      ]
+    },
+    {
+      "id": "extension-extract",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false
+      },
+      "primary": {
+        "case": "extension-build"
+      },
+      "success": true,
+      "expect": [],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "aac-direct-extension.mp4"
+        }
+      ]
+    },
+    {
+      "id": "inexact-third",
+      "request": {
+        "action": "build",
+        "inputKind": "parts",
+        "target": "google-jpeg",
+        "time": {
+          "value": "1",
+          "timescale": 3
+        }
+      },
+      "primary": "cover.jpg",
+      "success": false,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "canExecute"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "blockers"
+          ],
+          "value": [
+            "Android XMP time requires an exact integer microsecond value"
+          ]
+        }
+      ],
+      "movie": "aac-pce-wave.mov"
+    }
+  ],
+  "sha256": {
+    "aac-direct-duplicate.mp4": "fc4acef62af0bacd8a218acca6c3c6978b1ff874ec3e16f7a6cfebc313c0ed6f",
+    "aac-direct-extension.mp4": "3f847c389856e38210b71256d614e2a1ec9253e71e8ffc39da4547e2032bc941",
+    "aac-direct-version.mp4": "c9f600656ed9474cc779452d2e0545d03f2c5269be1c7b2150b6d7f06051c432",
+    "aac-direct.mp4": "abc1a448760707abd3dcb0fe6b8502d790c71c611a3dcd53aebb77384da215eb",
+    "aac-mixed-sizes.mov": "ebb5483cb4ddd22f6aa7bc831df1229008356cdcb176938dc3c704436e0dd905",
+    "aac-pce-stz2-unused.mov": "00fe9574b4ed5bff02d5233a04bc87dc5b706eb8400ac5343d34777a1ca12016",
+    "aac-pce-stz2.mov": "946835418c68809be128fe8260a8236efe23e7844d58b0fc8985fa42bb7f27d7",
+    "aac-pce-truncated.mov": "6095626fd18c9c75841ece8595631e8f193de57d1ae5c003d8a2ec6d4adce5de",
+    "aac-pce-wave.mov": "89f90349361802d11ec0fa115037c6039261eb7841f1eeaac743c13dabac6100",
+    "agtm-raw.bin": "a4e29174ff45c73ef3c5d4b3abdc3ffa0d4dd358e0d4ed47d3fb673bdd486a55",
+    "agtm-stz2.mp4": "3d63a8a9d79fa05f814e5cf0d67c2fde34b46144ee355ebbcf13a4c730c67473",
+    "cover.jpg": "824800360e925acce8f8d6fbd22191c631cc821f1cbe251eeaaa2d77e9b24f64",
+    "golden-direct-build-0.bin": "cfec40f4fe0e5477111e83f979b031cba2f3dadc5e0c1d766007863236b04831",
+    "golden-duplicate-build-0.bin": "2d793967cf4f0669af7712fa3b3d5d8cc0c492bc5f5e7ac65afb147e679ac7b7",
+    "golden-extension-build-0.bin": "ee2979630e042a90c334cdd8367f9734a2e73cd6766bc6c242e3e190e6c5697a",
+    "golden-legacy-compact-0.bin": "4561ea9f4fd1fb4c2ecf5a1cb765761b20b2f5d3741051731e4202a034683ef4",
+    "golden-legacy-import-audio-0.bin": "acf795448e244c3b13f1c8056e25a0802718f12ef595a28e59bc40116c56a2ee",
+    "golden-legacy-import-audio-1.bin": "230b6510df09f78d8132a163ebe2881d5e6cdb229ba21e3a7abf0b892ef5425b",
+    "golden-legacy-preserve-0.bin": "4561ea9f4fd1fb4c2ecf5a1cb765761b20b2f5d3741051731e4202a034683ef4",
+    "golden-legacy-remove-audio-0.bin": "1472ede16bf4bf6b40950a305bfc016ebfb1eb25b92e426ac2a588f47a9c075b",
+    "golden-pce-build-0.bin": "1390def8701ce990d28768559c8a4495c1f31bb43c097a358c8bdd086463774d",
+    "golden-stz2-compact-0.bin": "49f953911c8339ca9817e826d86381fbf8bc92f162839848954439df80d64bfe",
+    "golden-stz2-import-audio-0.bin": "8240318d54d02125648b6f5f5762eff2aae610a0febb3ccb9f020868f2e228aa",
+    "golden-stz2-preserve-0.bin": "7967c06b26dd61a7f04ab12ddc014eab10031355086458b9a554c7806065e5a3",
+    "golden-stz2-remove-audio-0.bin": "4fb2a2652aeec27c253c30a841c308cccab69098c8214eb9910f3e38d0b07f3f",
+    "golden-version-build-0.bin": "d6011e5e9ff5cf67453e065962e11dabb6d95a71e8d21d5bf276d35d3c64362a",
+    "icc-budget.icc": "32754ebf4f40ef8d48cddd1cb67385415a7d47fa98feee89767bd2f30fdfe087",
+    "icc-structure-v4.4.icc": "8e70a0db1bfc1348283b377540f6432057eff249bcc1ee4a6cd1bbe1bd8b104d",
+    "icc-truncated.icc": "86e901df0a12aa41e3998704322751184fbf8ea0f39faa79001ffbf47e1231a8",
+    "icc-unsupported-v4.3.icc": "6850c9dd40a87f0f54cbac6f29667590ce3897eb0d647a18dbe7b6f0c80a38e1",
+    "motion.mp4": "e8e35dd0dbf98b8b95ab9561a2debc5e8bb5f6469f2dfb08c6329f9674a70a2e"
+  }
+}

@@ -20,4 +20,7 @@ let agtm = try core.execute(requestJSON: Data("{\"action\":\"agtm\",\"videoInput
 guard agtm.success, agtm.files.count == 1, agtm.files[0].bytes == raw else { fatalError("native AGTM bridge failed") }
 let invalid = try core.execute(requestJSON: Data("{\"action\":\"parse\"}".utf8), primary: Data([1, 2, 3]))
 guard !invalid.success else { fatalError("invalid bytes accepted") }
+let syntaxCases = try runSyntaxContracts(core: core, directory: URL(fileURLWithPath: CommandLine.arguments[5]), label: "ios-simulator-swift-c-abi")
+guard syntaxCases == 42 else { fatalError("new syntax vectors did not all execute") }
+print("IOS_SIMULATOR_SYNTAX passed: cases=\(syntaxCases)")
 print("IOS_SIMULATOR_SWIFT_RUST passed: linked static C ABI, exact time, original movie, complete AGTM, errors")

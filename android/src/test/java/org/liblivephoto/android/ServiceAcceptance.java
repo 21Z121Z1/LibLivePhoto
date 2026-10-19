@@ -96,7 +96,7 @@ public final class ServiceAcceptance extends Instrumentation {
     }
     private void runChecks() throws Exception {
         markPhase("instrumentation running");
-        if(!Arrays.asList("all","core","metadata","lifecycle","concurrency").contains(scope))throw new IllegalArgumentException("unknown acceptance scope");
+        if(!Arrays.asList("all","core","metadata","lifecycle","concurrency","syntax").contains(scope))throw new IllegalArgumentException("unknown acceptance scope");
         byte[] still=asset("cover.jpg"), movie=asset("motion.mp4"), motion=asset("motion-photo.jpg");
         File stillFile=file("own-still.bin",still,0), movieFile=file("own-movie.bin",movie,0), motionFile=file("own-motion-range.bin",motion,13);
         try (ParcelFileDescriptor stillFD=ParcelFileDescriptor.open(stillFile,ParcelFileDescriptor.MODE_READ_ONLY);
@@ -106,6 +106,30 @@ public final class ServiceAcceptance extends Instrumentation {
              MotionPhotoClient builder=connect(MotionPhotoBuilderService.class);
              MotionPhotoClient checker=connect(MotionPhotoCheckerService.class);
              MotionPhotoClient extractor=connect(MotionPhotoExtractorService.class)) {
+            if(scenario("syntax")) {
+                // Existing Binder actions exercise actual FD ranges and isolated
+                // parser processes. Conformance/remux are existing JNI actions,
+                // not Binder service capabilities; their transport is explicit.
+                NativeEngine engine=new NativeEngine(); AtomicInteger sequence=new AtomicInteger();
+                assertions+=SyntaxContracts.run(name->asset("syntax/"+name),(json,p,m)->{
+                    String action=new org.json.JSONObject(json).getString("action");
+                    MotionPhotoClient selected="parse".equals(action)?parser:"build".equals(action)?builder:"extract".equals(action)||"agtm".equals(action)?extractor:null;
+                    if(selected==null) {
+                        markPhase("syntax JNI "+action+" pid="+android.os.Process.myPid());
+                        return engine.executeJson(json,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{});
+                    }
+                    markPhase("syntax Binder "+action+" remotePid="+selected.remoteProcessId());
+                    int serial=sequence.incrementAndGet();
+                    File primaryFile=file("own-syntax-primary-"+serial,p,13),secondaryFile=file("own-syntax-movie-"+serial,m,17);
+                    try(ParcelFileDescriptor primaryFD=ParcelFileDescriptor.open(primaryFile,ParcelFileDescriptor.MODE_READ_ONLY);
+                        ParcelFileDescriptor secondaryFD=ParcelFileDescriptor.open(secondaryFile,ParcelFileDescriptor.MODE_READ_ONLY)) {
+                        Os.lseek(primaryFD.getFileDescriptor(),3,OsConstants.SEEK_SET);
+                        NativeResult value=invoke(selected,SyntaxContracts.request(json),MotionPhotoClient.Source.range(primaryFD,13,p.length),m.length==0?null:MotionPhotoClient.Source.range(secondaryFD,17,m.length));
+                        if(Os.lseek(primaryFD.getFileDescriptor(),0,OsConstants.SEEK_CUR)!=3)throw new AssertionError("syntax source cursor changed");
+                        return value;
+                    } finally { primaryFile.delete();secondaryFile.delete(); }
+                },"android-actual-jni-and-binder");
+            }
             Os.lseek(motionFD.getFileDescriptor(),7,OsConstants.SEEK_SET);
             MotionPhotoClient.Source source=MotionPhotoClient.Source.range(motionFD,13,motion.length);
             if(scenario("core")) {

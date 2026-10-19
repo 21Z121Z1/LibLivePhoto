@@ -62,6 +62,7 @@ public final class NativeSmoke {
     check(!rejectedEsds.success&&rejectedEsds.headerJson.contains("esds version/flags"),"unknown esds version rejected across JNI");
     NativeResult pceBuilt=engine.build(Input.bytes(still),Input.bytes(pceMovie),new ExactTime(1,10),"google-jpeg");check(pceBuilt.success,"PCE container lossless build");
     check(Arrays.equals(pceMovie,engine.extract(Input.bytes(pceBuilt.files.get(0).copyBytes()),false,true,false).files.get(0).copyBytes()),"PCE movie bytes retained across JNI build/extract");
-    System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded envelope, AGTM, collection/provider controls opaque vivo streams, bounded ICC and actual AAC-LC PCE/wave");
+    SyntaxContracts.run(name->Files.readAllBytes(syntax.resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"host-jni");
+    System.out.println("JNI_SMOKE passed: existing regressions plus all42 new syntax/preservation/exact-time cases");
   }
 }

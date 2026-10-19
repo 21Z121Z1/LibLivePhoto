@@ -126,6 +126,7 @@ dependencies = [
  "liblivephoto-bridge",
  "liblivephoto-format",
  "serde_json",
+ "wasm-bindgen",
 ]
 
 [[package]]

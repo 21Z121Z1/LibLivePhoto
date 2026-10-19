@@ -84,7 +84,7 @@ def main():
         for source in sorted((ROOT/'android/src/main/aidl').rglob('*.aidl')):
             archive.write(source, 'aidl/'+str(source.relative_to(ROOT/'android/src/main/aidl')))
     run([*java, 'com.sun.tools.javac.Main', '-source', '8', '-target', '8', '-bootclasspath', bootclasspath,
-         '-classpath', build/'classes', '-d', build/'test-classes', *sorted((ROOT/'android/src/test/java').rglob('*.java'))])
+         '-classpath', build/'classes', '-d', build/'test-classes', ROOT/'java/src/test/java/org/liblivephoto/SyntaxContracts.java', *sorted((ROOT/'android/src/test/java').rglob('*.java'))])
     run([*java, 'sun.tools.jar.Main', '--create', '--file', build/'test-classes.jar', '-C', build/'test-classes', '.'])
     run([tools/'d8', '--lib', platform/'android.jar', '--min-api', '26', '--output', build/'dex', build/'classes.jar', build/'test-classes.jar'])
     unsigned = build/'acceptance-unsigned.apk'
@@ -92,6 +92,10 @@ def main():
     assets.mkdir(parents=True, exist_ok=True)
     for source in (ROOT/'fixtures/bindings').iterdir():
         if source.is_file(): shutil.copyfile(source, assets/source.name)
+    syntax_assets = build/'assets/syntax'
+    syntax_assets.mkdir(parents=True, exist_ok=True)
+    for source in (ROOT/'fixtures/syntax').iterdir():
+        if source.is_file(): shutil.copyfile(source, syntax_assets/source.name)
     run([tools/'aapt2', 'link', '-o', unsigned, '--manifest', ROOT/'android/src/test/AndroidManifest.xml',
          '-I', platform/'android.jar', '--min-sdk-version', '26', '--target-sdk-version', '35', '-A', ROOT/'web/public/demo', '-A', build/'assets'])
     with zipfile.ZipFile(unsigned, 'a', zipfile.ZIP_DEFLATED) as archive:

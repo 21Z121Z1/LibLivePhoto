@@ -22,6 +22,7 @@ jobs:
       - run: swift test --package-path apple
         env:
           LIBLIVEPHOTO_NATIVE_LIBRARY: ${{ github.workspace }}/target/debug/liblivephoto_native.dylib
+          LIBLIVEPHOTO_SYNTAX_FIXTURES: ${{ github.workspace }}/fixtures/syntax
       - name: Compile iOS native adapters against the simulator SDK
         working-directory: apple
         run: xcodebuild -scheme LibLivePhotoApple -destination 'generic/platform=iOS Simulator' -derivedDataPath ../evidence/local/apple-build CODE_SIGNING_ALLOWED=NO build
@@ -54,6 +55,8 @@ jobs:
       - run: npm ci --prefix web --ignore-scripts
       - run: npm --prefix web test
       - run: npm --prefix web run build
+      - name: Actual Node WASM syntax and preservation contracts
+        run: node --test web/tests/syntax.test.mjs
       - run: cd web && npx playwright install --with-deps chromium
       - name: Diagnose bundled browser readiness independently
         working-directory: web

@@ -219,3 +219,98 @@ fn malformed_tables_and_unknown_reference_combinations_do_not_get_relaxed() {
         ));
     }
 }
+
+#[test]
+fn mixed_legacy_and_compact_size_tables_are_rejected_before_any_remux() {
+    let original = common::metadata_movie(b"zzzz", &[], &[(&[1, 2], 3), (&[4], 7)], -1);
+    let mixed = rewrite(&original, &mut |k, p| {
+        (k == b"stsz").then(|| [common::boxed(k, p), compact_table(p, 8)].concat())
+    });
+    assert!(matches!(
+        track_summary(&mixed),
+        Err(MotionPhotoReadError::MetadataMismatch(_))
+    ));
+    assert!(matches!(
+        metadata_packets(&mixed, 2),
+        Err(MotionPhotoReadError::MetadataMismatch(_))
+    ));
+    assert!(optimize(&mixed, OptimizeOptions::default()).is_err());
+    assert!(remove_tracks(&mixed, &[2], OptimizeOptions::default()).is_err());
+    assert!(import_tracks(&original, &mixed, &[2], OptimizeOptions::default()).is_err());
+}
+
+#[test]
+fn real_unreferenced_media_is_retained_or_discarded_without_changing_legacy_or_compact_samples() {
+    let original = common::metadata_movie(
+        b"zzzz",
+        b"opaque",
+        &[(&[1, 2], 3), (&[4, 5, 6], 7), (&[8], 2)],
+        -1,
+    );
+    let unused = b"unreferenced-media-round4-0123456789";
+    for compact_table_width in [None, Some(4), Some(8), Some(16)] {
+        let indexed =
+            compact_table_width.map_or_else(|| original.clone(), |width| convert(&original, width));
+        let mut mdats = 0;
+        let padded = rewrite(&indexed, &mut |k, p| {
+            if k != b"mdat" {
+                return None;
+            }
+            mdats += 1;
+            (mdats == 2).then(|| common::boxed(k, &[p, unused].concat()))
+        });
+        let packets = snapshot(&padded, 2);
+        assert_eq!(packets, snapshot(&original, 2));
+        let video = video_frame_times(&padded, 1, 100).unwrap();
+        for compact_unreferenced_media in [false, true] {
+            let result = optimize(
+                &padded,
+                OptimizeOptions {
+                    compact_unreferenced_media,
+                },
+            )
+            .unwrap();
+            assert_eq!(snapshot(&result.bytes, 2), packets);
+            assert_eq!(video_frame_times(&result.bytes, 1, 100).unwrap(), video);
+            assert_eq!(tables(&result.bytes, b"stts"), tables(&padded, b"stts"));
+            assert_eq!(tables(&result.bytes, b"ctts"), tables(&padded, b"ctts"));
+            assert_eq!(tables(&result.bytes, b"stsz"), tables(&padded, b"stsz"));
+            assert_eq!(tables(&result.bytes, b"stz2"), tables(&padded, b"stz2"));
+            assert_eq!(
+                result.report.discarded_unreferenced_media_bytes,
+                if compact_unreferenced_media {
+                    unused.len() as u64
+                } else {
+                    0
+                }
+            );
+            assert_eq!(
+                result.report.retained_unreferenced_media_bytes,
+                if compact_unreferenced_media {
+                    0
+                } else {
+                    unused.len() as u64
+                }
+            );
+            assert_eq!(
+                result.bytes.windows(unused.len()).any(|v| v == unused),
+                !compact_unreferenced_media
+            );
+            assert!(result.report.encoded_samples_unchanged);
+        }
+        let removed = remove_tracks(
+            &padded,
+            &[2],
+            OptimizeOptions {
+                compact_unreferenced_media: true,
+            },
+        )
+        .unwrap();
+        assert_eq!(track_summary(&removed.bytes).unwrap().tracks.len(), 1);
+        assert_eq!(video_frame_times(&removed.bytes, 1, 100).unwrap(), video);
+        assert_eq!(
+            removed.report.discarded_unreferenced_media_bytes,
+            (unused.len() + 6) as u64
+        );
+    }
+}

@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = 'org.liblivephoto.android.acceptance'
-SCOPES = {'core': 20, 'metadata': 11, 'lifecycle': 16, 'concurrency': 18}
+SCOPES = {'core': 20, 'metadata': 11, 'lifecycle': 16, 'concurrency': 18, 'syntax': 50}
 
 
 def string(value):
@@ -223,7 +223,7 @@ def main(argv=None):
                 receipt['cleanup_error'] = 'owned acceptance package removal did not confirm success'
                 if failure is None:
                     failure = RuntimeError(receipt['cleanup_error'])
-        receipt['result'] = 'passed' if failure is None and receipt['assertions'] == 65 and receipt['owned_package_removed'] else 'failed'
+        receipt['result'] = 'passed' if failure is None and receipt['assertions'] == sum(SCOPES.values()) and receipt['owned_package_removed'] else 'failed'
         path.write_text(json.dumps(receipt, indent=2) + '\n')
         print('ANDROID_HARNESS_RUNTIME_RECEIPT ' + json.dumps(receipt), flush=True)
     if failure is not None:

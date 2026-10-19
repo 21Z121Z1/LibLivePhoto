@@ -58,7 +58,7 @@ def main(argv=None):
     # Swift allows top-level executable statements in main.swift.
     source=out/'main.swift';shutil.copyfile(ROOT/'apple/Acceptance/BridgeSimulator.swift',source)
     binary=out/'native-bridge'
-    run(['xcrun','swiftc','-sdk',sdk,'-target',arch+'-apple-ios16.0-simulator',ROOT/'apple/Sources/LibLivePhotoApple/Contracts.swift',ROOT/'apple/Sources/LibLivePhotoApple/RustCoreBridge.swift',source,
+    run(['xcrun','swiftc','-sdk',sdk,'-target',arch+'-apple-ios16.0-simulator',ROOT/'apple/Sources/LibLivePhotoApple/Contracts.swift',ROOT/'apple/Sources/LibLivePhotoApple/RustCoreBridge.swift',ROOT/'apple/Tests/LibLivePhotoAppleTests/SyntaxContracts.swift',source,
          '-Xlinker','-force_load','-Xlinker',ROOT/'target'/rust/'release/liblivephoto_native.a','-Xlinker','-export_dynamic','-o',binary],env={**os.environ,'SDKROOT':sdk})
     runtimes=json.loads(run(['xcrun','simctl','list','runtimes','--json']))['runtimes']
     available=[r for r in runtimes if r.get('isAvailable') and 'SimRuntime.iOS-' in r['identifier'] and tuple(map(int,r['version'].split('.')))>=(16,0)]
@@ -111,10 +111,10 @@ def main(argv=None):
             if state is None or state.get('state')!='Booted':
                 raise RuntimeError('bootstatus timed out and owned simulator is not Booted')
             print('Bootstatus monitor timed out; owned device is Booted. Attempting actual runtime process with its unchanged 120-second deadline.',flush=True)
-        logged(['xcrun','simctl','spawn',device,binary,ROOT/'web/public/demo/motion-photo.jpg',ROOT/'web/public/demo/motion.mp4',ROOT/'fixtures/bindings/agtm-video.mp4',ROOT/'fixtures/bindings/agtm-raw.bin'],out/'runtime.log',120)
+        logged(['xcrun','simctl','spawn',device,binary,ROOT/'web/public/demo/motion-photo.jpg',ROOT/'web/public/demo/motion.mp4',ROOT/'fixtures/bindings/agtm-video.mp4',ROOT/'fixtures/bindings/agtm-raw.bin',ROOT/'fixtures/syntax'],out/'runtime.log',120)
         text=tail(out/'runtime.log')
-        if 'IOS_SIMULATOR_SWIFT_RUST passed' not in text or 'IOS_SIMULATOR_RUNTIME:' not in text:raise RuntimeError('native bridge process did not pass its runtime identity and assertions')
-        receipt.update(result='passed',runtime_process_passed=True)
+        if 'IOS_SIMULATOR_SWIFT_RUST passed' not in text or 'IOS_SIMULATOR_RUNTIME:' not in text or 'IOS_SIMULATOR_SYNTAX passed: cases=42' not in text:raise RuntimeError('native bridge process did not pass its runtime identity, original assertions and42 syntax cases')
+        receipt.update(result='passed',runtime_process_passed=True,syntax_cases=42)
     except BaseException as error:
         receipt['error']=str(error)
         raise

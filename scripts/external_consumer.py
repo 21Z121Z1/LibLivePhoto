@@ -16,6 +16,17 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
  let mut extracted=Vec::new();parsed.extract(parsed.motion_video(),&mut extracted)?;
  assert_eq!(extracted,parsed.motion_video_bytes()?);
  parsed.validate()?;
+ for file in std::env::args().skip(2) {
+  let bytes=std::fs::read(file)?;
+  let descriptions=liblivephoto::inspect_video_sample_descriptions(&bytes)?;
+  let aac=descriptions.into_iter().find_map(|d|d.audio.and_then(|a|a.aac)).ok_or("AAC declaration missing")?;
+  // Existing read-side field names/types and an extensible destructuring pattern
+  // compile from a genuinely separate workspace. Full old struct literals are
+  // source incompatible with the two fields added in round3; see the handoff.
+  let liblivephoto::AacConfiguration{object_type,sample_rate,channels,raw,..}=aac;
+  assert_eq!((object_type,sample_rate,channels),(2,48000,Some(2)));
+  assert!(!raw.is_empty());
+ }
  println!("external consumer: probe, parse, extract, validate passed");Ok(())
 }
 '''
@@ -30,7 +41,7 @@ def main():
         (consumer/"src/bin/convert.rs").write_text((ROOT/"crates/liblivephoto/examples/convert.rs").read_text())
         seeds=base/"seeds"
         subprocess.run(["cargo","run","--quiet","-p","liblivephoto","--example","fuzz_seeds","--",str(seeds)],cwd=ROOT,check=True)
-        subprocess.run(["cargo","run","--quiet","--manifest-path",str(consumer/"Cargo.toml"),"--bin","external-consumer","--",str(seeds/"asset_input/single-track")],cwd=consumer,check=True)
+        subprocess.run(["cargo","run","--quiet","--manifest-path",str(consumer/"Cargo.toml"),"--bin","external-consumer","--",str(seeds/"asset_input/single-track"),str(ROOT/'fixtures/syntax/aac-direct.mp4'),str(ROOT/'fixtures/syntax/aac-pce-wave.mov')],cwd=consumer,check=True)
         def convert(*args):
             subprocess.run(["cargo","run","--quiet","--manifest-path",str(consumer/"Cargo.toml"),"--bin","convert","--",*map(str,args)],cwd=consumer,check=True,stdout=subprocess.DEVNULL)
         first=base/"apple"; android=base/"android"; returned=base/"returned"

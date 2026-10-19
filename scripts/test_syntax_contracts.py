@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Real CLI and independent packet/timeline/index checks for the round3 subset."""
-import hashlib,json,struct,subprocess,tempfile
+import hashlib,json,platform,struct,subprocess,tempfile
 from fractions import Fraction
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
@@ -42,7 +42,9 @@ def packet_facts(path):
     return result,r
 def main():
     subprocess.run(['cargo','build','--locked','-p','liblivephoto-cli'],cwd=ROOT,check=True)
-    cli=ROOT/'target/debug/llp';out=Path(tempfile.mkdtemp(prefix='syntax-contracts-',dir=ROOT/'evidence/local'))
+    cli=ROOT/'target/debug'/('llp.exe' if platform.system()=='Windows' else 'llp')
+    (ROOT/'evidence/local').mkdir(parents=True,exist_ok=True)
+    out=Path(tempfile.mkdtemp(prefix='syntax-contracts-',dir=ROOT/'evidence/local'))
     print('evidence: '+str(out),flush=True)
     calls=[]
     def run(*args,success):
@@ -91,10 +93,31 @@ def main():
         unsupported=out/(kind.decode()+'.mov');unsupported.write_bytes(indexed+box(kind,b''))
         run('optimize',unsupported,success=False)
     assert hashlib.sha256(movie.read_bytes()).hexdigest()==original_hash
+    from syntax_contracts import CliCore,run_cases
+    acceptance=run_cases(CliCore(cli),'cli-syntax')
+    # Golden bytes only establish platform transport parity. Independently
+    # demux each real-media golden and validate every indexed sample extent,
+    # encoded hash, rational DTS/PTS/duration, including actual unused media.
+    def stream(facts,index):return [p[1:] for p in facts if p[0]==index]
+    primary,_=packet_facts(profiles/'motion.mp4')
+    packet_checks=[]
+    for kind,source in [('stz2','aac-pce-stz2-unused.mov'),('legacy','aac-direct.mp4')]:
+        before,_=packet_facts(profiles/source)
+        for action in ['preserve','compact','remove-audio','import-audio']:
+            path=profiles/('golden-'+kind+'-'+action+'-0.bin')
+            after,_=packet_facts(path)
+            expected_video=stream(primary,0) if action=='import-audio' else stream(before,0)
+            assert stream(after,0)==expected_video,(kind,action,'video')
+            assert stream(after,1)==([] if action=='remove-audio' else stream(before,1)),(kind,action,'audio')
+            packet_checks.append({'kind':kind,'operation':action,'samples':len(after),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'packets':after})
+    unused=b'LLP round4 unreferenced media '+bytes(range(73))
+    preserved=(profiles/'golden-stz2-preserve-0.bin').read_bytes();compacted=(profiles/'golden-stz2-compact-0.bin').read_bytes()
+    assert unused in preserved and unused not in compacted and len(preserved)-len(compacted)==len(unused)==103
     receipt={'implementation_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         'tracked_diff_sha256':hashlib.sha256(subprocess.check_output(['git','diff','HEAD'],cwd=ROOT)).hexdigest(),
         'scope':'CLI ICC envelope and AAC-LC/PCE/wave; two-track real owned MOV converted to stz2. ffprobe demux DTS/PTS include its edit handling; raw stts/ctts preservation is also checked by Rust tests. No colour/audio rendering or device acceptance.',
-        'source_sha256':original_hash,'stz2_tables':tables,'packets':before,'outputs':outputs,'calls':calls,
+        'source_sha256':original_hash,'stz2_tables':tables,'packets':legacy,'outputs':outputs,'calls':calls,
+        'acceptance':acceptance,'independent_packet_checks':packet_checks,'actual_discarded_unreferenced_media_bytes':len(unused),
         'ffprobe_version':subprocess.check_output(['ffprobe','-version'],text=True).splitlines()[0]}
     (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print('passed; receipt: '+str(out/'receipt.json'))
 if __name__=='__main__':main()

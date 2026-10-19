@@ -201,6 +201,20 @@ pub fn process(request: &str, primary: &[u8], movie: &[u8]) -> OperationResult {
         Err(e) => OperationResult::failure("invalidRequest", e),
     }
 }
+
+/// The same bounded operation protocol as C/JNI/CLI. The caller owns the LLP1
+/// bytes and chooses publication; no browser-specific format implementation.
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+pub fn process_operation(
+    request: &str,
+    primary: &[u8],
+    movie: &[u8],
+) -> std::result::Result<Vec<u8>, wasm_bindgen::JsValue> {
+    process(request, primary, movie)
+        .into_envelope()
+        .map_err(|error| wasm_bindgen::JsValue::from_str(&error))
+}
 fn execute(
     v: &Value,
     primary: &[u8],
