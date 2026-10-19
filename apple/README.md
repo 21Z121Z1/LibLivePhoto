@@ -67,4 +67,12 @@ native assertions and runtime identity output remain required; failed assertions
 are never retried as success. This establishes C ABI execution, not SpringBoard,
 Photos-library or physical-device UI readiness. Cleanup failures also fail the
 acceptance. `python3 scripts/test_apple_harness.py` exercises fault injection
-only; its five tests are not Simulator acceptance.
+only; its seven tests are not Simulator acceptance.
+
+The harness selects an already installed iOS runtime at or above the iOS16
+deployment target, preferring the lowest available version; `--runtime IDENTIFIER`
+can request another available compatible runtime. It validates the queried
+iPhoneSimulator SDK, isolates inherited SDKROOT in child processes, and records
+all available runtimes/selected SDK. XCFramework builds select the correct SDK
+per target with an explicit iOS16 deployment target. This does not alter saved
+environment settings, install runtimes, disable migration or grant permissions.

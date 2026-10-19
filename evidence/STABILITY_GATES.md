@@ -96,3 +96,12 @@ monitor timeout only when its owned device reports `Booted`. The original
 Swift/Rust assertions and 120-second process deadline remain required. Neither
 the fault-injection unit tests nor `Booted` state count as native acceptance.
 Failure and cleanup receipts persist, and only the created UUID is deleted.
+The [7748d04 platform trace](apple-platform-7748d04.json) confirmed compatible
+SE3/iOS26.5 still stalled during CoreLocation migration/System App readiness;
+even the bounded device-list query timed out, so no process pass was claimed.
+Subsequent packaging/acceptance scripts isolate inherited SDKROOT, validate
+the target SDK and select an installed iOS runtime >=16 by the deployment floor,
+with an explicit runtime override available. No migration, permission or runtime
+image is modified to make a test pass. Seven local fault-injection gates cover
+recovery failure, stale receipts, SDK selection and runtime compatibility; actual
+Simulator execution remains independently mandatory.
