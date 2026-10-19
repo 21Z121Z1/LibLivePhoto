@@ -1,7 +1,10 @@
 import {test,expect} from '@playwright/test';
 import fs from 'node:fs';import path from 'node:path';
 const demo=path.resolve('public/demo');
-async function ready(page,apple=false){await page.goto('/');await page.locator(apple?'#apple-demo':'#demo').click();await expect(page.locator('#work-status')).toContainText('解析完成');await expect(page.locator('#cover-time')).toBeEnabled();}
+async function ready(page,apple=false){await page.goto('/');await page.locator(apple?'#apple-demo':'#demo').click();await expect(page.locator('#work-status')).toContainText('解析完成');try {await expect(page.locator('#cover-time')).toBeEnabled();}catch(error){
+ const state=await page.locator('#video').evaluate(v=>({readyState:v.readyState,networkState:v.networkState,error:v.error?{code:v.error.code,message:v.error.message}:null,h264Support:v.canPlayType('video/mp4; codecs="avc1.42E01E"'),currentTime:v.currentTime,duration:v.duration}));
+ throw new Error(`${error.message}\nMedia readiness diagnostic: ${JSON.stringify(state)}; status: ${await page.locator('#preview-message').textContent()}`);
+}}
 test('real WASM parses and extracts; cover time and frame stepping match source samples',async({page},testInfo)=>{
  const writes=[];page.on('request',r=>{if(!['GET','HEAD'].includes(r.method()))writes.push(r.url());});
  await ready(page);await expect(page.locator('#photo-time')).toHaveText('812500 / 1000000 s');await expect(page.locator('#frame-times')).toContainText('48 帧');await expect(page.locator('#resources a')).toHaveCount(2);

@@ -39,6 +39,13 @@ jobs:
       - run: npm --prefix web test
       - run: npm --prefix web run build
       - run: cd web && npx playwright install --with-deps chromium
+      - name: Diagnose bundled browser readiness independently
+        working-directory: web
+        run: |
+          node server.mjs > /tmp/liblivephoto-web-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          node browser-support-probe.mjs
       - name: Verify browser with H.264 decoder
         run: google-chrome --version
       - run: npm --prefix web run test:browser
