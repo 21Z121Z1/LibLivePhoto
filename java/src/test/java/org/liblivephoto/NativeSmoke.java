@@ -63,6 +63,8 @@ public final class NativeSmoke {
     NativeResult pceBuilt=engine.build(Input.bytes(still),Input.bytes(pceMovie),new ExactTime(1,10),"google-jpeg");check(pceBuilt.success,"PCE container lossless build");
     check(Arrays.equals(pceMovie,engine.extract(Input.bytes(pceBuilt.files.get(0).copyBytes()),false,true,false).files.get(0).copyBytes()),"PCE movie bytes retained across JNI build/extract");
     SyntaxContracts.run(name->Files.readAllBytes(syntax.resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"host-jni");
+    Path vendor=bindings.getParent().resolve("vendor");
+    SyntaxContracts.run(name->Files.readAllBytes(vendor.resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"vendor-host-jni",(id,fields,files,sha)->{},13);
     System.out.println("JNI_SMOKE passed: existing regressions plus all42 new syntax/preservation/exact-time cases");
   }
 }

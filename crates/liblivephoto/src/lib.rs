@@ -45,9 +45,11 @@ mod scoring_time;
 pub use scoring_time::*;
 mod timeline;
 mod video_metadata;
+mod vivo_consistency;
 mod vivo_media;
 pub use metadata_samples::*;
 pub use video_metadata::*;
+pub use vivo_consistency::*;
 pub use vivo_media::*;
 #[path = "vendor/oplus/topology.rs"]
 mod topology;
@@ -70,7 +72,10 @@ pub use media::*;
 pub use model::ByteRange;
 pub use presentation::*;
 pub use vendor::honor::{inspect_honor_metadata, HonorMetadata, HonorRecord, HonorVariant};
-pub use vendor::samsung::{inspect_samsung_metadata, Record as SamsungRecord, SamsungMetadata};
+pub use vendor::samsung::{
+    inspect_samsung_metadata, inspect_samsung_videos, Record as SamsungRecord, SamsungMetadata,
+    SamsungVideo, SamsungVideoDiagnostic, SamsungVideoInventory,
+};
 
 pub(crate) use android::parse_android_motion_photo;
 pub(crate) use live_photo_mov::{

@@ -68,6 +68,31 @@ fn real_corpus_parses_validates_extracts_and_preserves_all_source_bytes() {
         let p = MotionPhoto::parse(Input::SingleFile(&data), ParseOptions::compatible())
             .unwrap_or_else(|e| panic!("{path}: {e}"));
         p.validate().unwrap();
+        if path.contains("/samsung/") {
+            let inventory = inspect_samsung_videos(&data).unwrap().unwrap();
+            assert_eq!(inventory.videos.len(), 2, "{path}");
+            assert_eq!(inventory.declared_primary_records.len(), 1, "{path}");
+            assert!(inventory.diagnostics.is_empty(), "{path}");
+            assert_eq!(
+                inventory.select(None).unwrap().bytes,
+                p.motion_video_bytes().unwrap()
+            );
+            for video in &inventory.videos {
+                assert_eq!(
+                    inventory.select(Some(video.record_index)).unwrap().bytes,
+                    video.bytes
+                );
+                let record = &inventory.records[video.record_index];
+                assert_eq!(
+                    inventory.raw_record(video.record_index).unwrap(),
+                    &data[record.raw.lower_bound as usize..record.raw.upper_bound as usize]
+                );
+                let resource = p.resources().find(|r| r.extents == [video.extent]).unwrap();
+                let mut extracted = Vec::new();
+                p.extract(resource, &mut extracted).unwrap();
+                assert_eq!(extracted, video.bytes, "{path}");
+            }
+        }
         if path.contains("/vivo/") {
             let footer = inspect_camera_album_footer(&data).unwrap().unwrap();
             assert_eq!(footer.layout, CameraAlbumLayout::LengthDelimited43);
@@ -114,6 +139,32 @@ fn real_corpus_parses_validates_extracts_and_preserves_all_source_bytes() {
                 );
             }
             let extensions = p.vivo_media_extensions().unwrap().unwrap();
+            let report = p.vivo_declaration_report().unwrap().unwrap();
+            assert_eq!(report.footers.len(), 1, "{path}");
+            assert_eq!(
+                report.footers[0].origins,
+                [
+                    VivoFooterOrigin::TerminalSource,
+                    VivoFooterOrigin::MotionVideoUuid
+                ]
+            );
+            assert_eq!(report.footers[0].json_extents, [footer.json_extent]);
+            assert_eq!(
+                report.footers[0].identifier_extents,
+                [footer.identifier_extent]
+            );
+            assert_eq!(report.footers[0].raw_json, footer.raw_json);
+            assert_eq!(report.identifier_comparisons, 1);
+            assert!(!report.xmp_spans.is_empty());
+            assert!(
+                report
+                    .xmp_spans
+                    .iter()
+                    .all(|s| s.status == VivoXmpSpanStatus::Matched),
+                "{path}: {:?}",
+                report.xmp_spans
+            );
+            assert!(report.issues.is_empty(), "{path}: {:?}", report.issues);
             assert_eq!(extensions.streams.len(), 31);
             assert!(!extensions.duplicate_keys);
             assert_eq!(

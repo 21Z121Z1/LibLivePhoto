@@ -1,0 +1,763 @@
+{
+  "scope": "owned framing/byte contracts; no native Gallery acceptance",
+  "cases": [
+    {
+      "id": "samsung-normal",
+      "primary": "samsung-normal.jpg",
+      "request": {
+        "action": "metadata"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "verifiedMotion"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "provider"
+          ],
+          "value": "samsung_video_inventory"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "value",
+            "declaredPrimaryRecords"
+          ],
+          "value": [
+            2
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "value",
+            "videos",
+            0,
+            "recordIndex"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "value",
+            "videos",
+            1,
+            "recordIndex"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "value",
+            "videos",
+            0,
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "value",
+            "videos",
+            1,
+            "role"
+          ],
+          "value": "uninterpreted"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "samsung-no-primary",
+      "primary": "samsung-no-primary.jpg",
+      "request": {
+        "action": "metadata"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "verifiedMotion"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "provider"
+          ],
+          "value": "samsung_video_inventory"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "value",
+            "declaredPrimaryRecords"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "value",
+            "videos",
+            0,
+            "recordIndex"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            1,
+            "value",
+            "videos",
+            0,
+            "role"
+          ],
+          "value": "uninterpreted"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "samsung-no-primary-parse-rejected",
+      "primary": "samsung-no-primary.jpg",
+      "request": {
+        "action": "parse"
+      },
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "samsung-ambiguous",
+      "primary": "samsung-ambiguous.jpg",
+      "request": {
+        "action": "metadata"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "verifiedMotion"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "provider"
+          ],
+          "value": "samsung_video_inventory"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declaredPrimaryRecords"
+          ],
+          "value": [
+            2,
+            3
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "videos",
+            0,
+            "recordIndex"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "videos",
+            1,
+            "recordIndex"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "videos",
+            2,
+            "recordIndex"
+          ],
+          "value": 3
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "videos",
+            0,
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "videos",
+            1,
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "videos",
+            2,
+            "role"
+          ],
+          "value": "uninterpreted"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "samsung-ambiguous-parse-rejected",
+      "primary": "samsung-ambiguous.jpg",
+      "request": {
+        "action": "parse"
+      },
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "samsung-bad-pointer",
+      "primary": "samsung-bad-pointer.jpg",
+      "request": {
+        "action": "metadata"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "verifiedMotion"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "provider"
+          ],
+          "value": "samsung_video_inventory"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declaredPrimaryRecords"
+          ],
+          "value": [
+            2
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "videos",
+            0,
+            "recordIndex"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "videos",
+            0,
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "diagnostics",
+            0,
+            "recordIndex"
+          ],
+          "value": 2
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "samsung-bad-pointer-parse-rejected",
+      "primary": "samsung-bad-pointer.jpg",
+      "request": {
+        "action": "parse"
+      },
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "vivo-alias",
+      "primary": "vivo-alias.jpg",
+      "request": {
+        "action": "metadata"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "verifiedMotion"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "provider"
+          ],
+          "value": "vivo_media"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "footers",
+            0,
+            "origins"
+          ],
+          "value": [
+            "TerminalSource",
+            "MotionVideoUuid"
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "identifierComparisons"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "pairingVerified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "imageTimeUnit"
+          ],
+          "value": "unverified"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "xmpSpans",
+            0,
+            "status"
+          ],
+          "value": "Matched"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "issues"
+          ],
+          "value": []
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "vivo-id-conflict",
+      "primary": "vivo-id-conflict.jpg",
+      "request": {
+        "action": "metadata"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "verifiedMotion"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "provider"
+          ],
+          "value": "vivo_media"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "footers",
+            0,
+            "origins"
+          ],
+          "value": [
+            "TerminalSource",
+            "MotionVideoUuid"
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "identifierComparisons"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "pairingVerified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "imageTimeUnit"
+          ],
+          "value": "unverified"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "xmpSpans",
+            0,
+            "status"
+          ],
+          "value": "Matched"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "issues",
+            0,
+            "code"
+          ],
+          "value": "footer-internal-identifiers-differ"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "vivo-xmp-span-conflict",
+      "primary": "vivo-xmp-span-conflict.jpg",
+      "request": {
+        "action": "metadata"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "verifiedMotion"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "provider"
+          ],
+          "value": "vivo_media"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "footers",
+            0,
+            "origins"
+          ],
+          "value": [
+            "TerminalSource",
+            "MotionVideoUuid"
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "identifierComparisons"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "pairingVerified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "imageTimeUnit"
+          ],
+          "value": "unverified"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "xmpSpans",
+            0,
+            "status"
+          ],
+          "value": "Matched"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "xmpSpans",
+            1,
+            "status"
+          ],
+          "value": "Mismatch"
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "issues",
+            0,
+            "code"
+          ],
+          "value": "xmp-media-span"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "vivo-bad-stream",
+      "primary": "vivo-bad-stream.jpg",
+      "request": {
+        "action": "metadata"
+      },
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "verifiedMotion"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "provider"
+          ],
+          "value": "google"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "samsung-primary-original-bytes",
+      "primary": "samsung-normal.jpg",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false
+      },
+      "success": true,
+      "expect": [],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "motion.mp4"
+        }
+      ]
+    },
+    {
+      "id": "vivo-conflicting-id-original-bytes",
+      "primary": "vivo-id-conflict.jpg",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false
+      },
+      "success": true,
+      "expect": [],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "vivo-conflicting-movie.mp4"
+        }
+      ]
+    }
+  ],
+  "sha256": {
+    "motion.mp4": "e8e35dd0dbf98b8b95ab9561a2debc5e8bb5f6469f2dfb08c6329f9674a70a2e",
+    "samsung-normal.jpg": "1ff526c22fb29fe1865d9c8fb42111ad6163caf1453dac21e96efb3f2f07de5e",
+    "samsung-no-primary.jpg": "3468a16066b0c61644a17ee93fb22c4781244c501457665a2d7dd9391fee7000",
+    "samsung-ambiguous.jpg": "54aeaf1c946a6c7ac36ae0f05cfdb9ebbd4e4a9825ee47fbacfa6db6701e5121",
+    "samsung-bad-pointer.jpg": "5cad9e192880c29cb5aad18e0ecc9bf67a5425d3e79f7286b6a59d79dab97918",
+    "vivo-alias.jpg": "78c40253278409fa8818c3f6f56a81a356aa52d3c711101cca2f08d9cb8cce36",
+    "vivo-id-conflict.jpg": "047a85522f7abf7fa52d279cd7b16a475452c4da431c0bea1ff425a3e99cbbbc",
+    "vivo-xmp-span-conflict.jpg": "983ae794b80b61ebe78b786530db467e4ba2f7f1f1b4e9f55b4445344515d02b",
+    "vivo-bad-stream.jpg": "f6715608524a3aef21c0361ab85967b0ffc3ac1c376fb496efbb5f532547cd25",
+    "vivo-movie.mp4": "5f0bcd81f11258d3864dcd21f45f495184b61d085d6c14a535c0cd3688d82e0b",
+    "vivo-conflicting-movie.mp4": "fc33d55e8a97c6b32a5900954c1f03b6a35fa7b7a76b79b042401d8971aa9378"
+  }
+}

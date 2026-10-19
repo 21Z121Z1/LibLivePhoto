@@ -271,6 +271,7 @@ impl MetadataEngine {
                 "google",
                 "legacy_micro_video",
                 "samsung_sef",
+                "samsung_video_inventory",
                 "oplus_olive",
                 "honor_live_photo",
                 "camera_album",
@@ -565,7 +566,22 @@ impl MetadataEngine {
             }
         }
         let mut decoded = Vec::new();
-        if let Some(projection) = vivo_projection {
+        if let Some(mut projection) = vivo_projection {
+            if let Ok(photo) = &parsed_motion {
+                match photo.vivo_declaration_report_with_terminal(options.allows("camera_album")) {
+                    Ok(Some(report)) => {
+                        for issue in &report.issues {
+                            diagnostics
+                                .push(format!("vivo_media: {}: {}", issue.code, issue.message));
+                        }
+                        projection.value["declarations"] = report.json();
+                    }
+                    Ok(None) => {}
+                    Err(error) => {
+                        diagnostics.push(format!("vivo_media: declaration audit: {error}"))
+                    }
+                }
+            }
             decoded.push(projection);
         }
         for (index, b) in blocks.iter().enumerate() {
@@ -676,6 +692,23 @@ impl MetadataEngine {
                 Err(e) => diagnostics.push(format!("samsung_sef: {e}")),
             }
         }
+        if options.allows("samsung_sef") || options.allows("samsung_video_inventory") {
+            // Inventory is available even when no unique primary is parseable.
+            // Its candidates are observations, never a verified motion declaration.
+            match crate::inspect_samsung_videos(data) {
+                Ok(Some(inventory)) => native(
+                    "samsung_video_inventory",
+                    json!({"version":inventory.version,"declaredPrimaryRecords":inventory.declared_primary_records,
+                        "videos":inventory.videos.iter().map(|v|json!({"recordIndex":v.record_index,"extent":range_json(v.extent),
+                            "byteLength":v.bytes.len().to_string(),"role":"uninterpreted"})).collect::<Vec<_>>(),
+                        "diagnostics":inventory.diagnostics.iter().map(|d|json!({"recordIndex":d.record_index,"message":d.message})).collect::<Vec<_>>() }),
+                    None,
+                    false,
+                ),
+                Ok(None) => {}
+                Err(error) => diagnostics.push(format!("samsung_video_inventory: {error}")),
+            }
+        }
         if let Some(metadata) = camera_album {
             if metadata.identifier_agreement == crate::DeclaredIdentifierAgreement::Different {
                 diagnostics.push(
@@ -712,7 +745,7 @@ impl MetadataEngine {
         })
     }
 }
-fn subrange(
+pub(crate) fn subrange(
     extents: &[ByteRange],
     range: ByteRange,
     length: usize,
@@ -720,16 +753,25 @@ fn subrange(
     if range.lower_bound > range.upper_bound || range.upper_bound > length as u64 {
         return Err(Error::InvalidResource);
     }
-    let mut cursor = 0;
+    let mut cursor = 0u64;
     let mut output = Vec::new();
     for e in extents {
-        let next = cursor + e.length();
+        if e.lower_bound > e.upper_bound {
+            return Err(Error::InvalidResource);
+        }
+        let next = cursor
+            .checked_add(e.length())
+            .ok_or(Error::InvalidResource)?;
         let start = cursor.max(range.lower_bound);
         let end = next.min(range.upper_bound);
         if start < end {
             output.push(ByteRange::new(
-                e.lower_bound + start - cursor,
-                e.lower_bound + end - cursor,
+                e.lower_bound
+                    .checked_add(start - cursor)
+                    .ok_or(Error::InvalidResource)?,
+                e.lower_bound
+                    .checked_add(end - cursor)
+                    .ok_or(Error::InvalidResource)?,
             )?);
         }
         cursor = next;
@@ -753,6 +795,48 @@ fn encode_hex(data: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn source_mapping_handles_discontiguous_high_offsets_and_rejects_invalid_or_short_ranges() {
+        let extents = [
+            ByteRange::new(20, 24).unwrap(),
+            ByteRange::new(u64::MAX - 1, u64::MAX).unwrap(),
+        ];
+        assert_eq!(
+            subrange(&extents, ByteRange::new(3, 5).unwrap(), 5).unwrap(),
+            [
+                ByteRange::new(23, 24).unwrap(),
+                ByteRange::new(u64::MAX - 1, u64::MAX).unwrap()
+            ]
+        );
+        for range in [
+            ByteRange {
+                lower_bound: 2,
+                upper_bound: 1,
+            },
+            ByteRange::new(0, 6).unwrap(),
+        ] {
+            assert!(subrange(&extents, range, 5).is_err());
+        }
+        assert!(subrange(
+            &[ByteRange {
+                lower_bound: 1,
+                upper_bound: 0
+            }],
+            ByteRange::new(0, 0).unwrap(),
+            0
+        )
+        .is_err());
+        assert!(subrange(
+            &[
+                ByteRange::new(0, u64::MAX).unwrap(),
+                ByteRange::new(0, 1).unwrap()
+            ],
+            ByteRange::new(0, 1).unwrap(),
+            1
+        )
+        .is_err());
+        assert!(subrange(&extents[..1], ByteRange::new(3, 5).unwrap(), 5).is_err());
+    }
     #[test]
     fn opcamera_xmp_in_real_heic_is_a_declaration_without_a_fabricated_movie() {
         let still = include_bytes!("../../../web/public/acceptance/still.heic");

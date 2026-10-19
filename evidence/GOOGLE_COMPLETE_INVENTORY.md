@@ -1,6 +1,11 @@
 # Complete Google interface inventory
 
 Reference: `google/libmotionphoto@12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3`.
+Round5's [vendor preservation matrix](VENDOR_PRESERVATION_ROUND5.md) records the
+Samsung explicit catalogue and vivo declaration-origin/conflict additions,
+operation-specific limits, authored/original tests and blocked APK evidence.
+Its final handoff binds fresh verification to a separate source SHA; prior
+round4 results below retain their own exact identity.
 This inventory extends the earlier core-only assessment. It is an open work list,
 not a completion claim. The first implementation and receipts remain available
 at `88e0fdd92fb9ff7bb963b64e6676e4ec1d73b0d4`.

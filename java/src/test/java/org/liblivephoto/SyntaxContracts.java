@@ -28,6 +28,9 @@ public final class SyntaxContracts {
         return run(reader,executor,label,(id,fields,files,sha)->{});
     }
     public static int run(Reader reader, Executor executor, String label, CaseObserver observer) throws Exception {
+        return run(reader,executor,label,observer,42);
+    }
+    public static int run(Reader reader, Executor executor, String label, CaseObserver observer, int expectedCount) throws Exception {
         byte[] manifestBytes = reader.read("cases.json");
         String manifestDigest = digest(manifestBytes);
         Map<?,?> manifest = (Map<?,?>)Json.parse(new String(manifestBytes,StandardCharsets.UTF_8));
@@ -58,7 +61,7 @@ public final class SyntaxContracts {
             System.out.println("SYNTAX_CONTRACT_CASE "+label+" "+id+" fields="+((List<?>)c.get("expect")).size()+" files="+files.size());
             observer.passed(id,((List<?>)c.get("expect")).size(),files.size(),manifestDigest);
         }
-        check(cases==42,"complete syntax suite required");
+        check(cases==expectedCount,"complete acceptance suite required");
         System.out.println("SYNTAX_CONTRACTS_PASSED entry="+label+" cases="+cases+" manifest_sha256="+manifestDigest);
         return cases;
     }
@@ -82,6 +85,6 @@ public final class SyntaxContracts {
 
     public static void main(String[] args) throws Exception {
         Path directory = Paths.get(args[0]); NativeEngine engine = new NativeEngine();
-        run(name->Files.readAllBytes(directory.resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"packaged-jar-jni");
+        run(name->Files.readAllBytes(directory.resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"packaged-jar-jni",(id,fields,files,sha)->{},args.length>1?Integer.parseInt(args[1]):42);
     }
 }

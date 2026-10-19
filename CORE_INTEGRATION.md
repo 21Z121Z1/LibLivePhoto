@@ -9,6 +9,12 @@ operation-specific contracts and remaining acceptance requirements.
 
 ## Inputs and outputs
 
+For vendor inspection, [round5's contract matrix](evidence/VENDOR_PRESERVATION_ROUND5.md)
+distinguishes existing asset-level resource extraction from the new read-only
+Samsung catalogue and vivo declaration audit. Explicit stream selection copies
+the selected original container bytes; it does not establish a Gallery playback
+role or a native writer. Neither audit guesses a proprietary time unit.
+
 `parse(Input, options)` borrows memory. `open(PathInput, options)` owns a bounded
 snapshot. `PathInput::Parts` adds explicit still/movie composition from paths,
 with caller-supplied exact time. It does not infer pairing from filenames.
