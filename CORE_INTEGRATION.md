@@ -158,7 +158,9 @@ variant has static/synthetic evidence only. This adds no native vendor writer or
 Gallery playback/editing claim. See [vendor evidence and gaps](evidence/VENDOR_RESEARCH_20261019.md).
 
 `inspect_vivo_media_extensions(movie)` and `MotionPhoto::vivo_media_extensions()`
-read top-level `vivoMediaEStream`/`vivoMediaExtInfo` UUIDs. Both independent vivo
+read top-level `vivoMediaEStream`/`vivoMediaExtInfo` UUIDs from a complete,
+contiguous BMFF snapshot with `ftyp` first. Leading-box/noncontiguous layouts
+are outside this additional inspection contract. Both independent vivo
 originals contain31 stream records. The API borrows exact payloads and reports
 ordered numeric keys, opaque encoding tags, directory/framing ranges and the
 existing CameraAlbum footer. Duplicate keys remain separate records. Unknown

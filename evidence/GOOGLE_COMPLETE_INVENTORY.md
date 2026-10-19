@@ -5,17 +5,21 @@ This inventory extends the earlier core-only assessment. It is an open work list
 not a completion claim. The first implementation and receipts remain available
 at `88e0fdd92fb9ff7bb963b64e6676e4ec1d73b0d4`.
 
-Current verified platform baseline is **7affb283d61e070f505c27e18c202cec85e80841**:
-[three terminal workflows](platform-7affb28.json), Linux/macOS205 and Windows204
-default/all-feature tests, public originals2, actual SDK consumers, Android65
-with confirmed cleanup, macOS11, actual iOS26.2 and Node4/Chrome7. Bind/callback/
-handshake traces distinguish phases; the old ready-future wait remains20 seconds
-after synchronous bind returns. The two historical Android failures remain
-unexplained. New vivo UUID extraction at9988a1d passed local211/default and
-all-feature tests, original2, provider38, actual C/JNI and ASan95736;
-[exact local receipt](vendor-streams-9988a1d.json). Its changed-code platform gate
-is separate. [Round2 vendor facts](VENDOR_RESEARCH_ROUND2.md) bind source hashes,
-independent originals and unsupported semantics without a native-writer claim.
+Current verified platform baseline is **4d02be46804c13c19657bbd6d865342f6be816b7**:
+[three successful terminal workflows](platform-4d02be4.json), eight jobs/seven
+artifact digests, Linux/macOS211 and Windows210 default/all-feature tests,
+public originals2, actual three-host SDK consumers, installed Android65 with
+confirmed cleanup, macOS11, actual iOS26.2 and Node4/Chrome7. Three ASan targets
+completed2114027 executions without crashes. [Latest handoff](HANDOFF_ROUND2_20261019.md)
+records the bounded result and remaining gaps. The preceding7affb28 baseline
+also passed all workflows; both historical Android failures remain unexplained.
+New vivo UUID extraction has six authored regressions, two independent
+31-record originals and actual C/JNI byte tests. [Round2 vendor facts](VENDOR_RESEARCH_ROUND2.md)
+bind source hashes and unsupported semantics without a native-writer claim.
+[85 same-input comparisons](differential-4d02be4.json) ran at4d02be4; the pinned
+reference framework reports99 passes, including one explicit HEVC encoder
+case that returns early and is counted as OK. That case supplies no encoding
+coverage; our lossless original-HEIF tests remain independent.
 
 Scope update: the user explicitly excluded **Moments construction** on
 2026-10-19. Creation/import of Moments video plus its generated scoring metadata
@@ -78,7 +82,7 @@ actual platform run at71b778f completed: portable/corpus/ASan and Apple/web
 passed, Android built/installed but failed the first20-second isolated-service
 readiness wait with zero assertions. [Historical terminal evidence](platform-71b778f.json)
 includes the real failure/phase/exit/crash/cleanup records; full Android
-acceptance and the earlier metadata-process cause remain open.
+acceptance failed for that SHA. The historical timeout and metadata-process causes remain unresolved after the later successful runs.
 
 | ID | Public capability / shipped interface | Google authority | Current implementation and status |
 | --- | --- | --- | --- |

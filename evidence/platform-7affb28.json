@@ -585,8 +585,9 @@
       "handshake_begin_ms": 22102,
       "handshake_return_ms": 22983,
       "ready_complete_ms": 23043,
-      "future_completion_after_bind_return_ms": 19269,
-      "handshake_ms": 881
+      "handshake_ms": 881,
+      "observed_ready_complete_minus_bind_return_ms": 19269,
+      "timestamp_semantics": "Client trace timestamps follow the corresponding calls. ready.complete is logged after CompletableFuture.complete, so the observed interval is not a stopwatch measurement of the waiting thread;4d02be4 reports that wait directly."
     },
     "trace_limits": "Client relative elapsedMs and service absolute SystemClock elapsedMs have different origins. Bounded logcat snapshots can omit early lifecycle rows; ready.complete may race the status snapshot. Successful65 assertions verify readiness/PID separation even where individual rows are absent. Do not invent absent trace events.",
     "conclusion": "All four installed-runtime scopes and owned-package cleanup passed. Startup/callback intervals dominate several connections in this successful run; this does not explain or fix either earlier failure.",

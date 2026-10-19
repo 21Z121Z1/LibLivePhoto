@@ -163,5 +163,5 @@
       "bytes": 72
     }
   },
-  "platform_status": "7affb28 previously passed every exact-SHA workflow. This new Rust code still requires its own final platform run."
+  "platform_status": "The same core/fuzz/JVM/fixture source objects were actually tested at4d02be4: every portable/corpus/ASan and Apple/web job passed; installed Android passed all65 assertions and cleanup. Exact final source/harness objects are in platform-4d02be4.json."
 }

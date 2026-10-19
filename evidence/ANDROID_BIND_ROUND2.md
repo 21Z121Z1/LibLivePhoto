@@ -45,3 +45,24 @@ new runtime/source evidence. Repeated system startup/dispatch failures are
 classified from actual traces and handed off with a bounded verification plan;
 no infinite rerun, timeout increase, assertion removal, permission change or
 artifact CONNECT403 bypass is used.
+
+## Actual terminal result
+
+Both permitted installed-runtime attempts passed: [7affb28](platform-7affb28.json)
+and [4d02be4](platform-4d02be4.json), each with installation, all65 assertions
+and confirmed owned-APK removal. The second was required by the new vivo source
+and added PID retention; no third attempt was started.
+
+At4d02be4,16 connections report actual remote PIDs and future waits4161..14829ms.
+Lifecycle snapshots independently record the four parser PIDs with isolated
+UIDs99000..99003; other services use the app UID10148 in distinct processes.
+Recorded handshakes take12..290ms. Callback/startup intervals dominate several
+connections in these successful runs; this does not establish the cause of
+71b778f's missing readiness or c15648c's process death. Early lifecycle rows may
+be absent from bounded logcat snapshots and are never reconstructed as facts.
+
+The first7affb28 metadata connection's ready.complete trace is23.043s after
+the client connection timer starts,19.269s after bind.return. It follows future completion and
+is not an exact stopwatch measurement of the waiting thread.4d02be4 records
+that wait directly. No end-to-end20-second bind promise or increased wait
+is claimed. The historical failures remain separately linked above.

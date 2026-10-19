@@ -52,3 +52,16 @@ transport and bytes, while the two separate original files supply O evidence.
 Neither is actual Gallery interoperability. Proprietary/decompiled source and
 original media remain private and outside Git; only manifests/hashes/facts and
 owned synthetic test data are committed. New dependency count:0.
+
+## Executed verification
+
+The same core/JVM/fuzz/fixture objects passed [exact4d02be4 CI](platform-4d02be4.json):
+Linux/macOS211 and Windows210 tests in each default/all-feature run, both
+public-original tests, actual three-host C/JNI/packaged consumers and2114027
+ASan executions. Android installed all65 existing service assertions and cleaned
+up; iOS26.2 actual Swift/Rust and existing Apple/browser gates passed. The new
+UUID extraction is directly exercised by Rust/original/C/JNI tests; the Android
+65-assertion contract is not a new vendor Gallery/portrait acceptance test.
+The [85-case Google comparison](differential-4d02be4.json) covers existing Google
+contracts, not a nonexistent Google vivo provider. Reference99 includes an
+explicit skipped HEVC encoder case; no reference rendering result is inferred.

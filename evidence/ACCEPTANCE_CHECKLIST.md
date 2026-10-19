@@ -10,13 +10,16 @@ remain in [GOOGLE_COMPLETE_INVENTORY.md](GOOGLE_COMPLETE_INVENTORY.md), includin
 source/header/implementation/test authority. This list adds delivery/acceptance
 gates; it does not remove or replace those rows.
 
-Current all-platform baseline **7affb283d61e070f505c27e18c202cec85e80841**
-passed all three workflows, including actual installed core20/metadata11/
-lifecycle16/concurrency18 and confirmed cleanup. [Exact receipt](platform-7affb28.json)
-retains16 connection traces and the unchanged20-second ready-future wait after
-synchronous bind returns. This pass does not explain the two earlier failures.
-The new vivo UUID stream source9988a1d has [211-test local evidence](vendor-streams-9988a1d.json)
-and independently checked original bytes; its final platform gate is separate.
+Current all-platform baseline **4d02be46804c13c19657bbd6d865342f6be816b7**
+passed all three workflows/eight jobs: Linux/macOS211 and Windows210 per
+default/all-feature run, public originals2, actual C/JNI/release consumers,
+ASan2114027, Android core20/metadata11/lifecycle16/concurrency18 and cleanup,
+macOS11, actual iOS26.2, Node4/Chrome7. [Exact receipt](platform-4d02be4.json)
+retains16 actual PID/wait records and parser isolated UIDs99000..99003.
+Both installed attempts in this continuation passed; the earlier failures
+remain unexplained. [Current handoff](HANDOFF_ROUND2_20261019.md) and
+[85-case differential](differential-4d02be4.json) include the reference
+framework's99 counter/one HEVC early-return limitation and vendor boundaries.
 
 Verified baseline: **4848e5fb80b650fdefcedbe9aebedef9de7e627f**, preserved as
 local `baseline/verified-4848e5f` and an [immutable receipt](stable-baseline-4848e5f.json).
