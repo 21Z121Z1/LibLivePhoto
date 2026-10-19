@@ -126,7 +126,7 @@ public abstract class MotionPhotoService extends Service {
                         callback.finished(id, result.success, result.success ? "complete" : "core returned diagnostics");
                     }
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 cancel(e.getClass().getSimpleName() + ": " + e.getMessage());
             } finally { if (terminal.get()) cleanup(); }
         }

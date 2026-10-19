@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.*;
 /** Actual installed APK/Binder/JNI checks. No mocked Android or permission bypass. */
 public final class ServiceAcceptance extends Instrumentation {
     private int assertions;
+    private String phase = "instrumentation startup";
     private void check(boolean condition, String message) {
         if (!condition) throw new AssertionError(message);
         assertions++;
@@ -24,6 +25,8 @@ public final class ServiceAcceptance extends Instrumentation {
             result.putInt("assertions", assertions); finish(-1, result);
         } catch (Throwable error) {
             android.util.Log.e("LibLivePhotoAcceptance", "native service acceptance failed", error);
+            result.putString("phase",phase);
+            result.putString("stack",android.util.Log.getStackTraceString(error));
             result.putString("stream", "ANDROID_SERVICE_ACCEPTANCE FAILED: " + error + "\n"); finish(0, result);
         }
     }
@@ -38,6 +41,8 @@ public final class ServiceAcceptance extends Instrumentation {
         return file;
     }
     private NativeResult invoke(MotionPhotoClient client, Request request, MotionPhotoClient.Source p, MotionPhotoClient.Source m) throws Exception {
+        phase="operation "+request.toJson();
+        android.util.Log.i("LibLivePhotoAcceptance",phase);
         return client.execute(request,p,m,null).result().get(40,TimeUnit.SECONDS);
     }
     private void runChecks() throws Exception {
@@ -50,7 +55,10 @@ public final class ServiceAcceptance extends Instrumentation {
              MotionPhotoClient builder=new MotionPhotoClient(getTargetContext(),MotionPhotoBuilderService.class);
              MotionPhotoClient checker=new MotionPhotoClient(getTargetContext(),MotionPhotoCheckerService.class);
              MotionPhotoClient extractor=new MotionPhotoClient(getTargetContext(),MotionPhotoExtractorService.class)) {
+            int serviceIndex=0;
             for (MotionPhotoClient client : Arrays.asList(parser,builder,checker,extractor)) {
+                phase="connect service "+serviceIndex++ +" (metadata,builder,checker,extractor)";
+                android.util.Log.i("LibLivePhotoAcceptance",phase);
                 client.ready().get(20,TimeUnit.SECONDS);
                 check(client.remoteProcessId()!=android.os.Process.myPid(),"service must actually use another process");
                 check(invoke(client,new Request("version"),null,null).success,"remote Rust native library loads");
@@ -58,6 +66,7 @@ public final class ServiceAcceptance extends Instrumentation {
             Os.lseek(motionFD.getFileDescriptor(),7,OsConstants.SEEK_SET);
             MotionPhotoClient.Source source=MotionPhotoClient.Source.range(motionFD,13,motion.length);
             AtomicInteger readProgress=new AtomicInteger();
+            phase="isolated metadata pipe/read progress";
             NativeResult metadata=parser.execute(new Request("metadata"),source,null,(p,n,t)->{if("read".equals(p)&&n>0)readProgress.incrementAndGet();}).result().get(40,TimeUnit.SECONDS);
             check(metadata.success,"isolated metadata result");
             check(readProgress.get()>0,"actual FD read progress crosses Binder");
@@ -96,6 +105,7 @@ public final class ServiceAcceptance extends Instrumentation {
             try (RandomAccessFile fill=new RandomAccessFile(large,"rw")) { fill.setLength(32L*1024*1024); }
             try (ParcelFileDescriptor fd=ParcelFileDescriptor.open(large,ParcelFileDescriptor.MODE_READ_ONLY)) {
                 MotionPhotoClient.Operation pending=parser.execute(new Request("parse"),MotionPhotoClient.Source.whole(fd),null,null);
+                phase="cancel actual service read";
                 check(pending.cancel(),"cancel an actual service operation");
                 try { pending.result().get(5,TimeUnit.SECONDS); throw new AssertionError("cancel returned success"); }
                 catch (CancellationException | ExecutionException expected) { assertions++; }

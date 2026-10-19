@@ -28,7 +28,7 @@ public final class MotionPhotoClient implements AutoCloseable {
             try {
                 if (service.apiVersion() != 1) throw new IOException("service API mismatch");
                 ready.complete(MotionPhotoClient.this);
-            } catch (Exception e) { fail(e); }
+            } catch (Throwable e) { fail(e); }
         }
         public void onServiceDisconnected(ComponentName name) { fail(new IOException("service process disconnected")); }
         @Override public void onBindingDied(ComponentName name) { fail(new IOException("service binding died")); }
@@ -106,7 +106,7 @@ public final class MotionPhotoClient implements AutoCloseable {
             try (InputStream in = new ParcelFileDescriptor.AutoCloseInputStream(input)) {
                 NativeResult value = NativeResult.readEnvelope(in, 160 * 1024 * 1024);
                 if (terminal.compareAndSet(false, true)) result.complete(value);
-            } catch (Exception e) { fail(e); }
+            } catch (Throwable e) { fail(e); }
             finally { active.remove(this); }
         }
         private void fail(Throwable error) {

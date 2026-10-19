@@ -17,7 +17,7 @@ def main():
     installed=False
     try:
         print(run(['install','--no-streaming',str(apk)]));installed=True
-        text=run(['shell','am','instrument','-w',package+'/org.liblivephoto.android.ServiceAcceptance'],timeout=240)
+        text=run(['shell','am','instrument','-w','-r',package+'/org.liblivephoto.android.ServiceAcceptance'],timeout=240)
         (out/'instrumentation.log').write_text(text);print(text)
         if 'ANDROID_SERVICE_ACCEPTANCE passed' not in text or 'INSTRUMENTATION_CODE: -1' not in text:
             raise RuntimeError('actual Android service acceptance failed; see instrumentation.log and logcat')
@@ -30,6 +30,8 @@ def main():
                  'gallery_acceptance':False,'result':'passed'}
         (out/'runtime-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
     finally:
-        (out/'logcat.log').write_text(run(['logcat','-d','-s','LibLivePhotoAcceptance:*','AndroidRuntime:E','libc:F']))
+        logs=run(['logcat','-d','-s','LibLivePhotoAcceptance:*','AndroidRuntime:E','libc:F'])
+        (out/'logcat.log').write_text(logs)
+        print(logs[-24000:],flush=True)
         if installed:print(run(['uninstall',package]))
 if __name__=='__main__':main()

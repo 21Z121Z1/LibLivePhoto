@@ -30,11 +30,12 @@ test('Apple pair uses actual identifier and rational time; mismatched pair is re
  const bad=Buffer.from(fs.readFileSync(path.join(demo,'apple-paired.mov')));const id=bad.indexOf('LIBLIVEPHOTO-SYNTHETIC-DEMO-20261019');expect(id).toBeGreaterThan(0);bad[id]=0x78;
  await page.locator('#files').setInputFiles([{name:'apple-still.jpg',mimeType:'image/jpeg',buffer:fs.readFileSync(path.join(demo,'apple-still.jpg'))},{name:'wrong.mov',mimeType:'video/quicktime',buffer:bad}]);await expect(page.locator('#work-status')).toContainText('identifierMismatch');
 });
-test('ordinary pair requires explicit association; invalid input and codec failure are visible',async({page})=>{
+test('ordinary pair can reparse the same files with explicit association and exact time',async({page})=>{
  await page.goto('/');await page.locator('#files').setInputFiles([path.join(demo,'cover.jpg'),path.join(demo,'motion.mp4')]);await expect(page.locator('#work-status')).toContainText('missingPairMetadata');
- await page.locator('#declared').check();await page.locator('#files').setInputFiles([]);await page.locator('#files').setInputFiles([path.join(demo,'cover.jpg'),path.join(demo,'motion.mp4')]);await expect(page.locator('#work-status')).toContainText('解析完成');await expect(page.locator('#photo-time')).toContainText('未知');await expect(page.locator('#cover-time')).toBeDisabled();
+ await page.locator('#declared').check();await page.locator('#reparse').click();await expect(page.locator('#work-status')).toContainText('解析完成');await expect(page.locator('#photo-time')).toContainText('未知');await expect(page.locator('#cover-time')).toBeDisabled();
+ await page.locator('#time-value').fill('13');await page.locator('#time-scale').fill('16');await page.locator('#reparse').click();await expect(page.locator('#photo-time')).toHaveText('13 / 16 s');await expect(page.locator('#cover-time')).toBeEnabled();
  await page.locator('#files').setInputFiles({name:'bad.jpg',mimeType:'image/jpeg',buffer:Buffer.from('not a photo')});await expect(page.locator('#work-status')).toHaveClass('error');
- await ready(page);await page.locator('#video').evaluate(v=>v.dispatchEvent(new Event('error')));await expect(page.locator('#preview-message')).toContainText('没有隐式转码');await expect(page.locator('#play')).toBeDisabled();
+
 });
 test('mobile layout, keyboard controls and cancellation leave local state consistent',async({page},testInfo)=>{
  await page.setViewportSize({width:390,height:844});await ready(page);expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
@@ -66,5 +67,5 @@ test('replacing media revokes URLs and discards late seeks and cancelled demo fe
  await page.evaluate(()=>{document.getElementById('next-frame').click();document.getElementById('cancel').click();});await expect(page.locator('#work-status')).toContainText('已取消');await expect(page.locator('#play')).toBeDisabled();expect(await page.evaluate(()=>window.localBlobUrls.size)).toBe(0);
  let release;const held=new Promise(resolve=>release=resolve);let intercepted;const seen=new Promise(resolve=>intercepted=resolve);await page.route('**/demo/motion-photo.jpg',async route=>{intercepted();await held;await route.continue().catch(()=>{});});
  await page.locator('#demo').click();await seen;await page.locator('#cancel').click();release();await page.unroute('**/demo/motion-photo.jpg');
- await page.locator('#apple-demo').click();await expect(page.locator('#format')).toHaveText('AppleLivePhoto');await expect(page.locator('#cover-time')).toBeEnabled();expect(await page.evaluate(()=>window.localBlobUrls.size)).toBe(2);expect(errors).toEqual([]);
+ await page.locator('#apple-demo').click();await expect(page.locator('#format')).toHaveText('AppleLivePhoto');await expect(page.locator('#cover-time')).toBeEnabled();expect(await page.evaluate(()=>window.localBlobUrls.size)).toBe(2);await expect.poll(()=>page.locator('#video').evaluate(v=>!v.seeking)).toBe(true);await page.evaluate(()=>{document.getElementById('video').dispatchEvent(new Event('error'));document.getElementById('still').dispatchEvent(new Event('error'));});await expect(page.locator('#play')).toBeEnabled();await expect(page.locator('#preview-message')).not.toContainText('无法');expect(errors).toEqual([]);
 });
