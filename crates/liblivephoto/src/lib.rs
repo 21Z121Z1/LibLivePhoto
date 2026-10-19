@@ -35,6 +35,8 @@ pub use metadata_engine::*;
 mod presentation;
 pub mod remux;
 mod scanner;
+mod scoring_time;
+pub use scoring_time::*;
 mod timeline;
 mod video_metadata;
 pub use metadata_samples::*;

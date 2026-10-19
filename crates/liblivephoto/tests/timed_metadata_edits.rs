@@ -149,7 +149,7 @@ fn score_payload_times_are_inspectable_but_never_silently_retimed() {
     );
     assert!(matches!(
         extract_video_metadata(&movie, PhotoTimeExpectation::Unchecked),
-        Err(MotionPhotoReadError::UnsupportedLayout(_))
+        Err(MotionPhotoReadError::MetadataMismatch(_))
     ));
 }
 

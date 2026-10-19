@@ -322,8 +322,13 @@ pub fn sef(records: &[(u16, &str, Vec<u8>)]) -> Vec<u8> {
 }
 
 /// Synthetic metadata timeline fixture; mdat offsets precede the appended moov.
-pub fn metadata_edits(
+pub fn metadata_edits(movie: Vec<u8>, movie_scale: u32, edits: &[(u64, i64, i16, i16)]) -> Vec<u8> {
+    movie_track_edits(movie, 1, movie_scale, edits)
+}
+
+pub fn movie_track_edits(
     mut movie: Vec<u8>,
+    track_index: usize,
     movie_scale: u32,
     edits: &[(u64, i64, i16, i16)],
 ) -> Vec<u8> {
@@ -343,7 +348,7 @@ pub fn metadata_edits(
     let trak = children
         .iter()
         .filter(|b| b.kind.as_bytes() == b"trak")
-        .nth(1)
+        .nth(track_index)
         .unwrap();
     let mut payload = (edits.len() as u32).to_be_bytes().to_vec();
     for (duration, start, integer, fraction) in edits {

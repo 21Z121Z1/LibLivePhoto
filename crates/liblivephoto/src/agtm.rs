@@ -112,7 +112,7 @@ fn explicit_t35(data: &[u8]) -> bool {
 
 impl MotionPhoto<'_> {
     /// Select AGTM metadata samples by their exact presentation intervals. A
-    /// missing track/sample returns an empty vector. Edit lists are unsupported;
+    /// missing track/sample returns an empty vector. Unit-rate edits are mapped;
     /// nonintegral timestamp conversion fails explicitly. No first-sample or
     /// arbitrary whole-file scanner fallback is used.
     pub fn agtm_at(&self, time: MediaTime) -> Result<Vec<AgtmSample<'_>>> {

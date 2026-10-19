@@ -141,9 +141,17 @@ construction remains explicitly excluded.
 
 `metadata_packets` reports raw decode-order packets, including composition
 offsets, on the track media timeline before edits. These raw packets remain
-inspectable for unsupported edit rates. Scoring semantic validation with edits
-still rejects explicitly because payload-internal score timestamps have not
-been mapped; it never labels their raw times as edited movie times. Timed AGTM
+inspectable for unsupported edit rates. `extract_video_metadata` validates
+payload-internal timestamps as declared movie times, including direct XMP
+comparison; it never adds the metadata track's ctts or edit offset to them.
+`project_scoring_media_times` is an explicit alternative for caller-declared
+pre-edit video media CTS. The caller identifies primary/high-resolution video
+tracks separately. It matches exact source CTS (including ctts), then maps
+sample indices through unit-rate edits. Returned score references retain raw
+bits; sorted movie times expose repeats, with explicit trimmed/unspecified
+states. Missing frame matches, unsupported rates, overflow, fragmentation,
+nonintegral microseconds and aggregate output limits fail. It does not author
+a replacement payload or choose one repeated occurrence. Timed AGTM
 selects one sequential edit before scanning samples, avoiding a samples × edits
 allocation/work expansion; the existing aggregate extraction budgets remain.
 

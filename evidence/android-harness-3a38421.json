@@ -1,0 +1,32 @@
+{
+  "implementation_sha": "3a38421a30db4def8b9117442b8f5fd7c111b1de",
+  "scope": "Android harness host fault injection only, no device/emulator execution",
+  "command": "python3 scripts/test_android_harness.py",
+  "tests_passed": 12,
+  "failed": 0,
+  "native_acceptance_claimed": false,
+  "runtime_pending": true,
+  "script_sha256": {
+    "scripts/test_android.py": "8facb3638f71f481fb959889e75098ee1234b8c4ebcaff2ca8b57cdc370a4fdb",
+    "scripts/test_android_harness.py": "26ef57189402afc133ab295383a4a9d66d587aab5e0fa021f0c0b638512377ef",
+    ".github/workflows/android.yml": "523ff325c333016a3fdd358a2759b6edbda5e9a4bb156cbd7b647eaf5b86b18b"
+  },
+  "log_sha256": "914dc091b1571c64a3f9b71a9fd8bc634feb48279a0ee9def7b285b48d433631",
+  "budgets": {
+    "readiness_seconds": 120,
+    "readiness_attempts": 40,
+    "scope_seconds": 240,
+    "operation_seconds": 40,
+    "required_assertions": 65
+  },
+  "regressions": [
+    "Exit224/stdout/stderr captured; nonzero cannot prove absence.",
+    "Bounded readiness/unknown failures never authorize installation.",
+    "Existing package refused without overwrite or cleanup.",
+    "All four scopes and exact assertion counts required.",
+    "Cleanup failure or uncertain installation cannot produce a success receipt.",
+    "Unique run directories retain old receipts/logs."
+  ],
+  "known_failure_receipt": "android-platform-541b609.json",
+  "cause_of_541_failure": "undetermined; previous stdout/stderr not retained by old check_output guard"
+}

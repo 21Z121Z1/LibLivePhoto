@@ -516,6 +516,25 @@ pub(crate) fn video_frames(
     id: u32,
     max_frames: usize,
 ) -> Result<Vec<crate::FrameTime>> {
+    video_frames_with_edits(data, id, max_frames, true)
+}
+
+/// Source sample CTS, before elst. Used only with an explicitly selected video
+/// track; embedded scoring timestamps are not metadata-track decode timestamps.
+pub(crate) fn video_frames_unedited(
+    data: &[u8],
+    id: u32,
+    max_frames: usize,
+) -> Result<Vec<crate::FrameTime>> {
+    video_frames_with_edits(data, id, max_frames, false)
+}
+
+fn video_frames_with_edits(
+    data: &[u8],
+    id: u32,
+    max_frames: usize,
+    apply_edits: bool,
+) -> Result<Vec<crate::FrameTime>> {
     let container = inspect(data, ResourceId(0), false)?;
     let track = container
         .tracks
@@ -552,15 +571,16 @@ pub(crate) fn video_frames(
     }
     let mut budget = 0;
     validate_samples(data, &tables, &top, &mut budget, |_, _, _| Ok(()))?;
-    if count
-        .checked_mul(track.edits.len().max(1))
-        .is_none_or(|n| n > 1_000_000)
+    if apply_edits
+        && count
+            .checked_mul(track.edits.len().max(1))
+            .is_none_or(|n| n > 1_000_000)
     {
         return Err(Error::InputLimit);
     }
     let times = sample_timing(data, &tables, count)?;
     let mut frames = Vec::new();
-    if track.edits.is_empty() {
+    if !apply_edits || track.edits.is_empty() {
         frames.extend(
             times
                 .into_iter()
@@ -584,6 +604,14 @@ pub(crate) fn video_frames(
             }
             let duration =
                 i64::try_from(edit.movie_duration).map_err(|_| Error::InvalidPresentation)?;
+            // Compare rational endpoints without rounding fractional track ticks.
+            if edit.media_start >= 0
+                && i128::from(edit.media_start) * i128::from(movie_scale)
+                    + i128::from(duration) * i128::from(track.timescale)
+                    > i128::from(i64::MAX) * i128::from(movie_scale)
+            {
+                return Err(Error::InvalidPresentation);
+            }
             if edit.media_start >= 0 {
                 for (sample_index, (pts, _)) in times.iter().enumerate() {
                     let offset = pts

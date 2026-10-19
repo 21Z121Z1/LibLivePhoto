@@ -52,6 +52,9 @@ pub struct ScoringMetadata {
 /// Decode only declared Google samples, bounded across all tracks to 4096
 /// samples, 16 MiB of referenced payload and 65536 semantic records. Repeated
 /// references to the same mdat bytes each consume the budget.
+/// Payload-internal frame timestamps are validated as declared movie presentation
+/// times, not shifted by the metadata track's ctts or edits. For caller-declared
+/// pre-edit video media times, use `project_scoring_media_times` explicitly.
 pub fn extract_video_metadata(
     video: &[u8],
     expected: PhotoTimeExpectation,
@@ -62,11 +65,6 @@ pub fn extract_video_metadata(
     for track in container.tracks.iter().filter(|t| {
         !matches!(t.kind, TrackKind::Video | TrackKind::Audio) && t.sample_entries.contains(b"mett")
     }) {
-        if !track.edits.is_empty() {
-            return Err(Error::UnsupportedLayout(
-                "scoring metadata validation with edit lists is not implemented",
-            ));
-        }
         // Test the actual sample description before interpreting the sample bytes.
         for packet in crate::tracks::metadata_samples(video, track)? {
             const MIME: &[u8] = b"application/motionphoto-image-meta";

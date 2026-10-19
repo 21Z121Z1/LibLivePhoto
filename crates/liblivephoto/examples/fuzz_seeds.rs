@@ -41,6 +41,26 @@ fn main() -> std::io::Result<()> {
             ),
             ("score-unknown", vec![0xc0, 4, 0xd0, 0, 0xd1, 0]),
             (
+                "score-video-edits",
+                common::movie_track_edits(
+                    common::metadata_movie(
+                        b"mett",
+                        b"\0application/motionphoto-image-meta\0",
+                        &[(
+                            &[
+                                0xc0, 20, 0xc1, 18, 0, 0, 0, 7, 0xc3, 12, 0x3f, 0, 0, 0, 0, 0, 0,
+                                0, 0, 0, 0, 0,
+                            ],
+                            2000,
+                        )],
+                        0,
+                    ),
+                    0,
+                    1000,
+                    &[(1000, 0, 1, 0), (500, -1, 1, 0), (1000, 0, 1, 0)],
+                ),
+            ),
+            (
                 "score-movie",
                 common::metadata_movie(
                     b"mett",
