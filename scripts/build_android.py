@@ -4,7 +4,7 @@
 No Gradle downloads, SDK license acceptance, publishing or device permission
 changes are performed here. Missing toolchains fail with their exact path.
 """
-import argparse, hashlib, json, os, shutil, subprocess, zipfile
+import argparse, hashlib, json, os, re, shutil, subprocess, zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,7 +33,7 @@ def main():
     if args.sdk is None or not args.sdk.is_dir():
         raise RuntimeError('installed Android SDK required: set ANDROID_SDK_ROOT or --sdk (no SDK found)')
     sdk = args.sdk.resolve()
-    platform = newest(p for p in (sdk/'platforms').glob('android-*') if (p/'android.jar').is_file() and (p/'framework.aidl').is_file())
+    platform = newest(p for p in (sdk/'platforms').glob('android-*') if re.fullmatch(r'android-\d+', p.name) and (p/'android.jar').is_file() and (p/'framework.aidl').is_file())
     tools = newest(p for p in (sdk/'build-tools').glob('*') if (p/'aapt2').is_file() and (p/'aidl').is_file())
     ndk = args.ndk.resolve() if args.ndk else newest((sdk/'ndk').glob('*'))
     prebuilt = newest((ndk/'toolchains/llvm/prebuilt').glob('linux-*'))
@@ -46,8 +46,13 @@ def main():
              '-o'+str(build/'generated'), source])
     java = ['java'] + (['-Djava.home='+args.compiler_java_home] if args.compiler_java_home else [])
     sources = sorted((ROOT/'java/src/main/java').rglob('*.java')) + sorted((ROOT/'android/src/main/java').rglob('*.java')) + sorted((build/'generated').rglob('*.java'))
-    # Android boot classes, rather than desktop --release stubs, define the SDK API.
-    run([*java, 'com.sun.tools.javac.Main', '-source', '8', '-target', '8', '-bootclasspath', platform/'android.jar',
+    # Android's core lambda compile stubs are required by javac; D8 desugars
+    # those call sites. They are build inputs, never APK runtime classes.
+    lambda_stubs = tools/'core-lambda-stubs.jar'
+    if not lambda_stubs.is_file():
+        raise RuntimeError('missing SDK core lambda compile stubs: '+str(lambda_stubs))
+    bootclasspath = os.pathsep.join(map(str, [platform/'android.jar', lambda_stubs]))
+    run([*java, 'com.sun.tools.javac.Main', '-source', '8', '-target', '8', '-bootclasspath', bootclasspath,
          '-d', build/'classes', *sources])
     run([*java, 'sun.tools.jar.Main', '--create', '--file', build/'classes.jar', '-C', build/'classes', '.'])
     for abi in abis:
@@ -74,7 +79,7 @@ def main():
             archive.write(build/'jni'/abi/'liblivephoto_native.so', 'jni/'+abi+'/liblivephoto_native.so')
         for source in sorted((ROOT/'android/src/main/aidl').rglob('*.aidl')):
             archive.write(source, 'aidl/'+str(source.relative_to(ROOT/'android/src/main/aidl')))
-    run([*java, 'com.sun.tools.javac.Main', '-source', '8', '-target', '8', '-bootclasspath', platform/'android.jar',
+    run([*java, 'com.sun.tools.javac.Main', '-source', '8', '-target', '8', '-bootclasspath', bootclasspath,
          '-classpath', build/'classes', '-d', build/'test-classes', *sorted((ROOT/'android/src/test/java').rglob('*.java'))])
     run([*java, 'sun.tools.jar.Main', '--create', '--file', build/'test-classes.jar', '-C', build/'test-classes', '.'])
     run([tools/'d8', '--lib', platform/'android.jar', '--min-api', '26', '--output', build/'dex', build/'classes.jar', build/'test-classes.jar'])
