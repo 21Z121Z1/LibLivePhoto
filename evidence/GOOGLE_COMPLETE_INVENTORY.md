@@ -61,8 +61,12 @@ fix is claimed. Atc15648c the same source objects passed all portable, corpus,
 ASan and Apple/web jobs. Android installed core20 passed, then metadata returned
 Process crashed/code0; later scopes did not execute. [Terminal evidence](platform-c15648c.json)
 keeps that failed overall gate. The follow-up [crash-diagnostic receipt](android-crash-harness-b5ceff4.json)
-records13 host fault tests and unchanged65 native assertions/deadlines; its new
-platform run remains required.
+records13 host fault tests and unchanged65 native assertions/deadlines. Its
+actual platform run at71b778f completed: portable/corpus/ASan and Apple/web
+passed, Android built/installed but failed the first20-second isolated-service
+readiness wait with zero assertions. [Latest terminal evidence](platform-71b778f.json)
+includes the real failure/phase/exit/crash/cleanup records; full Android
+acceptance and the earlier metadata-process cause remain open.
 
 | ID | Public capability / shipped interface | Google authority | Current implementation and status |
 | --- | --- | --- | --- |

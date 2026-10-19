@@ -47,6 +47,16 @@ returned Process crashed/code0; lifecycle/concurrency did not execute. The
 the empty filtered crash evidence. The next diagnostic change does not remove
 assertions, extend operation/scope deadlines or claim a root-cause fix.
 
+Latest executed `71b778f` also completed all workflows: Linux/macOS205 and
+Windows204 default/all-feature tests, public-fixture2, actual three-host SDK
+consumers,2917258 ASan cases,4 Node/7 Chrome,11 macOS tests and actual SE3/iOS26.2
+passed. Android built/installed and passed13 host harness tests, then the first
+MetadataParserService bind readiness exceeded20 seconds before any core action
+or assertion. Cleanup was confirmed; native all65 acceptance is failed.
+[Exact final-code receipt](platform-71b778f.json) includes actual phase/exit/crash
+output. No unrelated Bluetooth crash is attributed to the library, and no
+root-cause fix is claimed.
+
 Stability is a hard gate for all boards. See [STABILITY_GATES.md](STABILITY_GATES.md)
 for malformed ranges, cumulative allocation/copy bounds, FFI ownership,
 cancellation, failure rollback and the limits of each runtime acceptance claim.

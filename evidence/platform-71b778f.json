@@ -1,0 +1,465 @@
+{
+  "implementation_sha": "71b778ff886e35627600381eef06435bd902240a",
+  "locally_tested_source_sha": "8dbe8300c0915dc0c921fbbbabb4b219577f84da",
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "branch": "codex/google-core-coverage-20261019",
+  "source_identity": "Exact CI checkout. Only scripts and Android harness/test trees differ from8dbe830; the complete13-test diagnostic source objects matchb5ceff4. Final documentation/evidence-only commits must retain these objects.",
+  "runs": [
+    {
+      "id": 39291032643,
+      "name": "Verify independent format library",
+      "head_sha": "71b778ff886e35627600381eef06435bd902240a",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39291032643"
+    },
+    {
+      "id": 39291032227,
+      "name": "Apple adapter and local web",
+      "head_sha": "71b778ff886e35627600381eef06435bd902240a",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39291032227"
+    },
+    {
+      "id": 39291032268,
+      "name": "Android native services",
+      "head_sha": "71b778ff886e35627600381eef06435bd902240a",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39291032268"
+    }
+  ],
+  "jobs": [
+    {
+      "id": 118191414708,
+      "run_id": 39291032268,
+      "name": "sdk-and-services",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 118191416530,
+      "run_id": 39291032643,
+      "name": "Exact original fixture round trips",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118191417077,
+      "run_id": 39291032643,
+      "name": "Portable (macos-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118191417116,
+      "run_id": 39291032643,
+      "name": "Portable (windows-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118191417312,
+      "run_id": 39291032643,
+      "name": "Portable (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118191417399,
+      "run_id": 39291032643,
+      "name": "Sanitizer and coverage campaign",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118191428455,
+      "run_id": 39291032227,
+      "name": "web",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118191428885,
+      "run_id": 39291032227,
+      "name": "apple",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12205782366,
+      "name": "native-sdk-windows-latest",
+      "run_id": 39291032643,
+      "size_in_bytes": 7133435,
+      "digest": "sha256:d6b38f2de034a4aa252add81230e5a79a5a6577468ace0fd11f4f05b18bfe4d1",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12205646608,
+      "name": "native-sdk-ubuntu-latest",
+      "run_id": 39291032643,
+      "size_in_bytes": 9431781,
+      "digest": "sha256:305e0c76c0f4e3a6c50871abb54a2bea62fc25924a1035b26d879adf466f1599",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12205287970,
+      "name": "native-sdk-macos-latest",
+      "run_id": 39291032643,
+      "size_in_bytes": 8970705,
+      "digest": "sha256:f5b30d6c25942f8fbe00415e87ff1c58ffac9ecd2e2e4683782a56cc3a2cdc41",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12205268070,
+      "name": "sanitizer-coverage-logs",
+      "run_id": 39291032643,
+      "size_in_bytes": 191434,
+      "digest": "sha256:19c196635b214ca7c42a7450d83d2d06581f791ca71942b7445953100f7f48c9",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12206525671,
+      "name": "apple-sdk-build",
+      "run_id": 39291032227,
+      "size_in_bytes": 22386973,
+      "digest": "sha256:ebd4eecce2569e1edf96121f6b6423580c21a766b0d74bad9a892a7040acd73b",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12205985691,
+      "name": "web-browser-evidence",
+      "run_id": 39291032227,
+      "size_in_bytes": 390753,
+      "digest": "sha256:6bd288e69ba3a8796748440d434e6c09c999efcda83cc599711ec1e9aa62a244",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12205903316,
+      "name": "android-service-evidence",
+      "run_id": 39291032268,
+      "size_in_bytes": 3793809,
+      "digest": "sha256:ef89795871fc142778cc7c56ad45972c42885568812b7495dcd988e68fbfbdf3",
+      "downloaded_into_this_container": false
+    }
+  ],
+  "portable": {
+    "Linux": {
+      "default": {
+        "passed": 205,
+        "failed": 0,
+        "ignored": 3
+      },
+      "all_features": {
+        "passed": 205,
+        "failed": 0,
+        "ignored": 3
+      }
+    },
+    "macOS": {
+      "default": {
+        "passed": 205,
+        "failed": 0,
+        "ignored": 3
+      },
+      "all_features": {
+        "passed": 205,
+        "failed": 0,
+        "ignored": 3
+      }
+    },
+    "Windows": {
+      "default": {
+        "passed": 204,
+        "failed": 0,
+        "ignored": 3
+      },
+      "all_features": {
+        "passed": 204,
+        "failed": 0,
+        "ignored": 3
+      }
+    },
+    "count_note": "Windows excludes cfg(unix) range_and_borrowed_fd_use_the_same_relative_collection_without_moving_cursor. Eight new CameraAlbum tests execute on every host.",
+    "fmt_clippy": "passed on all three hosts",
+    "actual_C_JNI": "passed on all three hosts, including new CameraAlbum assertions",
+    "packaged_SDK_consumers": "archive hashes, actual extracted release CLI/C ABI and external Java JAR consumer passed on all three hosts",
+    "external_Rust": "passed on all three hosts"
+  },
+  "fixtures": {
+    "identities_verified": 14,
+    "explicit_public_tests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "private_original_analysis": "ignored, not executed or redistributed",
+    "vivo_extension": "Both independent existing originals execute the new footer/UUID/byte-preservation checks."
+  },
+  "asan": {
+    "sanitizer": "address",
+    "command": "bash scripts/fuzz.sh 60 evidence/local/ci-fuzz",
+    "requested_seconds_per_target": 60,
+    "max_input_bytes": 1048576,
+    "rss_limit_mb": 2048,
+    "per_input_timeout_seconds": 5,
+    "targets": {
+      "asset_input": {
+        "executions": 65750,
+        "actual_seconds": 61,
+        "peak_rss_mb": 475
+      },
+      "container_headers": {
+        "executions": 2710185,
+        "actual_seconds": 61,
+        "peak_rss_mb": 581
+      },
+      "remux": {
+        "executions": 141323,
+        "actual_seconds": 61,
+        "peak_rss_mb": 465
+      }
+    },
+    "total_executions": 2917258,
+    "crashes": 0
+  },
+  "apple": {
+    "macOS_XCTest_passed": 11,
+    "actual_local_PHLivePhoto_pair_load_and_byte_export": "passed",
+    "iOS_SDK_compile": "passed",
+    "static_XCFramework": "passed",
+    "actual_Swift_Rust_process": "passed",
+    "device": "iPhone SE (3rd generation)",
+    "runtime": "iOS26.2 (23C54)",
+    "compiler_Xcode": "26.6",
+    "compiler_simulator_SDK": "26.5",
+    "bootstatus_completed": true,
+    "owned_device_deleted": true,
+    "Photos_library_import_edit_physical_display_capture": "not executed",
+    "exact71_log_evidence": "Included below; actual Swift/Rust process passed with bootstatus and owned-device cleanup."
+  },
+  "web": {
+    "Node_tests": 4,
+    "actual_Chrome_tests": 7,
+    "WASM_build": "passed",
+    "physical_speaker_HDR_or_Apple_LPK_runtime": "not verified"
+  },
+  "android": {
+    "status": "failed",
+    "workflow_run": 39291032268,
+    "job_id": 118191414708,
+    "SDK_dual_ABI_AAR_APK_build": "passed",
+    "host_fault_tests": 13,
+    "runtime_receipt_from_actual_stdout": {
+      "result": "failed",
+      "completed_scopes": [],
+      "assertions": 0,
+      "gallery_acceptance": false,
+      "readiness_deadline_seconds": 120,
+      "readiness_max_attempts": 40,
+      "per_scope_deadline_seconds": 240,
+      "per_operation_deadline_seconds": 40,
+      "installation_confirmed": true,
+      "installation_outcome_uncertain": false,
+      "owned_package_removed": true,
+      "implementation_sha": "71b778ff886e35627600381eef06435bd902240a",
+      "readiness_attempts": 1,
+      "package_absence_confirmed": true,
+      "error": "actual Android acceptance failed in core; expected 20 assertions and INSTRUMENTATION_CODE: -1"
+    },
+    "evidence_directory": "android/build/acceptance-hy0zh6bl",
+    "failed_scope": "core",
+    "failure_phase": "connect MetadataParserService",
+    "caught_error": "java.util.concurrent.TimeoutException at ServiceAcceptance.connect:62, ready().get(20,TimeUnit.SECONDS)",
+    "instrumentation_terminal_code": 0,
+    "remaining_scopes_not_executed": [
+      "metadata",
+      "lifecycle",
+      "concurrency"
+    ],
+    "required_scopes": {
+      "core": 20,
+      "metadata": 11,
+      "lifecycle": 16,
+      "concurrency": 18
+    },
+    "required_assertions": 65,
+    "actual_crash_buffer": "Two SIGABRTs belong to Android Bluetooth processes1129/1450, not this package; no attribution to Rust/JNI is supported.",
+    "actual_package_exit_history": [
+      "Main package: USER REQUESTED/FORCE STOP due to finished instrumentation, following the caught TimeoutException.",
+      "Isolated service: OTHER KILLS BY SYSTEM/ISOLATED NOT NEEDED during teardown."
+    ],
+    "root_cause_limit": "First isolated service did not become ready within the original20-second bind budget. Accessible data does not distinguish service cold-start, callback dispatch or Binder handshake latency. No native parser invocation, Java/native crash, ANR or low-memory root cause is inferred.",
+    "previous_failure_is_separate": "c15648c passed core20 then metadata reported unclassified Process crashed;71 does not reproduce or explain that earlier failure.",
+    "root_fix_claimed": false,
+    "deadline_increased": false,
+    "permission_or_ADB_state_changed": false,
+    "log_sha256": "5ff022a628515c355e11f667405230cc7f317661a5de462347b7aaade0739575",
+    "log_bytes": 103957,
+    "next_required_evidence": "A supported runtime that satisfies the unchanged bind deadline and executes all65 assertions, or targeted service-start/callback/handshake traces to justify a concrete fix. No speculative retries or new cloud task started.",
+    "executed_remote_core_actions_before_timeout": 0,
+    "Binder_handshake_limit": "The ready future may include callback dispatch and apiVersion handshake; their individual timing is not established."
+  },
+  "limits": [
+    "No physical Gallery/Photos acceptance or original Honor corpus.",
+    "Android arm64 and broader API/runtime/vendor range are not established by compilation or the API35/x86_64 test.",
+    "iOS26.5 startup, Apple LPK transfer/runtime and ISO container materialization remain separate historical blockers.",
+    "Full codec/ICC interpretation, AAC PCE/QT-v2/wave, non-unit/dwell/reverse edits and fragmented/external/indexed remux remain explicit software limits.",
+    "No vendor APK/firmware body or proprietary code committed/executed; no upstream/XDRemux modification, merge or release."
+  ],
+  "source_objects": {
+    "Cargo.toml": "31afd8e6a5e611174fc826613c4d91cb63bd8752",
+    "Cargo.lock": "05e5a92e2722074d64a35460b38ea706fcaa239e",
+    "crates": "2f8144ca1d0d399e2aa50eb66afb815864a95217",
+    "fuzz": "bcd2ec0b3338d14741d71ea0e95b1375cba983c3",
+    "scripts": "43e600eef2f8bebafdc0d8a59121ef923cf6a5fd",
+    "java": "fec2387468434285b4ed7e5e2741141f8d2ba989",
+    "android": "dd81e9744123bde8e29ebf41384f33c81880f5f2",
+    "apple": "dfce4d6cfdda9bbc2ac7a6e15629931df3e749b4",
+    "web": "f195d780eba5305b4cef5817c8004b11b49e9ed6",
+    "native": "eec2f68cd192c1afdc76d67dcebbca800d9f08c9",
+    "fixtures": "d29a6b6805d1094a4231a878a76c8f2246adba03",
+    ".github/workflows": "472a032127d00194ae08945344c308b5992f2e7e"
+  },
+  "log_excerpts": [
+    {
+      "job_id": 118191417077,
+      "lines": [
+        "2026-10-19T17:08:03.0463210Z JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded streamed envelope, AGTM image/video/input parity, source-unverified collection classification and provider controls",
+        "2026-10-19T17:08:03.4049770Z C_ABI_SMOKE passed: actual version, motion parse, exact time, error, response ownership and opt-in conformance diagnostics (no decoder/device certification)",
+        "2026-10-19T17:08:30.4144700Z {\"implementation_sha\": \"71b778ff886e35627600381eef06435bd902240a\", \"archive\": \"liblivephoto-darwin-arm64-sdk.zip\", \"manifest_hashes\": \"passed\", \"release_cli\": \"passed\", \"release_c_abi\": \"passed\", \"external_java_jar_consumer\": \"passed\"}"
+      ]
+    },
+    {
+      "job_id": 118191417116,
+      "lines": [
+        "2026-10-19T17:07:15.3494293Z JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded streamed envelope, AGTM image/video/input parity, source-unverified collection classification and provider controls\r",
+        "2026-10-19T17:07:16.0942910Z C_ABI_SMOKE passed: actual version, motion parse, exact time, error, response ownership and opt-in conformance diagnostics (no decoder/device certification)\r",
+        "2026-10-19T17:07:52.8893832Z {\"implementation_sha\": \"71b778ff886e35627600381eef06435bd902240a\", \"archive\": \"liblivephoto-windows-amd64-sdk.zip\", \"manifest_hashes\": \"passed\", \"release_cli\": \"passed\", \"release_c_abi\": \"passed\", \"external_java_jar_consumer\": \"passed\"}\r"
+      ]
+    },
+    {
+      "job_id": 118191417312,
+      "lines": [
+        "2026-10-19T17:05:48.9749401Z JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded streamed envelope, AGTM image/video/input parity, source-unverified collection classification and provider controls",
+        "2026-10-19T17:05:49.1431835Z C_ABI_SMOKE passed: actual version, motion parse, exact time, error, response ownership and opt-in conformance diagnostics (no decoder/device certification)",
+        "2026-10-19T17:06:08.5141947Z {\"implementation_sha\": \"71b778ff886e35627600381eef06435bd902240a\", \"archive\": \"liblivephoto-linux-x86_64-sdk.zip\", \"manifest_hashes\": \"passed\", \"release_cli\": \"passed\", \"release_c_abi\": \"passed\", \"external_java_jar_consumer\": \"passed\"}"
+      ]
+    },
+    {
+      "job_id": 118191417399,
+      "lines": [
+        "2026-10-19T17:07:01.1245188Z Done 65750 runs in 61 second(s)",
+        "2026-10-19T17:07:01.1250361Z stat::number_of_executed_units: 65750",
+        "2026-10-19T17:07:01.1251480Z stat::peak_rss_mb:              475",
+        "2026-10-19T17:08:02.6910794Z Done 2710185 runs in 61 second(s)",
+        "2026-10-19T17:08:02.6911094Z stat::number_of_executed_units: 2710185",
+        "2026-10-19T17:08:02.6912146Z stat::peak_rss_mb:              581",
+        "2026-10-19T17:09:04.6236896Z Done 141323 runs in 61 second(s)",
+        "2026-10-19T17:09:04.6237192Z stat::number_of_executed_units: 141323",
+        "2026-10-19T17:09:04.6238768Z stat::peak_rss_mb:              465"
+      ]
+    },
+    {
+      "job_id": 118191416530,
+      "lines": [
+        "2026-10-19T17:05:05.9790866Z verified 14 public fixture identities",
+        "2026-10-19T17:05:34.8867374Z test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 23.29s"
+      ]
+    },
+    {
+      "job_id": 118191428455,
+      "lines": [
+        "2026-10-19T17:06:19.3402729Z \u2139 tests 4",
+        "2026-10-19T17:06:19.3403633Z \u2139 pass 4",
+        "2026-10-19T17:07:01.2939902Z   7 passed (9.7s)"
+      ]
+    },
+    {
+      "job_id": 118191428885,
+      "lines": [
+        "2026-10-19T17:08:36.3298710Z \t Executed 11 tests, with 0 failures (0 unexpected) in 0.623 (0.627) seconds",
+        "2026-10-19T17:08:36.3299570Z \t Executed 11 tests, with 0 failures (0 unexpected) in 0.623 (0.635) seconds",
+        "2026-10-19T17:10:27.8416920Z Owned simulator type/runtime: com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+        "2026-10-19T17:13:09.6167470Z IOS_SIMULATOR_RUNTIME: Version 26.2 (Build 23C54)",
+        "2026-10-19T17:13:09.6288890Z IOS_SIMULATOR_SWIFT_RUST passed: linked static C ABI, exact time, original movie, complete AGTM, errors",
+        "2026-10-19T17:13:21.1356910Z   \"bootstatus_completed\": true,",
+        "2026-10-19T17:13:21.1472210Z   \"runtime_process_passed\": true,",
+        "2026-10-19T17:13:21.2090830Z   \"compiler_sdk\": \"/Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk\",",
+        "2026-10-19T17:13:21.5433030Z   \"owned_device_deleted\": true"
+      ]
+    },
+    {
+      "job_id": 118191414708,
+      "lines": [
+        "Actual installed service acceptance scope: core",
+        "2026-10-19T17:15:42.5830736Z INSTRUMENTATION_STATUS: assertions=0",
+        "2026-10-19T17:15:42.5831346Z INSTRUMENTATION_STATUS: phase=instrumentation running",
+        "2026-10-19T17:15:42.5831897Z INSTRUMENTATION_STATUS: scope=core",
+        "2026-10-19T17:15:42.5832623Z INSTRUMENTATION_STATUS_CODE: 1",
+        "2026-10-19T17:15:42.5832996Z INSTRUMENTATION_STATUS: assertions=0",
+        "2026-10-19T17:15:42.5833499Z INSTRUMENTATION_STATUS: phase=connect MetadataParserService",
+        "2026-10-19T17:15:42.5834020Z INSTRUMENTATION_STATUS: scope=core",
+        "2026-10-19T17:15:42.5834427Z INSTRUMENTATION_STATUS_CODE: 1",
+        "2026-10-19T17:15:42.5834887Z INSTRUMENTATION_RESULT: phase=connect MetadataParserService",
+        "2026-10-19T17:15:42.5835386Z INSTRUMENTATION_RESULT: stack=java.util.concurrent.TimeoutException",
+        "2026-10-19T17:15:42.5835923Z \tat java.util.concurrent.CompletableFuture.timedGet(CompletableFuture.java:1936)",
+        "2026-10-19T17:15:42.5836487Z \tat java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2071)",
+        "2026-10-19T17:15:42.5837038Z \tat org.liblivephoto.android.ServiceAcceptance.connect(ServiceAcceptance.java:62)",
+        "2026-10-19T17:15:42.5837668Z \tat org.liblivephoto.android.ServiceAcceptance.runChecks(ServiceAcceptance.java:76)",
+        "2026-10-19T17:15:42.5838918Z \tat org.liblivephoto.android.ServiceAcceptance.onStart(ServiceAcceptance.java:34)",
+        "2026-10-19T17:15:42.5839847Z \tat android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2594)",
+        "2026-10-19T17:15:42.5840428Z ",
+        "2026-10-19T17:15:42.5841090Z INSTRUMENTATION_RESULT: stream=ANDROID_SERVICE_ACCEPTANCE FAILED: java.util.concurrent.TimeoutException",
+        "2026-10-19T17:15:42.5841705Z ",
+        "2026-10-19T17:15:42.5841849Z INSTRUMENTATION_CODE: 0",
+        "2026-10-19T17:15:42.5842065Z ",
+        "2026-10-19T17:15:46.0716673Z ANDROID_HARNESS_SERVICE_DIAGNOSTIC [{\"command\": [\"shell\", \"getprop\", \"sys.boot_completed\"], \"returncode\": 0, \"timed_out\": false, \"stdout\": \"1\\n\", \"stderr\": \"\", \"sequence\": 9, \"observed_at_utc\": \"2026-10-19T17:15:42.583+00:00\", \"elapsed_seconds\": 1.14}, {\"command\": [\"shell\", \"service\", \"check\", \"package\"], \"returncode\": 0, \"timed_out\": false, \"stdout\": \"Service package: found\\n\", \"stderr\": \"\", \"sequence\": 10, \"observed_at_utc\": \"2026-10-19T17:15:43.723+00:00\", \"elapsed_seconds\": 1.115}, {\"command\": [\"shell\", \"service\", \"check\", \"activity\"], \"returncode\": 0, \"timed_out\": false, \"stdout\": \"Service activity: found\\n\", \"stderr\": \"\", \"sequence\": 11, \"observed_at_utc\": \"2026-10-19T17:15:44.838+00:00\", \"elapsed_seconds\": 1.233}]",
+        "2026-10-19T17:15:48.1944527Z ANDROID_HARNESS_GUEST_LOGCAT",
+        "2026-10-19T17:15:48.1944990Z --------- beginning of main",
+        "2026-10-19T17:15:48.1945471Z 10-19 17:15:41.138  1724  1828 E LibLivePhotoAcceptance: native service acceptance failed",
+        "2026-10-19T17:15:48.1946271Z 10-19 17:15:41.138  1724  1828 E LibLivePhotoAcceptance: java.util.concurrent.TimeoutException",
+        "2026-10-19T17:15:48.1947397Z 10-19 17:15:41.138  1724  1828 E LibLivePhotoAcceptance: \tat java.util.concurrent.CompletableFuture.timedGet(CompletableFuture.java:1936)",
+        "2026-10-19T17:15:48.1948701Z 10-19 17:15:41.138  1724  1828 E LibLivePhotoAcceptance: \tat java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2071)",
+        "2026-10-19T17:15:48.1950043Z 10-19 17:15:41.138  1724  1828 E LibLivePhotoAcceptance: \tat org.liblivephoto.android.ServiceAcceptance.connect(ServiceAcceptance.java:62)",
+        "2026-10-19T17:15:48.1951590Z 10-19 17:15:41.138  1724  1828 E LibLivePhotoAcceptance: \tat org.liblivephoto.android.ServiceAcceptance.runChecks(ServiceAcceptance.java:76)",
+        "2026-10-19T17:15:48.1952980Z 10-19 17:15:41.138  1724  1828 E LibLivePhotoAcceptance: \tat org.liblivephoto.android.ServiceAcceptance.onStart(ServiceAcceptance.java:34)",
+        "2026-10-19T17:15:48.1954670Z 10-19 17:15:41.138  1724  1828 E LibLivePhotoAcceptance: \tat android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2594)",
+        "2026-10-19T17:15:48.1955450Z ",
+        "2026-10-19T17:15:48.1955569Z STDERR:",
+        "2026-10-19T17:15:48.1955730Z ",
+        "2026-10-19T17:15:49.3838914Z ANDROID_HARNESS_CRASH_LOGCAT",
+        "2026-10-19T17:15:49.3839266Z --------- beginning of crash",
+        "2026-10-19T17:15:49.3839830Z 10-19 17:13:29.126  1129  1274 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 1274 (bt_stack_manage), pid 1129 (droid.bluetooth)",
+        "2026-10-19T17:15:49.3840787Z 10-19 17:14:48.456  1450  1632 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 1632 (bt_stack_manage), pid 1450 (droid.bluetooth)",
+        "2026-10-19T17:15:49.3841810Z ",
+        "2026-10-19T17:15:49.3841914Z STDERR:",
+        "2026-10-19T17:15:49.3842046Z ",
+        "2026-10-19T17:15:51.8586160Z ANDROID_HARNESS_EXIT_INFO",
+        "2026-10-19T17:15:51.8587085Z ACTIVITY MANAGER PROCESS EXIT INFO (dumpsys activity exit-info)",
+        "2026-10-19T17:15:51.8588514Z Last Timestamp of Persistence Into Persistent Storage: 1970-01-01 00:00:00.000",
+        "2026-10-19T17:15:51.8589325Z   package: org.liblivephoto.android.acceptance",
+        "2026-10-19T17:15:51.8589847Z     Historical Process Exit for uid=10148",
+        "2026-10-19T17:15:51.8590253Z         ApplicationExitInfo #0:",
+        "2026-10-19T17:15:51.8590881Z           timestamp=2026-10-19 17:15:41.458 pid=1724 realUid=10148 packageUid=10148 definingUid=10148 user=0",
+        "2026-10-19T17:15:51.8591894Z           process=org.liblivephoto.android.acceptance reason=10 (USER REQUESTED) subreason=21 (FORCE STOP) status=0",
+        "2026-10-19T17:15:51.8593191Z           importance=125 pss=0.00 rss=0.00 description=stop org.liblivephoto.android.acceptance due to finished inst state=empty trace=null",
+        "2026-10-19T17:15:51.8594127Z         ApplicationExitInfo #1:",
+        "2026-10-19T17:15:51.8594793Z           timestamp=2026-10-19 17:15:40.950 pid=1830 realUid=99000 packageUid=10148 definingUid=10148 user=0",
+        "2026-10-19T17:15:51.8596169Z           process=org.liblivephoto.android.acceptance:llp_metadata:org.liblivephoto.android.MetadataParserService reason=13 (OTHER KILLS BY SYSTEM) subreason=17 (ISOLATED NOT NEEDED) status=0",
+        "2026-10-19T17:15:51.8597563Z           importance=300 pss=0.00 rss=0.00 description=isolated not needed state=empty trace=null",
+        "2026-10-19T17:15:51.8598031Z ",
+        "2026-10-19T17:15:51.8598145Z STDERR:",
+        "2026-10-19T17:15:51.8598486Z ",
+        "2026-10-19T17:15:59.7211051Z ANDROID_HARNESS_RUNTIME_RECEIPT {\"result\": \"failed\", \"completed_scopes\": [], \"assertions\": 0, \"gallery_acceptance\": false, \"readiness_deadline_seconds\": 120, \"readiness_max_attempts\": 40, \"per_scope_deadline_seconds\": 240, \"per_operation_deadline_seconds\": 40, \"installation_confirmed\": true, \"installation_outcome_uncertain\": false, \"owned_package_removed\": true, \"implementation_sha\": \"71b778ff886e35627600381eef06435bd902240a\", \"readiness_attempts\": 1, \"package_absence_confirmed\": true, \"error\": \"actual Android acceptance failed in core; expected 20 assertions and INSTRUMENTATION_CODE: -1\"}",
+        "2026-10-19T17:15:59.8176425Z "
+      ]
+    }
+  ],
+  "log_excerpts_source": "Embedded extracts from actually fetched GitHub job logs; artifact digests identify complete retained CI evidence.",
+  "locally_tested_harness_sha": "b5ceff4d17552fcd0c42a21a3ade1f6ac2cd1ec0",
+  "same_input_differential": "85 cases and99 reference tests are exact91fc380 historical records; provider38 and XDRemux replay were rerun at8dbe830. Their receipts retain original tested SHAs.",
+  "completion": "Portable/corpus/ASan and Apple/web terminal success; installed Android terminal failure. Core implementation and diagnostics are reviewable, but full cross-board/native acceptance is not claimed."
+}

@@ -43,7 +43,7 @@
   },
   "required_native_assertions": 65,
   "root_cause_fix_claimed": false,
-  "actual_Android_compile_runtime": "Pending changed-code CI; no local Android SDK is present.",
+  "actual_Android_compile_runtime": "Actually built and installed at71b778f;13 host gates passed. Native core scope failed at first20-second MetadataParserService readiness wait before remote core work; owned APK cleanup confirmed. See platform-71b778f.json.",
   "authorities": [
     {
       "url": "https://developer.android.com/tools/logcat",
@@ -61,5 +61,6 @@
       "use": "ANR, Java/native crash, signal/low-memory and other reasons are distinct; an am instrument shortMsg alone cannot classify them."
     }
   ],
-  "remaining": "Wait for the exact changed-code native run and inspect actual crash/exit/phase evidence. Prior c156 core20 is not full65 acceptance."
+  "remaining": "Original all65 acceptance remains unpassed at71; saved phase/exit/crash data localizes this run to bind readiness without proving cold-start/callback/Binder root cause.",
+  "platform_receipt": "platform-71b778f.json"
 }

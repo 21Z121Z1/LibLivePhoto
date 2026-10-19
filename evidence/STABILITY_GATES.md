@@ -115,6 +115,14 @@ own-package exit-history snapshots before cleanup, plus instrumentation status
 phases and the final receipt in stdout. These diagnostics do not classify a
 crash without evidence or alter the original runtime assertions/deadlines.
 
+The follow-up actually executed at71b778f: all portable, corpus, ASan and
+Apple/web gates passed. Android compiled/installed, then the first isolated
+MetadataParserService readiness exceeded20 seconds with zero core assertions.
+Its final stdout receipt confirms cleanup. Dedicated crash entries belong to
+Bluetooth; package exit records show teardown after the caught timeout.
+[Latest source-bound evidence](platform-71b778f.json) preserves this failed
+native gate and does not infer the earlier metadata-process failure's cause.
+
 Source byte budgets bound inputs and copied payloads, not all allocator/runtime
 overhead. Process memory, caller concurrency and operating-system limits still
 matter. Cancellation cannot interrupt synchronous Rust work inside a native
