@@ -100,6 +100,7 @@ name = "liblivephoto-bridge"
 version = "0.1.0"
 dependencies = [
  "liblivephoto",
+ "liblivephoto-format",
  "serde_json",
  "wasm-bindgen",
 ]
