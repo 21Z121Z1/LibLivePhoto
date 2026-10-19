@@ -54,8 +54,15 @@ and HDR properties, exact tkhd matrices, coded sample-entry dimensions, and
 audio version/sample-size declarations. `inspect_video_sample_descriptions`
 provides these facts for standalone MP4/MOV inputs under cumulative budgets.
 AAC AudioSpecificConfig supplies object type, sample rate and channel count.
-Channel configuration zero remains unknown because PCE parsing is absent.
-QuickTime v2/wave audio, codec-level VUI/SEI interpretation and full decoder
+Channel configuration zero is interpreted for the bounded AAC-LC PCE subset:
+front/side/back SCE/CPE plus LFE declarations supply the channel count; data and
+coupling elements do not. Raw ASC/comment bytes and declared tags survive.
+Core-coder dependencies, GA extensions, non-LC/SBR-present PCE and unfamiliar
+trailing syntax are unsupported. An explicit no-SBR sync suffix is recognized.
+QuickTime mp4a entry versions0/1 can use direct esds or one bounded wave with
+unique esds, matching frma and final null marker (optional zero mp4a marker).
+Conflicting/mixed descriptors, unknown children and esds versions are rejected
+for interpretation. QuickTime v2, codec-level VUI/SEI and full decoder
 conformance remain outside this inspection contract. Raw sample-entry audio
 fields and AAC declarations are distinct facts; the library does not reconcile
 all possible disagreements between them.
@@ -78,8 +85,9 @@ edits and never selects a closest frame. Sample dimensions are observed facts:
 the source gives no fixed resolution requirement. AAC48/96kHz and the literal
 44000Hz are checked exactly;44100Hz is Unsupported because the public page says
 44kHz, with no silent reinterpretation. A caller capability contract can still
-explicitly permit44100. PCE, QuickTime v2/wave and unfamiliar codec declarations
-remain unsupported by this optional profile. No bitstream/pixel certification
+explicitly permit44100. Supported LC/PCE and wave declarations participate in
+this optional profile; QuickTime v2, extended/unfamiliar syntax and unsupported
+codec declarations remain explicit limits. No bitstream/pixel certification
 or native-device compatibility is inferred from its report.
 
 CLI/C/JNI expose the read-only `conformance` operation for one immutable input:
@@ -113,7 +121,15 @@ ICC profiles remain opaque bytes. CICP primaries, transfer, matrix and range are
 explicit fields. Transfer codes 16 and 18 identify signaled PQ/HLG; absent or
 uninterpreted color metadata does not mean SDR. Primary HEIF property order,
 unknown properties, codec configuration and raw HDR properties are retained.
-ICC interpretation, gain-map application and HDR pixel rendering are absent.
+An optional `inspect_icc_structure(profile)` borrows the exact raw ICC profile
+and tag extents, measured from that profile's byte0. Pass the extracted or
+reassembled ICC bytes, not the enclosing JPEG/HEIF. `validate_icc_structure`
+and `conformance` profile `icc-structure-v4.4` check selected ICC.1:2022 header,
+exact length and bounded tag topology, including full shared extents and padding.
+Unknown/private tags remain raw; other versions report Unsupported. Date/class/
+PCS semantics, required tags, profile-ID hashes, LUT interpretation and colour
+rendering are not certified. Default preservation does not run this as a writer
+repair or normalize original ICC bytes. Gain-map/HDR rendering remains absent.
 The [normative/source/runtime map](evidence/NORMATIVE_CONFORMANCE.md) records
 which clauses are supported subsets. HEIF self-contained construction0/1 is
 supported; construction2 and external item sources are rejected explicitly.
@@ -220,7 +236,7 @@ selects one sequential edit before scanning samples, avoiding a samples × edits
 allocation/work expansion; the existing aggregate extraction budgets remain.
 
 `remux::remove_metadata_tracks(movie, ids)` is explicit opt-in deletion. Only
-unique metadata track IDs are accepted. The operation rejects fragmented/indexed
+unique metadata track IDs are accepted. The operation rejects fragmented/segment-indexed
 movies, track references and unsupported movie-level boxes. It retains original
 media data and appends an active `moov`, with before/after track validation.
 Its report lists removed and retained IDs. Unreferenced sample bytes remain in
@@ -233,7 +249,11 @@ Additional `remux::import_tracks`, `remove_tracks`, `optimize`,
 They rewrite/promote chunk offsets, preserve encoded samples and exact timing,
 allocate unique imported IDs and report metadata sidecars/discarded bytes.
 Unreferenced media stays retained unless compaction is explicitly allowed.
-Fragmented/indexed/external/reference-bearing unknown contracts are rejected.
+The additional nonfragmented index layout is stz2 (version0, widths4/8/16),
+mutually exclusive with stsz. Existing stsc/stco/co64, exact timing and
+self-contained-mdat checks remain. Rewrites retain packed stz2 bytes while
+promoting/relocating chunk offsets. Segment indexes (sidx), fragmentation,
+external references and unknown offset-bearing contracts remain rejected.
 Pinned MP4CopyTrack/optimizer/delete comparisons cover real H.264 B frames, AAC,
 existing Apple metadata and hvc1. See `scripts/mp4_differential.py`.
 

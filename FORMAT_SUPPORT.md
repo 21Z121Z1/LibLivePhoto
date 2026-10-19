@@ -40,3 +40,9 @@ No Oplus native writer or semantic role for stream2 is added. See the
 
 The repository contains synthetic test vectors and hashes of external originals.
 It does not redistribute the external photos or proprietary components.
+
+Round3 adds optional ICC4.4 envelope checks, AAC-LC PCE channel declarations and
+entry-version0/1 wave/esds inspection, plus one nonfragmented index alternative:
+stz2 widths4/8/16. These are bounded syntax/preservation contracts, not full ICC/
+AAC semantics, colour/audio rendering or native Gallery support. See
+[exact scope and execution](evidence/HANDOFF_ROUND3_20261019.md).

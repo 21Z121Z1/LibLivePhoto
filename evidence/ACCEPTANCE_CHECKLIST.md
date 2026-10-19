@@ -10,7 +10,16 @@ remain in [GOOGLE_COMPLETE_INVENTORY.md](GOOGLE_COMPLETE_INVENTORY.md), includin
 source/header/implementation/test authority. This list adds delivery/acceptance
 gates; it does not remove or replace those rows.
 
-Current all-platform baseline **4d02be46804c13c19657bbd6d865342f6be816b7**
+Latest code **7cc8f3316fd0031f574edfdb31ba2f331372a995** adds the scoped
+ICC4.4/AAC-LC-PCE-wave/stz2 contracts. [Round3 receipt](syntax-contracts-7cc8f33.json)
+records Linux223/default and all-feature, actual CLI/C/JNI, public-original2,
+153065 ASan executions, targeted reference26, unchanged consumer replay and
+WASM compilation. [Handoff](HANDOFF_ROUND3_20261019.md) distinguishes compiled,
+executed and unrun platforms. Mobile lifecycle, desktop non-Linux and browser
+runtime CI were deliberately not rerun;4d02be4 below remains historical platform
+evidence and does not certify the changed implementation.
+
+Historical all-platform baseline **4d02be46804c13c19657bbd6d865342f6be816b7**
 passed all three workflows/eight jobs: Linux/macOS211 and Windows210 per
 default/all-feature run, public originals2, actual C/JNI/release consumers,
 ASan2114027, Android core20/metadata11/lifecycle16/concurrency18 and cleanup,

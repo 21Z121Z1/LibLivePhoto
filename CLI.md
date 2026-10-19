@@ -57,5 +57,19 @@ Sidecars are published beside the main result and are not native Gallery claims.
 
 The optimizer/importer is bounded to validated standalone layouts. It reports
 unreferenced media/padding and source metadata sidecars. Unsupported references,
-fragmentation, indexes or unknown offset contracts are explicit failures; a passing
+fragmentation, segment indexes (sidx) or unknown offset contracts are explicit failures; a passing
 support query is not universal MP4 compatibility. Read [the acceptance checklist](evidence/ACCEPTANCE_CHECKLIST.md).
+
+ICC structure queries take raw ICC data, not the enclosing image:
+
+```sh
+llp conformance profile.icc --options-json '{"profile":"icc-structure-v4.4"}'
+```
+
+The scoped report distinguishes unsupported versions from a checked4.4 envelope;
+unknown/private payloads remain uninterpreted. AAC-LC/PCE and the bounded
+QuickTime wave/esds subset appear in parse sample descriptions and optional
+conformance checks. Full ICC/AAC rendering is not certified. Nonfragmented stz2
+indexes (4/8/16-bit) now work with the bounded optimizer/import/removal contracts;
+sidx/fragmented/external combinations remain failures. See
+[round3 source and execution](evidence/HANDOFF_ROUND3_20261019.md).

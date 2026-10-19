@@ -5,12 +5,21 @@ This inventory extends the earlier core-only assessment. It is an open work list
 not a completion claim. The first implementation and receipts remain available
 at `88e0fdd92fb9ff7bb963b64e6676e4ec1d73b0d4`.
 
-Current verified platform baseline is **4d02be46804c13c19657bbd6d865342f6be816b7**:
+Latest code **7cc8f3316fd0031f574edfdb31ba2f331372a995** adds the scoped
+ICC4.4/AAC-LC-PCE-wave/stz2 contracts. [Round3 receipt](syntax-contracts-7cc8f33.json)
+records Linux223/default and all-feature, actual CLI/C/JNI, public-original2,
+153065 ASan executions, targeted reference26, unchanged consumer replay and
+WASM compilation. [Handoff](HANDOFF_ROUND3_20261019.md) distinguishes compiled,
+executed and unrun platforms. Mobile lifecycle, desktop non-Linux and browser
+runtime CI were deliberately not rerun;4d02be4 below remains historical platform
+evidence and does not certify the changed implementation.
+
+Historical all-platform baseline is **4d02be46804c13c19657bbd6d865342f6be816b7**:
 [three successful terminal workflows](platform-4d02be4.json), eight jobs/seven
 artifact digests, Linux/macOS211 and Windows210 default/all-feature tests,
 public originals2, actual three-host SDK consumers, installed Android65 with
 confirmed cleanup, macOS11, actual iOS26.2 and Node4/Chrome7. Three ASan targets
-completed2114027 executions without crashes. [Latest handoff](HANDOFF_ROUND2_20261019.md)
+completed2114027 executions without crashes. [Round2 handoff](HANDOFF_ROUND2_20261019.md)
 records the bounded result and remaining gaps. The preceding7affb28 baseline
 also passed all workflows; both historical Android failures remain unexplained.
 New vivo UUID extraction has six authored regressions, two independent

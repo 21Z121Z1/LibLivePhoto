@@ -40,3 +40,13 @@ source is copied, translated, linked or executed as a production dependency.
 Source licenses, identities and failed transfers are recorded in
 [syntax-round3-sources.json](syntax-round3-sources.json). Actual execution remains
 separate from this pre-implementation contract.
+
+## Actual scoped completion
+
+[7cc8f33 execution](syntax-contracts-7cc8f33.json) and the
+[round3 handoff](HANDOFF_ROUND3_20261019.md) record Linux223/default and
+all-feature, actual C/JNI/CLI17-packet checks, public-original2 and matching
+production-object ASan153065/reference26/consumer/WASM verification.
+Non-Linux/mobile/browser runtime and release-package consumers were not rerun;
+this does not reuse4d02be4 as acceptance of changed source. Unsupported
+versions/extensions/remux combinations and full rendering/semantics stay open.

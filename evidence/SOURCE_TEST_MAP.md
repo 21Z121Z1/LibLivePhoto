@@ -13,11 +13,15 @@ runs20 same-input selections against the exact
 Expected ctts/edit/after-end differences are asserted; Google's output is not
 used as an unconditional correctness oracle.
 
-Latest exact execution is [4d02be4](platform-4d02be4.json), with
+Historical all-platform execution is [4d02be4](platform-4d02be4.json), with
 [85 actually run differential cases](differential-4d02be4.json). The reference
 framework's99-pass counter includes one explicit HEVC encoder early return;
 it does not establish reference pixel-encoding coverage. Lossless HEIF original
 preservation and native runtime gates have separate recorded tests.
+
+Latest scoped cloud implementation is [7cc8f33](syntax-contracts-7cc8f33.json):
+Linux223/default and all-feature plus actual CLI/C/JNI/packet checks. WASM is
+compiled only; mobile and non-Linux runtime gates retain their historical SHAs.
 
 ## Per-operation input/output distinctions
 
@@ -60,6 +64,9 @@ The pinned public header is at the repository root, `libmotionphoto_api.h`.
 | P07 (extra) | No pinned Google provider; [round2 source/license ledger](VENDOR_RESEARCH_ROUND2.md); [independent stream hashes/extents](vendor-vivo-stream-observations.json) | `inspect_vivo_media_extensions`, `MotionPhoto::vivo_media_extensions`, optional `vivo_media` provider; movie-relative borrowed extents projected to source-mapped extraction blocks | [six UUID/stream cases](../crates/liblivephoto/tests/vivo_media.rs); [both independent originals](../crates/liblivephoto/tests/fixtures.rs); actual C/JNI opaque-payload vector; asset-input ASan | ftyp-first contiguous snapshots only; unique top-level UUID framing, limits and exact aggregate consumption checked first. Ordered duplicate keys/unknown tags/raw JSON retained. No inferred imageTime unit, pixel role, pairing proof, writer or Gallery acceptance. Static decompilation was not copied or linked. |
 | R01–R04 | [MP4 builder public class](https://github.com/google/libmotionphoto/blob/12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3/lib/core/motion_photo/includes/motion_photo_mp4/motion_photo_mp4_file_builder.h#L52); [track copy internal use](https://github.com/google/libmotionphoto/blob/12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3/lib/core/motion_photo/src/motion_photo_mp4/motion_photo_mp4_file_builder.cc#L211); [optimization support/deletion](https://github.com/google/libmotionphoto/blob/12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3/lib/core/motion_photo/src/motion_photo_mp4/motion_photo_mp4_file_builder.cc#L319) | `track_summary`, `import_tracks`, `remove_tracks`, `optimize`, `optimization_support`, packet/timing APIs | [remux_complete](../crates/liblivephoto/tests/remux_complete.rs); [frame_timing](../crates/liblivephoto/tests/frame_timing.rs); [metadata_contract](../crates/liblivephoto/tests/metadata_contract.rs); six-case `mp4_differential.py` | Class helpers are public and internally used by builder/Moments; no generic copy facade is inferred. Rust explicit general import is bounded. Google hvc1 guard/copy time shift differ; unknown/reference/fragmented contracts rejected. |
 | C01–C04 / J01–J04 / A01–A04 | [CLI functions](https://github.com/google/libmotionphoto/blob/12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3/lib/core/motion_photo/includes/motion_photo_builder/function.h); [Java sources](https://github.com/google/libmotionphoto/tree/12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3/lib/java); [Android service/AIDL sources](https://github.com/google/libmotionphoto/tree/12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3/lib/android/src/main) | `llp`, maintained shared JSON/LLP1, C ABI, Java/JNI, four FD services | [CLI tests](../crates/liblivephoto-cli/tests/commands.rs); [shared protocol](../crates/liblivephoto-interface/tests/protocol.rs); [JVM smoke](../java/src/test/java/org/liblivephoto/NativeSmoke.java); [installed service scopes](../android/src/test/java/org/liblivephoto/android/ServiceAcceptance.java) | Host package/JNI proof and installed Android runtime are separate. Original Google Java/JNI ABI/protobuf compatibility is not promised. |
+| X01 (extra) | [ICC.1:2022](https://archive.color.org/specification/ICC.1-2022-05.pdf) selected §§7.1–7.4; [source/license ledger](syntax-round3-sources.json) | `inspect_icc_structure`, `validate_icc_structure`, raw-profile `icc-structure-v4.4` conformance | [ICC3 cases](../crates/liblivephoto/tests/icc_structure.rs), actual CLI/C/JNI malformed/unsupported/preservation/budget checks | Scoped envelope only; unknown/private bytes retained, other versions unsupported; full header/tag semantics and colour rendering unverified. |
+| X02 (extra declarations) | Pinned FDK2.0.3 primary ASC reader and FFmpeg n7.1 MOV reader/writer in [source ledger](syntax-round3-sources.json) | `AacConfiguration::program_config`, sample descriptions, capability plan, G08 declaration report | [AAC6 cases](../crates/liblivephoto/tests/aac_pce.rs), real owned silent AAC/PCE/wave, ffprobe and actual CLI/C/JNI | LC-only GA subset, versions0/1 wave; core dependency/GA extension/SBR-present/non-LC/unknown children/v2 remain unsupported. No complete AAC or speaker/rendering certification;44100 ambiguity unchanged. |
+| R05 (stz2 only) | Official MPEG ISO14496-12 edition7/2022 [conformance grammar](https://github.com/MPEGGroup/FileFormatConformance/blob/767a5bcb9fa4841d1b3bb0ca112a6e7d4c6bf067/data/standard_features/14496-12/boxes.json) and reference SampleSizeAtom | Existing track inspection/packet/frame/remux paths now share bounded stsz/stz2 size views | [three index cases](../crates/liblivephoto/tests/stz2_remux.rs), [real CLI packet/index checker](../scripts/test_syntax_contracts.py), remux ASan | Version0 widths4/8/16 only; duplicate/mixed tables fail. Encoded bytes, exact stts/ctts and packed indexes retained; segment indexes/fragments/external/unknown offset contracts remain rejected. |
 
 ## Stability and native acceptance
 
@@ -77,7 +84,7 @@ required declaration/order rules from recommended temporal correspondence.
 [Ten core cases](../crates/liblivephoto/tests/google_video_conformance.rs) bind
 positive/negative/unsupported/preservation and aggregate allocation checks;
 [protocol](../crates/liblivephoto-interface/tests/protocol.rs), CLI and actual
-C/JNI smoke calls bind the maintained request. PCE/QT-v2/wave, complete codec
+C/JNI smoke calls bind the maintained request. Non-LC/extended PCE, QT-v2, complete codec
 syntax and the page's44kHz/44100Hz ambiguity remain explicit limits.
 
 See [STABILITY_GATES.md](STABILITY_GATES.md) for public-range preflight, JSON and
