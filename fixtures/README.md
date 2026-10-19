@@ -17,6 +17,15 @@ It tests C/JNI transport and preservation; it is not original-device or Gallery
 interoperability evidence. `cargo run -p liblivephoto --example binding_fixtures
 -- NEW_DIRECTORY` reproduces the binding vectors using CREATE_NEW.
 
+`vivo-stream-motion.jpg` combines the same owned JPEG/H.264 demo with separately
+authored UUID framing, duplicate opaque keys and a neutral CameraAlbum footer.
+SHA256:`78c40253278409fa8818c3f6f56a81a356aa52d3c711101cca2f08d9cb8cce36`.
+It exercises actual C/JNI metadata transport and byte identity, not a native vivo
+writer or Gallery. The generator reproduces all six inputs; the previous five
+remain byte-for-byte unchanged. Public-original tests separately verify both
+independent vivo files and all31 stream payloads in each; those originals are
+not committed or packaged.
+
 Fetch and verify the public corpus:
 
 ```sh

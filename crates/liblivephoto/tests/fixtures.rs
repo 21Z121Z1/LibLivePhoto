@@ -113,6 +113,48 @@ fn real_corpus_parses_validates_extracts_and_preserves_all_source_bytes() {
                     "missing original UUID association: {path}"
                 );
             }
+            let extensions = p.vivo_media_extensions().unwrap().unwrap();
+            assert_eq!(extensions.streams.len(), 31);
+            assert!(!extensions.duplicate_keys);
+            assert_eq!(
+                extensions.footer.as_ref().unwrap().raw_json,
+                footer.raw_json
+            );
+            assert_eq!(
+                extensions
+                    .streams
+                    .iter()
+                    .map(|s| s.raw_payload.len())
+                    .sum::<usize>(),
+                if path.ends_with("01.jpg") {
+                    516066
+                } else {
+                    509296
+                }
+            );
+            let projection = collection
+                .decoded
+                .iter()
+                .find(|d| d.provider == "vivo_media")
+                .unwrap();
+            assert_eq!(projection.value["streamSemanticsInterpreted"], false);
+            let records = projection.value["streams"].as_array().unwrap();
+            assert_eq!(records.len(), 31);
+            for (record, stream) in records.iter().zip(&extensions.streams) {
+                let mut payload = Vec::new();
+                collection
+                    .extract_block(
+                        record["blockIndex"].as_u64().unwrap() as usize,
+                        &data,
+                        &mut payload,
+                        16 * 1024 * 1024,
+                    )
+                    .unwrap();
+                assert_eq!(
+                    payload, stream.raw_payload,
+                    "original stream bytes changed: {path}"
+                );
+            }
         }
         for r in p.resources() {
             let mut bytes = Vec::new();

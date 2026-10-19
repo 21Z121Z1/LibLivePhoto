@@ -43,8 +43,10 @@ mod scoring_time;
 pub use scoring_time::*;
 mod timeline;
 mod video_metadata;
+mod vivo_media;
 pub use metadata_samples::*;
 pub use video_metadata::*;
+pub use vivo_media::*;
 #[path = "vendor/oplus/topology.rs"]
 mod topology;
 mod tracks;

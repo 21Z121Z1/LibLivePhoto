@@ -157,6 +157,24 @@ unknown stream is called depth, no ID equality proves capture pairing, and raw
 variant has static/synthetic evidence only. This adds no native vendor writer or
 Gallery playback/editing claim. See [vendor evidence and gaps](evidence/VENDOR_RESEARCH_20261019.md).
 
+`inspect_vivo_media_extensions(movie)` and `MotionPhoto::vivo_media_extensions()`
+read top-level `vivoMediaEStream`/`vivoMediaExtInfo` UUIDs. Both independent vivo
+originals contain31 stream records. The API borrows exact payloads and reports
+ordered numeric keys, opaque encoding tags, directory/framing ranges and the
+existing CameraAlbum footer. Duplicate keys remain separate records. Unknown
+tags do not become depth, portrait, gyro or rendering semantics; footer time
+units and pair uniqueness remain unverified. Method ranges are relative to the
+original movie, while provider `vivo_media` maps extractable `vivo.stream-payload`,
+directory and footer-box blocks to the enclosing source snapshot. Path/fd/range
+metadata calls and C/JNI share this adapter. Standalone container inspection is
+not movie validation or native Gallery acceptance. Malformed optional vendor
+metadata produces diagnostics while the original container trailer remains
+extractable. Multiple known UUIDs require an explicit association and fail.
+Limits are256MiB input,65536 top-level boxes,4096 streams/one of each known UUID
+and16MiB aggregate stream payload; metadata collections also retain their
+existing4096-block/16MiB cumulative bounds. No native writer was added. See
+[independent source and original-byte evidence](evidence/VENDOR_RESEARCH_ROUND2.md).
+
 `agtm_at(MediaTime)` returns original metadata sample bytes, track/sample IDs,
 presentation interval and decoded version-0 baseline fields. It reads validated
 sample tables and honors `ctts`. Explicit `it35`/T.35 signaling establishes the

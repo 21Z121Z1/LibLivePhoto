@@ -32,6 +32,29 @@ pub fn camera_album_envelope(prefix: &[u8], json: &[u8], id: &[u8; 28], tail55: 
 pub fn full(kind: &[u8; 4], payload: &[u8]) -> Vec<u8> {
     boxed(kind, &[vec![0; 4], payload.to_vec()].concat())
 }
+/// Independently authored opaque stream-framing vector, never a native writer.
+pub fn vivo_stream_box(records: &[(u32, u8, &[u8])]) -> Vec<u8> {
+    let mut payload = b"vivoMediaEStream".to_vec();
+    for (_, _, data) in records {
+        payload.extend(b"streamdata");
+        payload.extend(*data);
+    }
+    for (key, encoding, data) in records {
+        payload.extend(b"streaminfo");
+        payload.extend(key.to_be_bytes());
+        payload.push(*encoding);
+        payload.extend((data.len() as u32).to_be_bytes());
+    }
+    payload.extend(b"streamcount");
+    payload.extend((records.len() as u16).to_be_bytes());
+    boxed(b"uuid", &payload)
+}
+
+pub fn vivo_footer_box() -> Vec<u8> {
+    boxed(b"uuid", &[b"vivoMediaExtInfo".to_vec(), camera_album_envelope(b"vivo",
+        br#"{"version":2202,"com.android.camera.imageTime":31,"com.android.camera.livephoto":"synthetic-camera-id-00000000","opaque":1.234567890123456789e100}"#,
+        b"synthetic-camera-id-00000000", false)].concat())
+}
 fn words(values: &[u32]) -> Vec<u8> {
     values.iter().flat_map(|v| v.to_be_bytes()).collect()
 }

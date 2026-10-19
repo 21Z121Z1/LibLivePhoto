@@ -274,6 +274,7 @@ impl MetadataEngine {
                 "oplus_olive",
                 "honor_live_photo",
                 "camera_album",
+                "vivo_media",
             ]
             .contains(&n)
             || self.providers.iter().any(|p| p.name() == n)
@@ -340,7 +341,7 @@ impl MetadataEngine {
                         identifier: &str,
                         extents: Vec<ByteRange>,
                         header_extents: Vec<ByteRange>|
-         -> Result<(), Error> {
+         -> Result<usize, Error> {
             let size = extents
                 .iter()
                 .try_fold(0usize, |sum, r| {
@@ -384,7 +385,7 @@ impl MetadataEngine {
                 raw_bytes,
                 raw_complete: buffered == size,
             });
-            Ok(())
+            Ok(blocks.len() - 1)
         };
         if data.starts_with(&[255, 216]) {
             let end =
@@ -485,7 +486,88 @@ impl MetadataEngine {
                 )?],
             )?;
         }
+        let parsed_motion = MotionPhoto::parse_with_handlers(
+            Input::SingleFile(data),
+            ParseOptions::compatible(),
+            options,
+        );
+        let mut vivo_projection = None;
+        if options.allows("vivo_media") {
+            if let Ok(photo) = &parsed_motion {
+                if photo.motion_video().source_index == 0 {
+                    if let Ok(movie) = photo.motion_video_bytes() {
+                        match crate::inspect_vivo_media_extensions(movie) {
+                            Ok(Some(extension)) => {
+                                let mapped =
+                                    |r| subrange(&photo.motion_video().extents, r, movie.len());
+                                let mut block_index = None;
+                                if let Some(directory) = extension.stream_directory_extent {
+                                    block_index = Some(push(
+                                        "PROPRIETARY",
+                                        "vivo.stream-directory",
+                                        mapped(directory)?,
+                                        Vec::new(),
+                                    )?);
+                                }
+                                let mut records = Vec::with_capacity(extension.streams.len());
+                                for stream in &extension.streams {
+                                    let mut headers = mapped(stream.framing_extent)?;
+                                    headers.extend(mapped(stream.directory_extent)?);
+                                    let payload = mapped(stream.payload_extent)?;
+                                    let index = push(
+                                        "PROPRIETARY",
+                                        "vivo.stream-payload",
+                                        payload.clone(),
+                                        headers,
+                                    )?;
+                                    records.push(json!({"key":format!("{:08x}",stream.key),"encodingTag":stream.encoding,
+                                        "blockIndex":index,"payloadExtents":payload.into_iter().map(range_json).collect::<Vec<_>>(),
+                                        "semantic":"opaque"}));
+                                }
+                                if let Some(footer_box) = extension.footer_box_extent {
+                                    let index = push(
+                                        "PROPRIETARY",
+                                        "vivo.footer-box",
+                                        mapped(footer_box)?,
+                                        Vec::new(),
+                                    )?;
+                                    block_index = block_index.or(Some(index));
+                                }
+                                let footer = if let Some(f) = extension.footer.as_ref() {
+                                    Some(json!({"version":f.version,
+                                        "imageTime":f.image_time.map(|n|n.to_string()),"imageTimeUnit":"unverified",
+                                        "identifierAgreement":format!("{:?}",f.identifier_agreement),
+                                        "rawJson":std::str::from_utf8(f.raw_json).map_err(|_| Error::InvalidResource)?}))
+                                } else {
+                                    None
+                                };
+                                vivo_projection = Some(DecodedMetadata {
+                                    provider: "vivo_media".into(),
+                                    block_index,
+                                    value: json!({"streams":records,"duplicateKeys":extension.duplicate_keys,
+                                        "footer":footer,"pairingVerified":false,"streamSemanticsInterpreted":false}),
+                                    motion_declaration: false,
+                                    video_extents: Vec::new(),
+                                });
+                            }
+                            Ok(None) => {}
+                            Err(error)
+                                if movie.windows(16).any(|w| {
+                                    w == b"vivoMediaEStream" || w == b"vivoMediaExtInfo"
+                                }) =>
+                            {
+                                diagnostics.push(format!("vivo_media: {error}"));
+                            }
+                            Err(_) => {} // Unrelated vendor trailers are not vivo declarations.
+                        }
+                    }
+                }
+            }
+        }
         let mut decoded = Vec::new();
+        if let Some(projection) = vivo_projection {
+            decoded.push(projection);
+        }
         for (index, b) in blocks.iter().enumerate() {
             if b.kind == "XMP" {
                 if options.allows("oplus_olive") {
@@ -612,11 +694,7 @@ impl MetadataEngine {
                     "rawJson":std::str::from_utf8(metadata.raw_json).map_err(|_| Error::InvalidResource)?}),
             });
         }
-        let verified_motion = match MotionPhoto::parse_with_handlers(
-            Input::SingleFile(data),
-            ParseOptions::compatible(),
-            options,
-        ) {
+        let verified_motion = match parsed_motion {
             Ok(_) => true,
             Err(e) => {
                 if decoded.iter().any(|d| d.motion_declaration) {

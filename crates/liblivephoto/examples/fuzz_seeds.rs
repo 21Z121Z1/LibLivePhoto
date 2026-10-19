@@ -15,6 +15,7 @@ fn main() -> std::io::Result<()> {
             ("score-empty", vec![0xc0, 0]),
             ("camera-album",[vec![255,216,255,217],common::camera_album_envelope(b"vivo",br#"{"version":2202,"com.android.camera.imageTime":31,"com.android.camera.livephoto":"synthetic-camera-id-00000000"}"#,b"synthetic-camera-id-00000000",false)].concat()),
             ("camera-album55",[vec![255,216,255,217],common::camera_album_envelope(b"vivo",br#"{"version":2202,"opaque":["unchanged",1.23456789e100]}"#,b"synthetic-camera-id-00000000",true)].concat()),
+            ("vivo-media",[common::movie(1000,1),common::vivo_stream_box(&[(7,255,b"opaque"),(7,10,b"second")]),common::vivo_footer_box()].concat()),
             ("heif-idat", common::heif(b"avif")),
             (
                 "heif-colr-pair",

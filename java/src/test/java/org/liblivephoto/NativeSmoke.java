@@ -41,6 +41,9 @@ public final class NativeSmoke {
     try{Json.parse(dense.toString());throw new AssertionError("JSON node budget ignored");}catch(IOException expected){check(expected.getMessage().contains("node limit"),"aggregate JSON node diagnostic");}
     char[] hugeNumber=new char[1025];Arrays.fill(hugeNumber,'9');
     try{Json.parse(new String(hugeNumber));throw new AssertionError("JSON number length budget ignored");}catch(IOException expected){check(expected.getMessage().contains("number length limit"),"JSON numeric allocation diagnostic");}
-    System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded streamed envelope, AGTM image/video/input parity, source-unverified collection classification and provider controls");
+    NativeResult vivo=engine.metadata(Input.bytes(Files.readAllBytes(bindings.resolve("vivo-stream-motion.jpg"))));check(vivo.success&&Boolean.TRUE.equals(vivo.metadata.get("verifiedMotion")),"vivo vector actual movie verification");boolean foundVivo=false;
+    for(Object item:(List<?>)vivo.metadata.get("decoded")){Map<?,?> decoded=(Map<?,?>)item;if("vivo_media".equals(decoded.get("provider"))){Map<?,?> value=(Map<?,?>)decoded.get("value");List<?> streams=(List<?>)value.get("streams");check(streams.size()==3&&Boolean.TRUE.equals(value.get("duplicateKeys"))&&Boolean.FALSE.equals(value.get("streamSemanticsInterpreted"))&&Boolean.FALSE.equals(value.get("pairingVerified")),"ordered opaque streams without semantic or pair inference");Map<?,?> first=(Map<?,?>)streams.get(0);int index=((Number)first.get("blockIndex")).intValue();Map<?,?> block=(Map<?,?>)((List<?>)vivo.metadata.get("blocks")).get(index);check("00ff6f7061717565".equals(block.get("rawBytesHex")),"vivo stream byte identity through JNI");foundVivo=true;}}
+    check(foundVivo,"vivo provider available through maintained JNI metadata");
+    System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded envelope, AGTM, collection/provider controls and opaque vivo streams");
   }
 }

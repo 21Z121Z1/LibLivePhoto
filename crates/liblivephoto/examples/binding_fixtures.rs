@@ -56,12 +56,36 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let camera_album = [still.to_vec(), common::camera_album_envelope(b"vivo",
         br#"{"version":2202,"com.android.camera.imageTime":31,"com.android.camera.livephoto":"synthetic-camera-id-00000000","opaque":1.234567890123456789e100}"#,
         b"synthetic-camera-id-00000000", false)].concat();
+    let vivo_movie = [
+        include_bytes!("../../../web/public/demo/motion.mp4").to_vec(),
+        common::vivo_stream_box(&[
+            (0xdec0de01, 255, b"\0\xffopaque"),
+            (0xdec0de01, 10, b"second"),
+            (3, 0, b""),
+        ]),
+        common::vivo_footer_box(),
+    ]
+    .concat();
+    let vivo_photo = MotionPhoto::parse(
+        Input::Parts {
+            still,
+            movie: &vivo_movie,
+            presentation: MediaTime::new(13, 16),
+        },
+        ParseOptions::strict(),
+    )?
+    .plan(TargetProfile::AndroidJpeg, WritePolicy::default())
+    .execute()?;
     for (name, bytes) in [
         ("agtm-video.mp4", movie.as_slice()),
         ("agtm-motion.jpg", output.files[0].bytes.as_slice()),
         ("agtm-raw.bin", agtm.as_slice()),
         ("collection.json", collection.as_slice()),
         ("camera-album.jpg", camera_album.as_slice()),
+        (
+            "vivo-stream-motion.jpg",
+            vivo_photo.files[0].bytes.as_slice(),
+        ),
     ] {
         File::options()
             .write(true)
