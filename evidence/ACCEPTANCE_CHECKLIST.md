@@ -18,6 +18,14 @@ All three exact-SHA workflows completed successfully: [hosts/corpus/ASan](https:
 Later changes must supply their own execution evidence. Remaining implementation
 and external acceptance requirements are tracked in [REMAINING_WORK.md](REMAINING_WORK.md).
 
+Post-baseline code checkpoint **76c25e42022c73fb2b5dc7f15fb4ec47cc669796**
+also completed all three exact-SHA workflows. Its [execution receipt](standards-edit-76c25e4.json)
+binds171 Rust tests, two explicitly run public-fixture tests, three-host native
+SDK consumers, actual SE3/iOS26.2 and Android65-assertion processes, and the new
+standards/edit regressions. One private-original analysis test remains unrun.
+Later evidence-only edits preserve the recorded code trees; their own CI status
+must still be checked independently.
+
 Stability is a hard gate for all boards. See [STABILITY_GATES.md](STABILITY_GATES.md)
 for malformed ranges, cumulative allocation/copy bounds, FFI ownership,
 cancellation, failure rollback and the limits of each runtime acceptance claim.

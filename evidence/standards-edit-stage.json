@@ -67,7 +67,7 @@
   "raw_agtm_differential_cases": 12,
   "limits": [
     "Local Swift/Android SDK runs unavailable; current exact-SHA CI is pending.",
-    "Three original-fixture tests are ignored locally and run explicitly in fixture CI.",
+    "Three tests are ignored in default/all-feature runs: two public-fixture tests execute in fixture CI; one analysis-only private-original test remains unexecuted and is not redistributed.",
     "ISO2025 text is provided and selected sections are readable through Library; container transfer failed CONNECT403, no local body.",
     "No universal Google/XMP/HEIF/UWA/native Gallery/Photos compliance claim."
   ]

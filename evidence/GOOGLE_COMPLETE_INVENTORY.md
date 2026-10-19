@@ -28,6 +28,11 @@ iOS26.2 process gates; it does not establish physical arm64/Gallery/Photos
 acceptance or resolve earlier iOS26.5 startup failures. The
 [current acceptance list](ACCEPTANCE_CHECKLIST.md) and [remaining work](REMAINING_WORK.md)
 supersede historical checkpoint priorities below.
+The [76c25e4 continuation](standards-edit-76c25e4.json) independently passed all
+three workflows with171 Rust tests, public-fixture2 and native processes. It
+adds exact AGTM unit-rate edit selection, fixes HEIF mirror/absolute-item
+preservation and XMP padding output, and binds the
+[normative clauses](NORMATIVE_CONFORMANCE.md) to positive/negative tests.
 
 | ID | Public capability / shipped interface | Google authority | Current implementation and status |
 | --- | --- | --- | --- |

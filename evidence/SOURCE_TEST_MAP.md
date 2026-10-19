@@ -6,6 +6,12 @@ not README samples. Status and actual execution SHA remain in the
 [acceptance checklist](ACCEPTANCE_CHECKLIST.md), stage receipts and CI.
 The separate [normative map](NORMATIVE_CONFORMANCE.md) distinguishes format
 requirements from pinned-source parity and Apple system acceptance.
+The [76c25e4 execution receipt](standards-edit-76c25e4.json) covers the added
+standards/edit regressions. [Timed metadata differential](../scripts/timed_metadata_differential.py)
+runs20 same-input selections against the exact
+[Google reader primitive](https://github.com/google/libmotionphoto/blob/12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3/lib/core/motion_photo/src/motion_photo_mp4/mp4_box_reader.cc#L218).
+Expected ctts/edit/after-end differences are asserted; Google's output is not
+used as an unconditional correctness oracle.
 
 ## Per-operation input/output distinctions
 

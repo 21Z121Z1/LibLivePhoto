@@ -13,7 +13,10 @@ contract. It is **not** a complete Google, XMP, BMFF, HEIF or Apple conformance
 certifier. `MediaCapabilities` is caller-supplied and optional. A rejected valid
 layout can be an unsupported subset rather than a malformed standard file.
 The [baseline receipt](stable-baseline-4848e5f.json) certifies only its SHA;
-post-baseline code and the new tests require their own execution receipt.
+the [76c25e4 receipt](standards-edit-76c25e4.json) independently records the new
+code/tests, exact-SHA native processes and all three successful workflows.
+H05's later body read and tightened coverage statement are tracked in the
+access receipt; they do not change the executed code.
 
 ## Authorities and edition boundaries
 
@@ -81,7 +84,7 @@ Both positive and negative bindings are given; an untested condition is a gap.
 | H02 ISO23008-12:2025 §6.5.1, property sequence | `media::inspect_still`, original ipma/ipco retention | [standards_contract](../crates/liblivephoto/tests/standards_contract.rs): `heif_mirror_axes_and_order_match_asymmetric_coordinate_landmarks`; [media_contract](../crates/liblivephoto/tests/media_contract.rs): `heif_primary_property_order_hdr_signaling_and_unknown_properties_survive_build` | Orthogonal transforms follow association order. Raw descriptive/unknown essential properties are retained, not rendered or universally validated; preserving an input's order is not a claim that every input is a conforming writer output. |
 | H03 ISO23008-12:2025 §6.5.10.2–.3, irot | `OrthogonalTransform`, transform property decoder | Same asymmetric/order test, including invalid reserved bits | Supported 90-degree CCW facts in x-right/y-down coordinates. No pixel rotation/crop renderer. |
 | H04 ISO23008-12:2025 §6.5.12.2–.3, imir | `media::inspect_still` mirror mapping | Same test: each axis, reversed association order, invalid bits and exact retained properties | Axis0 exchanges top/bottom; axis1 left/right. Corrected the old reversed interpretation. This is also consistent with [libavif's public header](https://github.com/AOMediaCodec/libavif/blob/main/include/avif/avif.h); not inferred solely from a translated axis label. |
-| H05 ISO23008-12:2025 §6.5.5, color information | `ColorDescription`, retained colr/CICP/ICC bytes | [media_contract](../crates/liblivephoto/tests/media_contract.rs): `all_exif_orientations_and_icc_survive_android_and_existing_apple_paths`, `heif_primary_property_order_hdr_signaling_and_unknown_properties_survive_build` | Partial observed facts/preservation. Color rendering, ICC interpretation, tone maps and mastering-display processing are not verified. |
+| H05 ISO23008-12:2025 §6.5.5.1–.3, color information | `ColorDescription`, retained colr/CICP/ICC bytes | [media_contract](../crates/liblivephoto/tests/media_contract.rs): `all_exif_orientations_and_icc_survive_android_and_existing_apple_paths`, `heif_primary_property_order_hdr_signaling_and_unknown_properties_survive_build` | Library body actually read at lines1097–1133. Partial facts/preservation only: the clause limits paired ICC+nclx declarations and refers syntax/semantics to ColourInformationBox in ISO14496-12. Current code does not certify colr count/pairing or primaries/transfer2 restrictions; referenced BMFF body, rendering, ICC interpretation and tone-map processing are not verified. |
 | H06 ISO23008-12:2025 Table3 / broader brands | bounded box/item parser | Existing malformed box/iloc count/extent tests and ASan campaign | Supported subset only. Table transcription/brand requirements are not used to invent absent fields or claim full mif1/HEIF/sequence/derived-image decoding. Full local materialization and unread/ambiguous clauses remain pending. |
 
 The metadata payload helper caps referenced copies at16MiB/4096 extents before

@@ -63,6 +63,12 @@ before scanning samples, avoiding samples×edits amplification. Raw packet media
 times and scoring-payload timestamps remain distinct; unsupported scoring edit
 validation, metadata fragmentation and non-unit rates fail explicitly. New
 positive/negative bindings are in [NORMATIVE_CONFORMANCE.md](NORMATIVE_CONFORMANCE.md).
+The [76c25e4 receipt](standards-edit-76c25e4.json) records171 default/all-feature
+tests, an explicitly executed public corpus pair of tests, unchanged XDRemux
+contract replay, real C/JNI and three-host packaged consumers, all four Android
+scopes and the iOS26.2 Swift/Rust process. The private-original analysis test is
+not executed. Local ASan ran1179105 cases; exact-SHA CI ASan ran1541136,
+each at60 seconds requested per target/61 seconds actual, with no crash.
 
 | Boundary | Retained limit / ownership | Verification |
 | --- | --- | --- |
