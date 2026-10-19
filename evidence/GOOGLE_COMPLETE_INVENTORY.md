@@ -34,6 +34,29 @@ adds exact AGTM unit-rate edit selection, fixes HEIF mirror/absolute-item
 preservation and XMP padding output, and binds the
 [normative clauses](NORMATIVE_CONFORMANCE.md) to positive/negative tests.
 
+Code `91fc38065d90f09ad971a89097cc022d20bebae6` adds H05's selected color
+rules, explicit scoring-media-time projection, optional G08/G09 declarations
+and bounded Android startup diagnostics. Local default/all-feature runs each
+passed197 tests, with public fixture2 executed separately,85 same-input
+comparisons,1322483 ASan executions, actual C/JNI/CLI, unchanged XDRemux replay
+and seven Chromium tests. [Exact source/run receipt](conformance-91fc380.json)
+and [full differential receipts](differential-91fc380.json) keep native CI status
+separate. Its Linux/macOS/Windows, corpus/ASan and Apple/web workflows passed;
+Android packaging passed but actual acceptance failed during APK installation,
+before any service scope. [Install failure and inaccessible saved diagnostics](android-install-91fc380.json)
+remain explicit; host fault-injection markers are not native passes.
+
+Code `8dbe8300c0915dc0c921fbbbabb4b219577f84da` adds bounded CameraAlbum
+raw-footer inspection and metadata blocks, with eight independent regressions
+and both existing vivo originals. Default/all-feature205, public-fixture2,
+provider differential38, actual C/JNI, unchanged XDRemux replay and asset ASan95130
+passed locally. [Exact source/command receipt](vendor-footer-8dbe830.json) and
+[five-vendor evidence matrix](VENDOR_RESEARCH_20261019.md) distinguish original
+bytes, static inference, listing-only versions and absent native acceptance.
+The preceding Android diagnostics change makes install results visible in job
+logs and suppresses simulated host success output; no guest-startup root-cause
+fix is claimed. New platform execution remains a separate gate for these changes.
+
 | ID | Public capability / shipped interface | Google authority | Current implementation and status |
 | --- | --- | --- | --- |
 | N01 | Parse path, memory, fd/range; MIME, directory, padding, exact cover time | `libmotionphoto_api.h` ParseMotionPhotoFrom*; `libmotionphoto_api.cc` | implemented/verified: Rust path/memory/fd/range plus CLI/JVM FileChannel and Android FD wrappers; per-wrapper budgets and descriptor ownership are explicit; installed Android runtime remains a separate gate |
@@ -51,6 +74,7 @@ preservation and XMP padding output, and binds the
 | P03 | Samsung SEF trailer and HEIC sefd/mpvd, raw MP4/mpv2/mpv3 offsets, keys/version | plugins/samsung_sef provider/proto/tests | raw/inline mpv2/mpv3/pointer and HEIF sefd/mpvd/stub layouts implemented and regression-tested; same-input raw/version/key/magic/length checks; writer remains direct JPEG only; native Gallery and wider original-device corpus are unverified |
 | P04 | Oplus OpCamera XMP attributes/elements, plain BMFF trailer, JXRS short/checksum/JSON-directory variants | plugins/oplus_olive provider/proto/tests | JPEG OpCamera/JXRS plain/short/checksum/JSON-directory reads implemented; container-independent OpCamera XMP covers HEIC metadata declarations; same-input canonical/alias and HEIF mpvd/no-mpvd cases; this does not promise all vendor Gallery behavior or native writers |
 | P05 | Honor/Huawei 20/40-byte LIVE footer, HiHonor_/LivePhoto_ TLV, sceneMode, metadata-only trailers | plugins/honor_live_photo provider/proto/tests | 20/40-byte LIVE and HiHonor_/LivePhoto_ TLV, sceneMode, metadata-only distinction and unknown raw records implemented; synthetic same-input decode/raw fields verified; legally redistributable original Honor device corpus and native acceptance remain absent |
+| P06 | Additional CameraAlbum raw trailer inspection (outside pinned Google providers) | Not a pinned Google capability; independent original-byte and static evidence in VENDOR_RESEARCH_20261019.md | Bounded43-byte terminal layout verified on two existing vivo originals;55-byte layout static/synthetic only. Raw JSON/block/declared integer and ID agreement are exposed. No inferred time unit, unique capture pairing, depth, native writer or Gallery compatibility claim. |
 | R01 | Inspect and preserve all movie tracks, sample descriptions, timing, metadata samples | MP4 reader/box reader, TrackIsAgtmMetadata, sample APIs | Raw packet CTS, exact frames and AGTM unit-rate empty/trim/repeat mapping implemented. Raw scoring fields retain declared-global-time validation; optional explicitly associated video-media-CTS projection reports repeats/trims/unspecified without rewriting payloads. Optional G08/G09 profile checks declarations/order/exact recommended correspondence. Non-unit/fragmented mapping and fractional destination conversions remain explicit unsupported/error cases. |
 | R02 | Copy/import selected tracks across files with reports | MotionPhotoMp4FileBuilder track-copy helpers | bounded general explicit import with unique IDs, exact movie-time mapping, byte verification and movie-metadata sidecars; pinned MP4CopyTrack comparison exposes a 1/8-second B-frame shift in reference copy while Rust retains source time; reference-bearing layouts rejected |
 | R03 | Delete metadata/selected tracks with reports | StripMetadataTrack and builder internals | explicit selected-track deletion with disposition reports and byte/time checks; pinned StripMetadataTrack and primary-builder deletion audited on existing metadata; referenced/unknown layouts rejected |

@@ -50,6 +50,12 @@ remains in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
   track API. The Java wire reader separately caps JSON at 1048576 values and
   numeric literals at 1024 characters before BigDecimal allocation, in addition
   to its length/depth/duplicate-key/UTF-8 checks.
+* CameraAlbum inspection accepts only exactly framed terminal layouts, with
+ 256MiB input,128KiB tail window,64KiB JSON,32 nesting levels and8192 structural
+ tokens. Duplicate keys (including Unicode aliases) and malformed known fields
+ fail explicitly. Raw JSON is returned unchanged, including opaque numeric text;
+ integer declarations do not imply time units, pairing or decoded auxiliary
+ stream semantics. Invalid optional metadata retains the original trailer.
 
 ## Existing bounded contracts retained
 
@@ -60,8 +66,11 @@ another box. The format metadata payload helper preflights all ranges and caps
 copied/repeated bytes at16MiB/4096 extents before allocating. AGTM unit-rate edit
 selection validates exact conversion/overflow and chooses one sequential edit
 before scanning samples, avoiding samples×edits amplification. Raw packet media
-times and scoring-payload timestamps remain distinct; unsupported scoring edit
-validation, metadata fragmentation and non-unit rates fail explicitly. New
+times and scoring-payload timestamps remain distinct. Raw Google scoring fields
+are validated directly as declared movie times. New explicit video-media-CTS
+projection requires caller-selected track IDs, reports repeated/trimmed/unknown
+fields and never rewrites payloads. Metadata fragmentation, non-unit rates and
+fractional destination ticks/microseconds fail explicitly. New
 positive/negative bindings are in [NORMATIVE_CONFORMANCE.md](NORMATIVE_CONFORMANCE.md).
 The [76c25e4 receipt](standards-edit-76c25e4.json) records171 default/all-feature
 tests, an explicitly executed public corpus pair of tests, unchanged XDRemux
@@ -78,10 +87,25 @@ each at60 seconds requested per target/61 seconds actual, with no crash.
 | Remux | Combined 256 MiB import inputs; unsupported offsets/references/layouts rejected; encoded packets verified after rewrite | Six same-input Google/ffprobe packet comparisons, track regression, remux fuzz target |
 | Metadata engine | Source 256 MiB, 4096 blocks, cumulative 16 MiB raw manifest bytes, 64 KiB prefixes for large coded/trailer blocks | Raw-block/range/serialization tests and 38-case pinned provider differential |
 | Timed metadata extraction | AGTM and score extraction each bound selected/copied payload across tracks to 16 MiB, 4096 samples and 65536 semantic records | Overlapping-interval/descriptor amplification regressions and seeded ASan target |
+| Scoring media-time projection |1MiB payload/65536 records;100000 source and100000 edited frames across selected video tracks; min(caller budget,65536) projected times, checked before per-score copies | Nine exact-domain/ctts/empty/trim/repeat/overflow/association/budget cases; raw score bits/unknown descriptors retained |
+| Optional color/video profiles | H05:4096 items/properties/rows/issues,65536 associations,16MiB referenced colors. Video:4096 descriptions,65536 properties,16MiB referenced property bytes,100000 aggregate edited frames | H05 five new regressions; G08/G09 ten core cases plus shared protocol/CLI/C/JNI requests. Violation/Unsupported/Recommendation are distinct; no decoder or device certification |
 | LLP1 protocol | 64 MiB header, 4096 files, cumulative 320 MiB envelope; consumers validate fields, UTF-8 and trailing bytes | Malformed/streamed protocol and native consumer tests |
 | Inspection / Java JSON | 100000 projected frames across tracks; Java reader 1048576 values and 1024-character numeric literals | Actual two-track manifest regression and JVM flat-tree/huge-number rejection |
 | Android service | Combined 32 MiB source, 64 KiB request; one worker/two queued operations; duplicated descriptors, reliable output pipe, callback-death/cancel cleanup | Actual installed APK gate; per-operation bounds are not a universal process-memory ceiling |
 | Android client | Two readers/eight queued reads, 160 MiB response cap, input descriptors borrowed and duplicated | Actual installed APK gate; complete envelope required before result publication |
+| Android acceptance readiness |120s/40 attempts for boot/package/activity plus clean package query; both ADB output streams/exit/timeout preserved;240s per scope and all65 original assertions retained | Twelve host fault-injection tests; unique run directories; only a confirmed owned APK is removed. Exit224 cannot mean package absence.541b609 pre-install failure remains an actual failed run, not a service pass |
+
+At91fc380, all three portable hosts, public fixtures, ASan and Apple/web passed;
+actual Android acceptance reached installation but failed before any scope.
+Its saved install-result artifact could not be transferred into this container
+(proxy CONNECT403), so the exact failure cause remains unknown.1753169 adds
+bounded install/service/logcat output directly to job logs and removes simulated
+host success markers. It changes neither timeouts nor required assertions and
+is not represented as a guest-startup fix. See [the exact failure receipt](android-install-91fc380.json).
+Code8dbe830 passed205 default/all-feature Rust tests, both public-fixture tests,
+38 provider comparisons, actual C/JNI and unchanged XDRemux replay locally.
+The changed asset parser ran95130 ASan cases in61 actual seconds with no crash;
+platform verification for this new code remains separately required.
 
 Source byte budgets bound inputs and copied payloads, not all allocator/runtime
 overhead. Process memory, caller concurrency and operating-system limits still

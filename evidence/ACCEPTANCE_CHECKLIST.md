@@ -26,6 +26,19 @@ standards/edit regressions. One private-original analysis test remains unrun.
 Later evidence-only edits preserve the recorded code trees; their own CI status
 must still be checked independently.
 
+Post-baseline `91fc380` passed197 default/all-feature tests on all three hosts,
+public-fixture2, ASan1587969, actual packaged C/JNI consumers,11 macOS tests,
+the iOS26.2 Swift/Rust process and4 Node/7 Chrome tests. Android packaging passed
+but actual acceptance failed at installation before any service scope; see
+[the terminal execution receipt](conformance-91fc380.json) and
+[the saved-diagnostics transfer blocker](android-install-91fc380.json).
+`8dbe830` then added bounded CameraAlbum raw inspection; local205/default and
+all-feature, public-fixture2, provider38, C/JNI, unchanged XDRemux and asset
+ASan95130 passed. [Exact local evidence](vendor-footer-8dbe830.json) is distinct
+from the new changed-code platform gate. Five-vendor facts and limits are in
+[VENDOR_RESEARCH_20261019.md](VENDOR_RESEARCH_20261019.md); no native Gallery
+acceptance or downloaded vendor APK execution occurred.
+
 Stability is a hard gate for all boards. See [STABILITY_GATES.md](STABILITY_GATES.md)
 for malformed ranges, cumulative allocation/copy bounds, FFI ownership,
 cancellation, failure rollback and the limits of each runtime acceptance claim.

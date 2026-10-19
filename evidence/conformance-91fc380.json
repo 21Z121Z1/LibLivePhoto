@@ -1,0 +1,416 @@
+{
+  "implementation_sha": "91fc38065d90f09ad971a89097cc022d20bebae6",
+  "baseline_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f",
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "branch": "codex/google-core-coverage-20261019",
+  "source_objects": {
+    "Cargo.toml": "31afd8e6a5e611174fc826613c4d91cb63bd8752",
+    "Cargo.lock": "05e5a92e2722074d64a35460b38ea706fcaa239e",
+    "crates": "648ae5045a01ba2303f93eab0b17d78b4a976461",
+    "fuzz": "71e3302fe55173db6cdaa20b2e8689651ae68a6a",
+    "scripts": "f2d4bcc39145e5649c93b46022487e7c9360aad1",
+    "java": "829b2f12a7fe6d20e7cc5d6cd397cba01164bdd7",
+    "android": "c25bbecd13c1f3aaef5bb6b9d5e6e971ecec1707",
+    "apple": "dfce4d6cfdda9bbc2ac7a6e15629931df3e749b4",
+    "web": "f195d780eba5305b4cef5817c8004b11b49e9ed6",
+    "native": "eec2f68cd192c1afdc76d67dcebbca800d9f08c9",
+    "fixtures": "207fc6e970cef99d8d23b9f2bfeb2d3f0781f149",
+    ".github/workflows": "472a032127d00194ae08945344c308b5992f2e7e"
+  },
+  "source_identity": "All production/test/harness/build/fixture inputs above refer to this exact code commit. Later evidence-only commits must match these objects; no new platform execution is inferred from their HEAD.",
+  "delivered": {
+    "H05": "Optional ISO2025 selected colr count/ICC+nclx pairing/paired2/2 checks across image items and all ipma boxes, preserving raw bytes.",
+    "scoring_time": "Direct declared-global-time validation remains distinct from explicit caller-associated pre-edit video-media-CTS projection; empty/trim/repeat/ctts/exactness/budgets handled without rewriting descriptors.",
+    "G08_G09": "Optional declaration/count/order checks; recommended rational frame correspondence; observed dimensions; Violation/Unsupported/Recommendation distinct.",
+    "Android_harness": "Bounded system-service and clean package-query readiness, both output streams/exit/timeout diagnostics, unique per-run evidence, all65 original assertions and confirmed owned-APK cleanup required."
+  },
+  "rust": {
+    "default": {
+      "passed": 197,
+      "failed": 0,
+      "ignored": 3
+    },
+    "all_features": {
+      "passed": 197,
+      "failed": 0,
+      "ignored": 3
+    },
+    "private_original_analysis_test": "ignored and not executed or redistributed",
+    "public_original_fixture_tests": {
+      "passed": 2,
+      "failed": 0,
+      "command": "cargo test --locked -p liblivephoto --test fixtures -- --ignored --nocapture"
+    },
+    "fmt_and_clippy": "passed; cargo fmt --all -- --check; cargo clippy --locked --workspace --all-targets --all-features -- -D warnings"
+  },
+  "host_harness_fault_injection": {
+    "android": 12,
+    "apple": 7,
+    "native_acceptance_claimed": false
+  },
+  "same_input_differential": {
+    "cases": 85,
+    "provider": 38,
+    "agtm": 12,
+    "score": 9,
+    "timed_metadata": 20,
+    "mp4": 6,
+    "full_receipts": "differential-91fc380.json",
+    "absolute_oracle_claimed": false
+  },
+  "pinned_reference_tests": {
+    "passed": 99,
+    "command": "/workspace/reference-build-make/bin/motion_photo_tests",
+    "cwd": "/workspace/reference-run",
+    "binary_sha256": "3f5f6b79eae3830922b29199c6b66695e87ef085b705d42cae127b8e4655597b"
+  },
+  "asan": {
+    "command": "bash scripts/fuzz.sh 60 evidence/local/final91-fuzz",
+    "sanitizer": "address",
+    "requested_seconds_per_target": 60,
+    "max_input_bytes": 1048576,
+    "rss_limit_mb": 2048,
+    "per_input_timeout_seconds": 5,
+    "targets": {
+      "asset_input": {
+        "executions": 77583,
+        "actual_seconds": 61,
+        "peak_rss_mb": 495,
+        "log_sha256": "1b36182b15ac455edd97c0e45204e9ab797eae8ee8d1eb7fb1d6231728593299"
+      },
+      "container_headers": {
+        "executions": 1024112,
+        "actual_seconds": 61,
+        "peak_rss_mb": 353,
+        "log_sha256": "13c53e49cb4fec5c1636036d44bdccebcf64b5233fe1f8a672cf19fc2b5f7907"
+      },
+      "remux": {
+        "executions": 220788,
+        "actual_seconds": 61,
+        "peak_rss_mb": 520,
+        "log_sha256": "7705018f3e8dad265965a6730305ff3a036a0bab6b5dffd27b497ad844827354"
+      }
+    },
+    "total_executions": 1322483,
+    "crashes": 0
+  },
+  "native_and_consumers": {
+    "C_ABI": "actual shared-library operations/ownership/exact time and new conformance diagnostics passed",
+    "JVM_JNI": "actual Java8 client/JDK21 shared library, memory/path/range/AGTM/cancel/32 lifetimes and new memory conformance diagnostics passed",
+    "XDRemux": {
+      "unchanged_test_replay_passed": 1,
+      "revision": "0688ea7d6270df52cc5968e2c36dd016f13bd31b",
+      "test_source_sha256": "aa3a154f0da02aa1bf79566f7439b2129b56f36dfc0a73c2a58ef225fb1b437b",
+      "full_product_build_claimed": false,
+      "repository_modified": false
+    },
+    "external_Rust": "probe/parse/extract/validate and Android->Apple->Android->Apple passed"
+  },
+  "web": {
+    "actual_wasm_build": "passed",
+    "node_tests": 4,
+    "actual_Chromium_tests": 7,
+    "physical_device_or_LPK_runtime_claimed": false
+  },
+  "commands_and_logs": {
+    "final91-agtm-diff.log": {
+      "sha256": "df4a0c1d49a13c209b383a2c2ee35da413063f447930c50c1c91c088c26c3154",
+      "bytes": 503
+    },
+    "final91-allfeatures-rust.log": {
+      "sha256": "0abd0965c641ec35e4b6e3750ec50e771edf8e05c79a7efdce7ce6711f31a79a",
+      "bytes": 24289
+    },
+    "final91-android-harness.log": {
+      "sha256": "e88110597dbb496c29a93e1520684142e7db4cb9fda4bc7a6fb44eac110c41aa",
+      "bytes": 2003
+    },
+    "final91-apple-harness.log": {
+      "sha256": "aee2b06ffa9fb992909c5a335bdf6ff4f0bbc09b63a013e9296d2095ef7bfabf",
+      "bytes": 7259
+    },
+    "final91-c-abi.log": {
+      "sha256": "b1c9f76d25021e5bee2b87859c3988075c2e76a5fe44762c4791c7d1a30ea347",
+      "bytes": 322
+    },
+    "final91-clippy.log": {
+      "sha256": "ee1d3fffa2022e962e63e0dbe4d35c9c198450a20c29fc09030f635dbb38bfcd",
+      "bytes": 72
+    },
+    "final91-default-rust.log": {
+      "sha256": "5c45db27b8bbdcfb5ae2a7d4bfc2ee011a79dba6d611f1723b9fe8ff7afceaf4",
+      "bytes": 24578
+    },
+    "final91-external-consumer.log": {
+      "sha256": "fdd744320db92ef920ef51b2015185dd9308b167b1d3c1338002730350ed2e1d",
+      "bytes": 196
+    },
+    "final91-fixture-cache.log": {
+      "sha256": "79610ce531ae385a3bf594acbe91867bfd588a8cc513d04e3606e7d680f6306a",
+      "bytes": 38
+    },
+    "final91-fixtures.log": {
+      "sha256": "c246ffe51dc79e2aa6106e605059e1cde6ec3b2a4d00de083ebed00191e01abc",
+      "bytes": 1333
+    },
+    "final91-fuzz-driver.log": {
+      "sha256": "90a771fbf5c541019df4929ddafbc0fc97f02ac5722be38d5c4231efa77eff19",
+      "bytes": 285153
+    },
+    "final91-google-tests.log": {
+      "sha256": "c9ffa0c58e34d7055fed472b32327cf280a55089b5550e9ec1adafbcd6ff3155",
+      "bytes": 23918
+    },
+    "final91-java.log": {
+      "sha256": "b52fab6ff458e75df1816a46a61268801fcca48ea125fe1decee6331bbae4d96",
+      "bytes": 699
+    },
+    "final91-mp4-diff.log": {
+      "sha256": "0c70349784aa8f7baa4250d67f954701e125d2ee57143df2644205cc1ace6944",
+      "bytes": 70
+    },
+    "final91-provider-diff.log": {
+      "sha256": "9d4ae16094ea5e8a783fc9ef49cd46d2f312d142fde2ba0a5bec059e3c7f0c9e",
+      "bytes": 75
+    },
+    "final91-score-diff.log": {
+      "sha256": "6a0a0e972854881152fda3178fe9aa5d14ddbb8ebcb8eae61646eb672f97523f",
+      "bytes": 72
+    },
+    "final91-timed-diff.log": {
+      "sha256": "3601999159057c0a615c2f84007b64a01e66c2bb5707e13dd4b0620590206853",
+      "bytes": 281
+    },
+    "final91-web-build.log": {
+      "sha256": "26958db9a8d8727dd7e033c744ea1b27b072a43d1e1e51e91f93236472cedfda",
+      "bytes": 689
+    },
+    "final91-web-chrome.log": {
+      "sha256": "9833f4cfdde69ad27e8151a9aa03c8999d0aedb852e85870da10e2adbdefc1fa",
+      "bytes": 1574
+    },
+    "final91-web-node.log": {
+      "sha256": "edc06279878a25d6df3132fd2b89d9cab1a090d5ab6406feb32a69ec2f867274",
+      "bytes": 536
+    },
+    "final91-xdremux.log": {
+      "sha256": "61c0e66290891c63a5acfa06bacdda2218077b61e007f531c27ba035097cda0f",
+      "bytes": 1078
+    }
+  },
+  "platform_runs": [
+    {
+      "id": 39280158439,
+      "name": "Verify independent format library",
+      "head_sha": "91fc38065d90f09ad971a89097cc022d20bebae6",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39280158439"
+    },
+    {
+      "id": 39280158419,
+      "name": "Android native services",
+      "head_sha": "91fc38065d90f09ad971a89097cc022d20bebae6",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39280158419"
+    },
+    {
+      "id": 39280158516,
+      "name": "Apple adapter and local web",
+      "head_sha": "91fc38065d90f09ad971a89097cc022d20bebae6",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39280158516"
+    }
+  ],
+  "platform_status_note": "Terminal exact-SHA results: portable/corpus/ASan and Apple/web passed; Android SDK packaging passed but the installed-runtime phase failed at APK installation, before all four service scopes. Earlier host fault-injection success markers are simulated and are not runtime passes. The inaccessible saved install result prevents a root-cause claim.",
+  "remaining_software": [
+    "AAC PCE, QuickTime-v2/wave and complete audio/codec bitstream interpretation.",
+    "Public44kHz versus44100Hz ambiguity, full ICC/BMFF color syntax, rendering/crop/VUI/SEI.",
+    "Non-unit/dwell/reverse edits, fragmented/external/indexed remux; no guessed projection or authoring."
+  ],
+  "external_boundaries": [
+    "Authorized physical-device Photos/Gallery/import/edit/render/capture/HDR and original Honor corpus remain absent.",
+    "Official Apple LPK transfer and ISO private materialization had proxy CONNECT403; no bypass or retry of denied transport. Authorized ISO Library clause reads were used."
+  ],
+  "excluded": [
+    "Moments construction",
+    "New Codex task/model/service-tier/fast-mode change",
+    "Merge/release/public deployment/upstream or XDRemux modification"
+  ],
+  "platform_jobs": [
+    {
+      "id": 118152675017,
+      "run_id": 39280158419,
+      "name": "sdk-and-services",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 118152674245,
+      "run_id": 39280158439,
+      "name": "Sanitizer and coverage campaign",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118152674642,
+      "run_id": 39280158439,
+      "name": "Portable (windows-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118152674651,
+      "run_id": 39280158439,
+      "name": "Portable (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118152674686,
+      "run_id": 39280158439,
+      "name": "Exact original fixture round trips",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118152674693,
+      "run_id": 39280158439,
+      "name": "Portable (macos-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118152674289,
+      "run_id": 39280158516,
+      "name": "apple",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118152674620,
+      "run_id": 39280158516,
+      "name": "web",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "platform_artifacts": [
+    {
+      "id": 12200477053,
+      "name": "android-service-evidence",
+      "run_id": 39280158419,
+      "size_in_bytes": 3737090,
+      "digest": "sha256:79e847798ef0dbd650543697a61e072ca84ccf691fb443601d01a79e78f6f0ac",
+      "body_materialized_in_container": false
+    },
+    {
+      "id": 12200815687,
+      "name": "native-sdk-macos-latest",
+      "run_id": 39280158439,
+      "size_in_bytes": 8924256,
+      "digest": "sha256:13c0f815e004d4c87c1d31162b8e458b85fcd4142d3cdada8761ecefb4612dcf",
+      "body_materialized_in_container": false
+    },
+    {
+      "id": 12199768782,
+      "name": "native-sdk-windows-latest",
+      "run_id": 39280158439,
+      "size_in_bytes": 7081137,
+      "digest": "sha256:fa5561722f2e34b8aa7472fe42f5b1c55156f50eeefbb90a906c5efd46e64d7a",
+      "body_materialized_in_container": false
+    },
+    {
+      "id": 12199668832,
+      "name": "sanitizer-coverage-logs",
+      "run_id": 39280158439,
+      "size_in_bytes": 190053,
+      "digest": "sha256:4ba5267aa7162ce1905413cbe2458fd200f15afc85d314fd005e387a76ab0bc6",
+      "body_materialized_in_container": false
+    },
+    {
+      "id": 12199257264,
+      "name": "native-sdk-ubuntu-latest",
+      "run_id": 39280158439,
+      "size_in_bytes": 9394659,
+      "digest": "sha256:0e0f2f7271837511e582462371caa29f58d2cf3f96e30ed4d6524fb966cd2641",
+      "body_materialized_in_container": false
+    },
+    {
+      "id": 12200965793,
+      "name": "apple-sdk-build",
+      "run_id": 39280158516,
+      "size_in_bytes": 22337806,
+      "digest": "sha256:363b310f3414dad2f7a7af43850d9008f765ff92485d5afe868a9162517348a1",
+      "body_materialized_in_container": false
+    },
+    {
+      "id": 12199007474,
+      "name": "web-browser-evidence",
+      "run_id": 39280158516,
+      "size_in_bytes": 393526,
+      "digest": "sha256:0675df9a3a8362f625338bac57e55265341b2176c37134f641b3c284ea797515",
+      "body_materialized_in_container": false
+    }
+  ],
+  "platform_actual_execution": {
+    "portable": {
+      "hosts": [
+        "Windows",
+        "Linux",
+        "macOS"
+      ],
+      "rust_default_per_host": {
+        "passed": 197,
+        "failed": 0,
+        "ignored": 3
+      },
+      "rust_all_features_per_host": {
+        "passed": 197,
+        "failed": 0,
+        "ignored": 3
+      },
+      "actual_C_JNI_and_packaged_SDK_consumers": true
+    },
+    "public_fixture_tests": {
+      "passed": 2,
+      "failed": 0,
+      "private_original_analysis_executed": false
+    },
+    "sanitizer": {
+      "asset_input": 74931,
+      "container_headers": 1331011,
+      "remux": 182027,
+      "total_executions": 1587969,
+      "requested_seconds_per_target": 60,
+      "actual_seconds_per_target": 61,
+      "crashes": 0
+    },
+    "apple": {
+      "macOS_Swift_tests": 11,
+      "actual_Swift_Rust_process": "passed",
+      "device": "iPhone SE (3rd generation)",
+      "runtime": "iOS26.2 (23C54)",
+      "compiler_simulator_sdk": "26.5",
+      "bootstatus_completed": true,
+      "owned_device_deleted": true,
+      "Photos_Gallery_acceptance": false
+    },
+    "web": {
+      "node_tests": 4,
+      "actual_Chrome_tests": 7
+    },
+    "android": {
+      "SDK_dual_ABI_AAR_APK_build": "passed",
+      "readiness": "passed before installation attempt",
+      "installation_confirmed": false,
+      "completed_service_scopes": 0,
+      "actual_service_assertions": 0,
+      "root_cause": "undetermined; install result body is not yet readable from the container",
+      "fake_host_markers_are_native_acceptance": false,
+      "receipt": "android-install-91fc380.json"
+    }
+  }
+}
