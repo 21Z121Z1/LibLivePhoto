@@ -7,6 +7,12 @@ S20 FE, S23 Ultra and Tab S9; SEF directory versions 106 and 107.
 Independent reference: [ExifTool Samsung](https://github.com/exiftool/exiftool/blob/2200871d9cef988051d2a99d67df3bda6cbb30a8/lib/Image/ExifTool/Samsung.pm).
 Confidence: high for the observed offsets; unresolved for autoplay and portrait use.
 
+Round7 [signed-package observations](SAMSUNG_APK_ROUND7.md) add version-scoped
+producer/consumer evidence from Gallery15.7.00.43 and MotionPhoto5.0.46, with
+actual APK sizes/hashes, successful v3 signature verification and explicit
+official-origin limits. This does not bind those packages to the older original
+photo corpus or establish physical Gallery acceptance.
+
 1. The last eight bytes contain a little-endian directory size and `SEFT`.
 2. The directory begins that size plus eight bytes before EOF. Its header is
    `SEFH`, a little-endian version, and a little-endian entry count.
@@ -28,7 +34,12 @@ Confidence: high for the observed offsets; unresolved for autoplay and portrait 
 The XDRemux JPEG fixtures contain a complete second BMFF payload named
 `MotionPhoto_AutoPlay`. The parser exposes it as `UnknownVideo`, with its own
 container and tracks. Its name does not establish a generic autoplay,
-substitution, depth or portrait role. Gallery selection remains unresolved.
+substitution, depth or portrait role. The measured Gallery15.7.00.43 helper
+prefers the separate AutoPlay range when `VideoReqInfo.isMotionSefPlay` is true
+and that range exists, then otherwise uses its primary-video helper. The flag's
+runtime assignment, feature gates and wider device/format applicability remain
+unverified. The library keeps explicit record-index extraction and its existing
+default unique-primary requirement.
 
 The JPEG writer emits a fresh directory with direct video payload. It retains
 unknown records byte-for-byte when the source has an SEF directory. It adjusts

@@ -4,6 +4,14 @@ The matrix separates producer, consumer, bytes and device evidence. The componen
 versions of a fixture must not be inferred from its device name or EXIF software.
 An unknown version remains unknown until a component package or runtime identifies it.
 
+The [round7 package ledger](vendor-round7-acquisition.json) now records real
+Samsung Gallery15.7.00.43 and MotionPhoto5.0.46 APK bodies and verified v3
+signatures. [Static findings](SAMSUNG_APK_ROUND7.md) establish a version-specific
+AutoPlay request condition and separate write/read tags. Their official firmware
+provenance is unverified, and they are not retrospectively assigned to any
+original photo below. Other families' unobtained packages remain distinct from
+listing-only facts; no refused target was retried or bypassed.
+
 | Family and version | Producer evidence | Consumer evidence | Original byte evidence | Limit |
 | --- | --- | --- | --- | --- |
 | Apple iPhone 15; component version unknown | Original HEIC/MOV pair | Public Photos resource-pair API | Matching identity, 820/600 time, five tracks | No Photos import/edit/export run |

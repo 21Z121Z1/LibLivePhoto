@@ -1,6 +1,19 @@
 # Complete Google interface inventory
 
 Reference: `google/libmotionphoto@12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3`.
+Round7 [Samsung APK research](SAMSUNG_APK_ROUND7.md) obtains two actual package
+bodies from a separate public firmware repository: signed Gallery15.7.00.43 and
+MotionPhoto5.0.46, total55189665bytes. Both pass apksigner v3 verification and
+match the separately supplied mirror certificate fingerprint; official OTA /
+certificate provenance remains unverified. Static bytecode confirms separate
+0x0a30/Data and0x0a33/AutoPlay write/read routes, a Gallery request-flag selection
+condition and standard XMP microsecond use. Two neutral regression controls
+cover type/name agreement and missing/zero/exact photo time. Production sources,
+public APIs, fixtures and workflow configuration stay unchanged from03d28dc;
+new-test execution is Linux-only. Other OEM semantic/physical gates remain open.
+[Acquisition](vendor-round7-acquisition.json), [method identity](vendor-round7-static-observations.json)
+and [local validation](vendor-round7-verification.json) retain their distinct scopes.
+
 Round6 tested source **03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b** closes the
 reference-harness and vendor transport acceptance gaps in the preceding round.
 [Handoff](HANDOFF_ROUND6_20261019.md), [local differential receipt](round6-local-verification.json)
