@@ -26,10 +26,15 @@ function equal(a, b) {
   return keys.length === others.length && keys.every(k => Object.hasOwn(b,k) && equal(a[k],b[k]));
 }
 function check(value, context) { if (!value) throw Error(context); }
-export async function runSyntaxContracts({load, process, label}) {
+export async function runSyntaxContracts({load, process, label, suite='syntax'}) {
   const manifestBytes = await load('cases.json');
   const manifest = JSON.parse(new TextDecoder().decode(manifestBytes));
   const digest = async bytes => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)), b => b.toString(16).padStart(2,'0')).join('');
+  const lock = JSON.parse(new TextDecoder().decode(await load('contract-suites.json')))[suite];
+  const count={syntax:42,vendor:13,'vendor-selection':20}[suite];
+  check(count!==undefined && lock.count===count && manifest.cases.length===count,'complete known suite');
+  check(await digest(manifestBytes)===lock.manifest_sha256,'locked suite manifest');
+  check(equal(manifest.cases.map(c=>c.id),lock.case_ids),'complete ordered case IDs');
   for (const [name, expected] of Object.entries(manifest.sha256)) {
     const hash = await digest(await load(name));
     check(hash === expected, `fixture hash ${name}`);

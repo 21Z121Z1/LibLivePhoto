@@ -1,3 +1,5 @@
 # The cross-platform acceptance receipt hashes the exact manifest bytes.
 fixtures/syntax/cases.json text eol=lf
 fixtures/vendor/cases.json text eol=lf
+fixtures/vendor-selection/cases.json text eol=lf
+fixtures/contract-suites.json text eol=lf

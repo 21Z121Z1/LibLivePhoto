@@ -227,6 +227,7 @@ fn execute(
         "unmapped",
         "pairId",
         "profile",
+        "samsungRecordIndex",
     ] {
         if v.get(key).is_some_and(|value| !value.is_string()) {
             return Err(format!("{key} must be a string"));
@@ -247,6 +248,57 @@ fn execute(
         }
     }
     let action = v["action"].as_str().ok_or("action required")?;
+    if let Some(value) = v.get("samsungRecordIndex") {
+        if action != "extract"
+            || !movie.is_empty()
+            || v.get("inputKind")
+                .is_some_and(|k| k.as_str() != Some("single"))
+            || v.get("resourceIds").is_some()
+            || v["still"].as_bool() == Some(true)
+            || v["xmp"].as_bool() == Some(true)
+            || v["video"].as_bool() == Some(false)
+            || v.get("time").is_some()
+            || v["strict"].as_bool() == Some(true)
+        {
+            return Err("samsungRecordIndex is an exclusive single-input original-video extraction selector".into());
+        }
+        let index = value
+            .as_str()
+            .ok_or("samsungRecordIndex must be a decimal string")?;
+        if index.is_empty() || index.len() > 20 || !index.bytes().all(|b| b.is_ascii_digit()) {
+            return Err("samsungRecordIndex must be a nonnegative decimal string".into());
+        }
+        let index = index
+            .parse::<usize>()
+            .map_err(|_| "samsungRecordIndex overflows the supported index")?;
+        let options = handlers(v)?;
+        if !options.allows("samsung_sef") && !options.allows("samsung_video_inventory") {
+            return Err("Samsung record inspection is disabled".into());
+        }
+        let selected = (|| -> std::result::Result<_, MotionPhotoReadError> {
+            let inventory =
+                inspect_samsung_videos(primary)?.ok_or(MotionPhotoReadError::Unrecognized)?;
+            let video = inventory.select(Some(index))?;
+            let record = &inventory.records[index];
+            let mime = movie_container_mime(video.bytes)?;
+            Ok(ok(
+                json!({"samsungRecordIndex":index,"wireName":record.name,"wireKind":record.kind,
+                "extent":{"start":video.extent.lower_bound.to_string(),"end":video.extent.upper_bound.to_string()},
+                "declaredPrimaryRecords":inventory.declared_primary_records,"role":"uninterpreted",
+                "encodedBytesUnchanged":true,"selection":"explicit-record-index"}),
+                vec![OperationFile {
+                    name: format!("samsung-record-{index}.{}", ext(mime)),
+                    mime: mime.into(),
+                    resource_id: None,
+                    bytes: video.bytes.to_vec(),
+                }],
+            ))
+        })();
+        return Ok(match selected {
+            Ok(result) => result,
+            Err(error) => OperationResult::failure(code(&error), error),
+        });
+    }
     if !movie.is_empty()
         && matches!(
             action,

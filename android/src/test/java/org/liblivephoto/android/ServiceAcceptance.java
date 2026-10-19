@@ -96,7 +96,7 @@ public final class ServiceAcceptance extends Instrumentation {
     }
     private void runChecks() throws Exception {
         markPhase("instrumentation running");
-        if(!Arrays.asList("all","core","metadata","lifecycle","concurrency","syntax").contains(scope))throw new IllegalArgumentException("unknown acceptance scope");
+        if(!Arrays.asList("all","core","metadata","lifecycle","concurrency","syntax","vendor").contains(scope))throw new IllegalArgumentException("unknown acceptance scope");
         byte[] still=asset("cover.jpg"), movie=asset("motion.mp4"), motion=asset("motion-photo.jpg");
         File stillFile=file("own-still.bin",still,0), movieFile=file("own-movie.bin",movie,0), motionFile=file("own-motion-range.bin",motion,13);
         try (ParcelFileDescriptor stillFD=ParcelFileDescriptor.open(stillFile,ParcelFileDescriptor.MODE_READ_ONLY);
@@ -111,7 +111,7 @@ public final class ServiceAcceptance extends Instrumentation {
                 // parser processes. Conformance/remux are existing JNI actions,
                 // not Binder service capabilities; their transport is explicit.
                 NativeEngine engine=new NativeEngine(); AtomicInteger sequence=new AtomicInteger();
-                assertions+=SyntaxContracts.run(name->asset("syntax/"+name),(json,p,m)->{
+                assertions+=SyntaxContracts.run(name->asset("contract-suites.json".equals(name)?name:"syntax/"+name),(json,p,m)->{
                     String action=new org.json.JSONObject(json).getString("action");
                     MotionPhotoClient selected="parse".equals(action)?parser:"build".equals(action)?builder:"extract".equals(action)||"agtm".equals(action)?extractor:null;
                     if(selected==null) {
@@ -131,6 +131,30 @@ public final class ServiceAcceptance extends Instrumentation {
                 },"android-actual-jni-and-binder",(id,fields,files,sha)->{
                     Bundle passed=new Bundle();passed.putString("syntaxCase",id);passed.putInt("syntaxFields",fields);passed.putInt("syntaxFiles",files);passed.putString("syntaxManifestSha256",sha);sendStatus(1,passed);
                 });
+            }
+            if(scenario("vendor")) {
+                AtomicInteger sequence=new AtomicInteger();
+                for(String suite:Arrays.asList("vendor","vendor-selection")) {
+                    int expected="vendor".equals(suite)?13:20;
+                    assertions+=SyntaxContracts.run(name->asset("contract-suites.json".equals(name)?name:suite+"/"+name),(json,p,m)->{
+                        String action=new org.json.JSONObject(json).getString("action");
+                        MotionPhotoClient selected="metadata".equals(action)||"parse".equals(action)?parser:"extract".equals(action)?extractor:null;
+                        if(selected==null)throw new AssertionError("vendor acceptance requires real Binder, no JNI fallback: "+action);
+                        markPhase("vendor Binder suite="+suite+" action="+action+" remotePid="+selected.remoteProcessId());
+                        int serial=sequence.incrementAndGet();
+                        File primaryFile=file("own-vendor-primary-"+serial,p,13),secondaryFile=file("own-vendor-movie-"+serial,m,17);
+                        try(ParcelFileDescriptor primaryFD=ParcelFileDescriptor.open(primaryFile,ParcelFileDescriptor.MODE_READ_ONLY);
+                            ParcelFileDescriptor secondaryFD=ParcelFileDescriptor.open(secondaryFile,ParcelFileDescriptor.MODE_READ_ONLY)) {
+                            Os.lseek(primaryFD.getFileDescriptor(),3,OsConstants.SEEK_SET);
+                            NativeResult value=invoke(selected,SyntaxContracts.request(json),MotionPhotoClient.Source.range(primaryFD,13,p.length),m.length==0?null:MotionPhotoClient.Source.range(secondaryFD,17,m.length));
+                            if(Os.lseek(primaryFD.getFileDescriptor(),0,OsConstants.SEEK_CUR)!=3)throw new AssertionError("vendor caller cursor changed");
+                            return value;
+                        } finally {primaryFile.delete();secondaryFile.delete();}
+                    },"android-binder-"+suite,(id,fields,files,sha)->{
+                        Bundle passed=new Bundle();passed.putString("vendorSuite",suite);passed.putString("vendorCase",id);
+                        passed.putInt("vendorFields",fields);passed.putInt("vendorFiles",files);passed.putString("vendorManifestSha256",sha);sendStatus(1,passed);
+                    },expected);
+                }
             }
             Os.lseek(motionFD.getFileDescriptor(),7,OsConstants.SEEK_SET);
             MotionPhotoClient.Source source=MotionPhotoClient.Source.range(motionFD,13,motion.length);

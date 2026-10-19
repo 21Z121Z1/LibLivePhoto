@@ -23,4 +23,10 @@ guard !invalid.success else { fatalError("invalid bytes accepted") }
 let syntaxCases = try runSyntaxContracts(core: core, directory: URL(fileURLWithPath: CommandLine.arguments[5]), label: "ios-simulator-swift-c-abi")
 guard syntaxCases == 42 else { fatalError("new syntax vectors did not all execute") }
 print("IOS_SIMULATOR_SYNTAX passed: cases=\(syntaxCases)")
+let fixtures = URL(fileURLWithPath: CommandLine.arguments[5]).deletingLastPathComponent()
+for (suite, count) in [("vendor", 13), ("vendor-selection", 20)] {
+    let actual = try runSyntaxContracts(core: core, directory: fixtures.appendingPathComponent(suite), label: "ios-simulator-\(suite)", expectedCount: count)
+    guard actual == count else { fatalError("incomplete vendor suite \(suite)") }
+    print("IOS_SIMULATOR_VENDOR passed: suite=\(suite) cases=\(actual)")
+}
 print("IOS_SIMULATOR_SWIFT_RUST passed: linked static C ABI, exact time, original movie, complete AGTM, errors")

@@ -34,6 +34,14 @@ public final class SyntaxContracts {
         byte[] manifestBytes = reader.read("cases.json");
         String manifestDigest = digest(manifestBytes);
         Map<?,?> manifest = (Map<?,?>)Json.parse(new String(manifestBytes,StandardCharsets.UTF_8));
+        String suite=expectedCount==42?"syntax":expectedCount==13?"vendor":expectedCount==20?"vendor-selection":null;
+        check(suite!=null,"known acceptance suite required");
+        Map<?,?> locks=(Map<?,?>)Json.parse(new String(reader.read("contract-suites.json"),StandardCharsets.UTF_8));
+        Map<?,?> lock=(Map<?,?>)locks.get(suite);
+        check(((Number)lock.get("count")).intValue()==expectedCount,"locked suite count");
+        check(manifestDigest.equals(lock.get("manifest_sha256")),"locked manifest digest "+suite);
+        List<String> ids=new ArrayList<>();for(Object item:(List<?>)manifest.get("cases"))ids.add((String)((Map<?,?>)item).get("id"));
+        check(ids.equals(lock.get("case_ids"))&&ids.size()==expectedCount,"complete ordered case IDs "+suite);
         for (Map.Entry<?,?> entry : ((Map<?,?>)manifest.get("sha256")).entrySet())
             check(digest(reader.read((String)entry.getKey())).equals(entry.getValue()), "fixture hash "+entry.getKey());
         Map<String,NativeResult> previous = new LinkedHashMap<>();
@@ -85,6 +93,6 @@ public final class SyntaxContracts {
 
     public static void main(String[] args) throws Exception {
         Path directory = Paths.get(args[0]); NativeEngine engine = new NativeEngine();
-        run(name->Files.readAllBytes(directory.resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"packaged-jar-jni",(id,fields,files,sha)->{},args.length>1?Integer.parseInt(args[1]):42);
+        run(name->Files.readAllBytes(("contract-suites.json".equals(name)?directory.getParent():directory).resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"packaged-jar-jni",(id,fields,files,sha)->{},args.length>1?Integer.parseInt(args[1]):42);
     }
 }

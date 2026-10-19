@@ -96,6 +96,7 @@ def main():
     from syntax_contracts import CliCore,run_cases
     acceptance=run_cases(CliCore(cli),'cli-syntax')
     vendor_acceptance=run_cases(CliCore(cli),'vendor-cli',ROOT/'fixtures/vendor')
+    selection_acceptance=run_cases(CliCore(cli),'vendor-selection-cli',ROOT/'fixtures/vendor-selection')
     # Golden bytes only establish platform transport parity. Independently
     # demux each real-media golden and validate every indexed sample extent,
     # encoded hash, rational DTS/PTS/duration, including actual unused media.
@@ -118,7 +119,7 @@ def main():
         'tracked_diff_sha256':hashlib.sha256(subprocess.check_output(['git','diff','HEAD'],cwd=ROOT)).hexdigest(),
         'scope':'CLI ICC envelope and AAC-LC/PCE/wave; two-track real owned MOV converted to stz2. ffprobe demux DTS/PTS include its edit handling; raw stts/ctts preservation is also checked by Rust tests. No colour/audio rendering or device acceptance.',
         'source_sha256':original_hash,'stz2_tables':tables,'packets':legacy,'outputs':outputs,'calls':calls,
-        'acceptance':acceptance,'vendor_acceptance':vendor_acceptance,'independent_packet_checks':packet_checks,'actual_discarded_unreferenced_media_bytes':len(unused),
+        'acceptance':acceptance,'vendor_acceptance':vendor_acceptance,'selection_acceptance':selection_acceptance,'independent_packet_checks':packet_checks,'actual_discarded_unreferenced_media_bytes':len(unused),
         'ffprobe_version':subprocess.check_output(['ffprobe','-version'],text=True).splitlines()[0]}
     (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
     print('INDEPENDENT_PACKET_CONTRACTS_PASSED '+json.dumps({'implementation_sha':receipt['implementation_sha'],'outputs':len(packet_checks),'packets':sum(len(row['packets']) for row in packet_checks),'actual_discarded_media_bytes':len(unused),'ffprobe_version':receipt['ffprobe_version']}),flush=True)

@@ -4,6 +4,14 @@ Build/install with `cargo build --release -p liblivephoto-cli` or
 `cargo install --path crates/liblivephoto-cli --locked`. The binary is `llp`.
 Run `llp --help` for the complete options and per-operation input contract.
 
+For explicit read-only Samsung SEF video selection, including absent/ambiguous
+primary declarations, use `llp extract input.jpg --options-json '{"samsungRecordIndex":"0"}' --out new-selected`. The index is a decimal string
+and refers to a validated SEF record, not a ResourceId or playback role. This
+returns that original movie only; it does not repair/reassign the asset. It is
+exclusive with a second input, resourceIds, still/XMP outputs, time and strict
+asset-parser flags. Provider disable controls still apply. Ordinary parse/default
+extract keeps rejecting ambiguity. See the vendor-selection fixture contract.
+
 ```sh
 llp version
 llp parse motion.jpg

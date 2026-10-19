@@ -13,9 +13,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = 'org.liblivephoto.android.acceptance'
 SCOPES = {'core': 20, 'metadata': 11, 'lifecycle': 16, 'concurrency': 18, 'syntax': 50}
+SCOPES['vendor'] = 41  #13 unchanged vendor cases +20 selection/range cases +8 existing connection assertions.
+SUITE_LOCKS = json.loads((ROOT/'fixtures/contract-suites.json').read_text())
 SYNTAX_MANIFEST = ROOT/'fixtures/syntax/cases.json'
 SYNTAX_CASE_IDS = [case['id'] for case in json.loads(SYNTAX_MANIFEST.read_text())['cases']]
 SYNTAX_MANIFEST_SHA256 = hashlib.sha256(SYNTAX_MANIFEST.read_bytes()).hexdigest()
+assert SUITE_LOCKS['syntax']['case_ids']==SYNTAX_CASE_IDS and SUITE_LOCKS['syntax']['manifest_sha256']==SYNTAX_MANIFEST_SHA256
+assert {name:lock['count'] for name,lock in SUITE_LOCKS.items()}=={'syntax':42,'vendor':13,'vendor-selection':20}
 
 
 def string(value):
@@ -118,6 +122,16 @@ def verify_scope(scope, text):
         digests = re.findall(r'^INSTRUMENTATION_STATUS: syntaxManifestSha256=([^\r\n]+)', text, re.MULTILINE)
         if ids != SYNTAX_CASE_IDS or digests != [SYNTAX_MANIFEST_SHA256]*42:
             raise RuntimeError('actual Android syntax acceptance requires all42 individual cases in manifest order and the exact manifest SHA256')
+    if scope == 'vendor':
+        suites=re.findall(r'^INSTRUMENTATION_STATUS: vendorSuite=([^\r\n]+)',text,re.MULTILINE)
+        ids=re.findall(r'^INSTRUMENTATION_STATUS: vendorCase=([^\r\n]+)',text,re.MULTILINE)
+        digests=re.findall(r'^INSTRUMENTATION_STATUS: vendorManifestSha256=([^\r\n]+)',text,re.MULTILINE)
+        expected_suites=[];expected_ids=[];expected_hashes=[]
+        for suite in ['vendor','vendor-selection']:
+            lock=SUITE_LOCKS[suite]
+            expected_suites += [suite]*lock['count'];expected_ids += lock['case_ids'];expected_hashes += [lock['manifest_sha256']]*lock['count']
+        if suites!=expected_suites or ids!=expected_ids or digests!=expected_hashes:
+            raise RuntimeError('actual Android vendor acceptance requires all13+20 Binder cases with ordered IDs and locked manifest digests')
 
 
 def diagnostic_snapshot(adb, filename, label, command, timeout):
@@ -173,6 +187,7 @@ def main(argv=None):
     print('Android acceptance evidence: ' + str(out), flush=True)
     adb = Adb([args.adb] + (['-s', args.serial] if args.serial else []), out)
     receipt = {'result': 'not_executed', 'completed_scopes': [], 'assertions': 0,
+               'legacy_assertions':0,
                'gallery_acceptance': False, 'readiness_deadline_seconds': 120,
                'readiness_max_attempts': 40, 'per_scope_deadline_seconds': 240,
                'per_operation_deadline_seconds': 40, 'installation_confirmed': False,
@@ -216,6 +231,8 @@ def main(argv=None):
             verify_scope(scope, text)
             receipt['completed_scopes'].append(scope)
             receipt['assertions'] += count
+            if scope!='vendor':receipt['legacy_assertions']+=count
+            else:receipt['vendor_suites']={name:SUITE_LOCKS[name] for name in ['vendor','vendor-selection']}
         for name, property_name in [('device', 'ro.product.model'), ('sdk', 'ro.build.version.sdk'),
                                     ('abi', 'ro.product.cpu.abi'), ('hardware', 'ro.hardware')]:
             receipt[name] = adb.require(['shell', 'getprop', property_name]).strip()
@@ -232,7 +249,7 @@ def main(argv=None):
                 receipt['cleanup_error'] = 'owned acceptance package removal did not confirm success'
                 if failure is None:
                     failure = RuntimeError(receipt['cleanup_error'])
-        receipt['result'] = 'passed' if failure is None and receipt['assertions'] == sum(SCOPES.values()) and receipt['owned_package_removed'] else 'failed'
+        receipt['result'] = 'passed' if failure is None and receipt['assertions'] == sum(SCOPES.values()) and receipt['legacy_assertions']==115 and receipt['owned_package_removed'] else 'failed'
         path.write_text(json.dumps(receipt, indent=2) + '\n')
         print('ANDROID_HARNESS_RUNTIME_RECEIPT ' + json.dumps(receipt), flush=True)
     if failure is not None:

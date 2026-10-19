@@ -4,6 +4,49 @@ use serde_json::json;
 mod common;
 
 #[test]
+fn explicit_samsung_selection_does_not_parse_or_rewrite_an_ambiguous_asset() {
+    let source = include_bytes!("../../../fixtures/vendor-selection/distinct-ambiguous.jpg");
+    let a = include_bytes!("../../../fixtures/vendor-selection/movie-a.mp4");
+    let b = include_bytes!("../../../fixtures/vendor-selection/movie-b.mp4");
+    assert!(!process(r#"{"action":"extract"}"#, source, &[]).success);
+    for (index, expected) in [
+        ("0", a.as_slice()),
+        ("2", b.as_slice()),
+        ("3", a.as_slice()),
+    ] {
+        let result = process(
+            &json!({"action":"extract","samsungRecordIndex":index}).to_string(),
+            source,
+            &[],
+        );
+        assert!(result.success, "{:?}", result.metadata);
+        assert_eq!(result.files.len(), 1);
+        assert_eq!(result.files[0].bytes, expected);
+        assert_eq!(result.metadata["role"], "uninterpreted");
+        assert_eq!(result.files[0].resource_id, None);
+    }
+    for request in [
+        json!({"action":"extract","samsungRecordIndex":0}),
+        json!({"action":"metadata","samsungRecordIndex":"0"}),
+        json!({"action":"extract","samsungRecordIndex":"0","resourceIds":[0]}),
+        json!({"action":"extract","samsungRecordIndex":"0","time":{"value":"1","timescale":1}}),
+    ] {
+        let result = process(&request.to_string(), source, &[]);
+        assert!(!result.success);
+        assert!(result.files.is_empty());
+        assert_eq!(result.metadata["error"]["code"], "invalidRequest");
+    }
+    assert!(
+        !process(
+            r#"{"action":"extract","samsungRecordIndex":"0"}"#,
+            source,
+            a
+        )
+        .success
+    );
+}
+
+#[test]
 fn conformance_profiles_report_rule_kinds_and_reject_ambiguous_associations() {
     let image = common::heif_with_properties(&[
         common::boxed(b"colr", b"profraw-icc"),

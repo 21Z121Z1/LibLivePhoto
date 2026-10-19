@@ -6,13 +6,21 @@ import LibLivePhotoApple
 
 // Test-only acceptance shared by XCTest and the actual iOS Simulator process.
 // Every operation calls the maintained Swift -> C ABI -> Rust bridge.
-func runSyntaxContracts(core: RustCoreBridge, directory: URL, label: String) throws -> Int {
+func runSyntaxContracts(core: RustCoreBridge, directory: URL, label: String, expectedCount: Int = 42) throws -> Int {
     func read(_ name: String) throws -> Data { try Data(contentsOf: directory.appendingPathComponent(name)) }
     func require(_ condition: Bool, _ message: String) throws {
         if !condition { throw NSError(domain: "SyntaxContracts", code: 1, userInfo: [NSLocalizedDescriptionKey: message]) }
     }
     let manifestBytes = try read("cases.json")
     let manifest = try JSONSerialization.jsonObject(with: manifestBytes) as! [String: Any]
+    let suites = [42: "syntax", 13: "vendor", 20: "vendor-selection"]
+    guard let suite = suites[expectedCount] else { throw NSError(domain: "SyntaxContracts", code: 2, userInfo: [NSLocalizedDescriptionKey: "unknown suite"]) }
+    let locks = try JSONSerialization.jsonObject(with: Data(contentsOf: directory.deletingLastPathComponent().appendingPathComponent("contract-suites.json"))) as! [String: [String: Any]]
+    let lock = locks[suite]!
+    let manifestDigest = SHA256.hash(data: manifestBytes).map { String(format: "%02x", $0) }.joined()
+    try require(manifestDigest == (lock["manifest_sha256"] as! String), "locked manifest \(suite)")
+    let ids = (manifest["cases"] as! [[String: Any]]).map { $0["id"] as! String }
+    try require(ids == (lock["case_ids"] as! [String]) && ids.count == expectedCount && (lock["count"] as! Int) == expectedCount, "complete ordered IDs \(suite)")
     for (name, expected) in manifest["sha256"] as! [String: String] {
         let digest = SHA256.hash(data: try read(name)).map { String(format: "%02x", $0) }.joined()
         try require(digest == expected, "fixture hash \(name)")
@@ -51,7 +59,7 @@ func runSyntaxContracts(core: RustCoreBridge, directory: URL, label: String) thr
         previous[id] = result
         print("SYNTAX_CONTRACT_CASE \(label) \(id) fields=\(facts.count) files=\(files.count)")
     }
-    try require(cases.count == 42, "complete syntax suite required")
+    try require(cases.count == expectedCount, "complete acceptance suite required")
     let digest = SHA256.hash(data: manifestBytes).map { String(format: "%02x", $0) }.joined()
     print("SYNTAX_CONTRACTS_PASSED entry=\(label) cases=\(cases.count) manifest_sha256=\(digest)")
     return cases.count

@@ -144,6 +144,8 @@ class RuntimeGates(unittest.TestCase):
                         return result('INSTRUMENTATION_RESULT: shortMsg=Process crashed.\nINSTRUMENTATION_CODE: 0\n')
                     count = harness.SCOPES[scope] - int(scope == bad_scope)
                     syntax = ''.join('INSTRUMENTATION_STATUS: syntaxCase='+id+'\nINSTRUMENTATION_STATUS: syntaxManifestSha256='+harness.SYNTAX_MANIFEST_SHA256+'\n' for id in harness.SYNTAX_CASE_IDS) if scope=='syntax' else ''
+                    if scope=='vendor':
+                        syntax=''.join('INSTRUMENTATION_STATUS: vendorSuite='+suite+'\nINSTRUMENTATION_STATUS: vendorCase='+id+'\nINSTRUMENTATION_STATUS: vendorManifestSha256='+harness.SUITE_LOCKS[suite]['manifest_sha256']+'\n' for suite in ['vendor','vendor-selection'] for id in harness.SUITE_LOCKS[suite]['case_ids'])
                     return result(syntax+'ANDROID_SERVICE_ACCEPTANCE passed; scope=' + scope +
                                   '; assertions=' + str(count) + '\nINSTRUMENTATION_CODE: -1\n')
                 return result('unit-fixture\n')
@@ -165,12 +167,14 @@ class RuntimeGates(unittest.TestCase):
             self.assertEqual(json.loads((old / 'runtime-receipt.json').read_text())['old'], True)
             return receipt, calls, error
 
-    def test_original_65_plus_50_syntax_assertions_and_cleanup_are_required(self):
+    def test_original_115_plus_41_vendor_assertions_and_cleanup_are_required(self):
         receipt, _, error = self.scenario()
         self.assertIsNone(error)
         self.assertEqual(receipt['result'], 'passed')
         self.assertEqual(receipt['completed_scopes'], list(harness.SCOPES))
-        self.assertEqual(receipt['assertions'], 115)
+        self.assertEqual(receipt['legacy_assertions'],115)
+        self.assertEqual({k:v for k,v in harness.SCOPES.items() if k!='vendor'},{'core':20,'metadata':11,'lifecycle':16,'concurrency':18,'syntax':50})
+        self.assertEqual(receipt['assertions'],156)
         self.assertTrue(receipt['owned_package_removed'])
 
     def test_total_count_cannot_substitute_for_individual_new_case_evidence(self):
@@ -181,6 +185,18 @@ class RuntimeGates(unittest.TestCase):
         text=''.join('INSTRUMENTATION_STATUS: syntaxCase='+id+'\nINSTRUMENTATION_STATUS: syntaxManifestSha256=wrong\n' for id in harness.SYNTAX_CASE_IDS)
         with self.assertRaisesRegex(RuntimeError,'exact manifest SHA256'):
             harness.verify_scope('syntax',text+'ANDROID_SERVICE_ACCEPTANCE passed; scope=syntax; assertions=50\nINSTRUMENTATION_CODE: -1\n')
+
+    def test_vendor_totals_without_individual_binder_cases_are_rejected(self):
+        with self.assertRaisesRegex(RuntimeError,r'all13\+20 Binder'):
+            harness.verify_scope('vendor','ANDROID_SERVICE_ACCEPTANCE passed; scope=vendor; assertions=41\nINSTRUMENTATION_CODE: -1\n')
+
+    def test_vendor_order_digest_and_suite_identity_are_required(self):
+        entries=[(suite,id,harness.SUITE_LOCKS[suite]['manifest_sha256']) for suite in ['vendor','vendor-selection'] for id in harness.SUITE_LOCKS[suite]['case_ids']]
+        def transcript(rows):return ''.join('INSTRUMENTATION_STATUS: vendorSuite='+s+'\nINSTRUMENTATION_STATUS: vendorCase='+i+'\nINSTRUMENTATION_STATUS: vendorManifestSha256='+h+'\n' for s,i,h in rows)+'ANDROID_SERVICE_ACCEPTANCE passed; scope=vendor; assertions=41\nINSTRUMENTATION_CODE: -1\n'
+        harness.verify_scope('vendor',transcript(entries))
+        for changed in [entries[:-1],list(reversed(entries)),[entries[0]]+entries[:-1],[(s,i,'wrong') for s,i,h in entries],[('syntax',i,h) for s,i,h in entries]]:
+            with self.assertRaisesRegex(RuntimeError,'locked manifest'):
+                harness.verify_scope('vendor',transcript(changed))
 
     def test_preinstall_failure_has_receipt_and_diagnostics_without_mutation(self):
         receipt, calls, error = self.scenario(readiness_failure=True)
@@ -217,7 +233,8 @@ class RuntimeGates(unittest.TestCase):
     def test_cleanup_failure_does_not_leave_a_passed_receipt(self):
         receipt, _, error = self.scenario(cleanup_failure=True)
         self.assertIsInstance(error, RuntimeError)
-        self.assertEqual(receipt['assertions'], 115)
+        self.assertEqual(receipt['legacy_assertions'],115)
+        self.assertEqual(receipt['assertions'],156)
         self.assertEqual(receipt['result'], 'failed')
 
     def test_uncertain_install_does_not_uninstall_an_unconfirmed_package(self):

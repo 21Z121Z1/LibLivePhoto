@@ -22,5 +22,7 @@ for (const [target, directory] of [['web', 'operation-pkg'], ['nodejs', 'operati
 cpSync(path.join(root, 'web/src'), path.join(root, 'web/dist'), { recursive: true });
 cpSync(path.join(root, 'web/public'), path.join(root, 'web/dist'), { recursive: true });
 cpSync(path.join(root, 'fixtures/syntax'), path.join(root, 'web/dist/syntax'), { recursive: true });
+for (const suite of ['vendor','vendor-selection']) cpSync(path.join(root,'fixtures',suite),path.join(root,'web/dist',suite),{recursive:true});
+cpSync(path.join(root,'fixtures/contract-suites.json'),path.join(root,'web/dist/contract-suites.json'));
 cpSync(path.join(root, 'web/tests/syntax-contracts.mjs'), path.join(root, 'web/dist/syntax-contracts.mjs'));
 console.log('Built web/dist. Run npm --prefix web run dev (loopback only).');

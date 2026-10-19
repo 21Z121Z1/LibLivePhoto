@@ -29,5 +29,6 @@ def main():
  from syntax_contracts import NativeCore,run_cases
  run_cases(NativeCore(ROOT/'target/debug'/name),'host-c-abi')
  run_cases(NativeCore(ROOT/'target/debug'/name),'vendor-host-c-abi',ROOT/'fixtures/vendor')
+ run_cases(NativeCore(ROOT/'target/debug'/name),'vendor-selection-host-c-abi',ROOT/'fixtures/vendor-selection')
  print('C_ABI_SMOKE passed: actual version, motion parse, exact time, error, ownership, conformance opaque vivo bytes, ICC valid/unsupported/malformed and actual AAC-LC PCE/wave (no rendering/device certification)')
 if __name__=='__main__':main()

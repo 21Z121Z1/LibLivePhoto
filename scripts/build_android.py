@@ -96,6 +96,11 @@ def main():
     syntax_assets.mkdir(parents=True, exist_ok=True)
     for source in (ROOT/'fixtures/syntax').iterdir():
         if source.is_file(): shutil.copyfile(source, syntax_assets/source.name)
+    for suite in ['vendor','vendor-selection']:
+        assets=build/'assets'/suite;assets.mkdir(parents=True,exist_ok=True)
+        for source in (ROOT/'fixtures'/suite).iterdir():
+            if source.is_file():shutil.copyfile(source,assets/source.name)
+    shutil.copyfile(ROOT/'fixtures/contract-suites.json',build/'assets/contract-suites.json')
     run([tools/'aapt2', 'link', '-o', unsigned, '--manifest', ROOT/'android/src/test/AndroidManifest.xml',
          '-I', platform/'android.jar', '--min-sdk-version', '26', '--target-sdk-version', '35', '-A', ROOT/'web/public/demo', '-A', build/'assets'])
     with zipfile.ZipFile(unsigned, 'a', zipfile.ZIP_DEFLATED) as archive:

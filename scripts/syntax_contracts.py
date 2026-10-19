@@ -118,7 +118,13 @@ def at_path(value, path):
 
 
 def run_cases(execute, label, directory=FIXTURES):
-    manifest = json.loads((directory / 'cases.json').read_text())
+    manifest_bytes = (directory/'cases.json').read_bytes()
+    manifest = json.loads(manifest_bytes)
+    lock = json.loads((ROOT/'fixtures/contract-suites.json').read_text())[directory.name]
+    assert lock['count'] == {'syntax':42,'vendor':13,'vendor-selection':20}[directory.name]
+    assert hashlib.sha256(manifest_bytes).hexdigest() == lock['manifest_sha256'], 'suite manifest digest'
+    assert [c['id'] for c in manifest['cases']] == lock['case_ids'], 'complete ordered suite IDs'
+    assert len(manifest['cases']) == lock['count'], 'complete suite count'
     for name, digest in manifest['sha256'].items():
         assert hashlib.sha256((directory / name).read_bytes()).hexdigest() == digest, name
     previous, receipts = {}, []

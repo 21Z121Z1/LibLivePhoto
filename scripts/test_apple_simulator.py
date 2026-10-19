@@ -114,7 +114,14 @@ def main(argv=None):
         logged(['xcrun','simctl','spawn',device,binary,ROOT/'web/public/demo/motion-photo.jpg',ROOT/'web/public/demo/motion.mp4',ROOT/'fixtures/bindings/agtm-video.mp4',ROOT/'fixtures/bindings/agtm-raw.bin',ROOT/'fixtures/syntax'],out/'runtime.log',120)
         text=tail(out/'runtime.log')
         if 'IOS_SIMULATOR_SWIFT_RUST passed' not in text or 'IOS_SIMULATOR_RUNTIME:' not in text or 'IOS_SIMULATOR_SYNTAX passed: cases=42' not in text:raise RuntimeError('native bridge process did not pass its runtime identity, original assertions and42 syntax cases')
-        receipt.update(result='passed',runtime_process_passed=True,syntax_cases=42)
+        locks=json.loads((ROOT/'fixtures/contract-suites.json').read_text());vendor={}
+        complete=(out/'runtime.log').read_text()
+        for suite,count in [('vendor',13),('vendor-selection',20)]:
+            ids=re.findall(r'^SYNTAX_CONTRACT_CASE ios-simulator-'+re.escape(suite)+r' ([^ ]+) fields=',complete,re.MULTILINE)
+            marker='SYNTAX_CONTRACTS_PASSED entry=ios-simulator-'+suite+' cases='+str(count)+' manifest_sha256='+locks[suite]['manifest_sha256']
+            if ids!=locks[suite]['case_ids'] or marker not in complete:raise RuntimeError('actual iOS process lacks complete ordered vendor IDs/digest: '+suite)
+            vendor[suite]={'cases':count,'case_ids':ids,'manifest_sha256':locks[suite]['manifest_sha256']}
+        receipt.update(result='passed',runtime_process_passed=True,syntax_cases=42,vendor_suites=vendor)
     except BaseException as error:
         receipt['error']=str(error)
         raise

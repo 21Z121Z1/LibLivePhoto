@@ -62,9 +62,11 @@ public final class NativeSmoke {
     check(!rejectedEsds.success&&rejectedEsds.headerJson.contains("esds version/flags"),"unknown esds version rejected across JNI");
     NativeResult pceBuilt=engine.build(Input.bytes(still),Input.bytes(pceMovie),new ExactTime(1,10),"google-jpeg");check(pceBuilt.success,"PCE container lossless build");
     check(Arrays.equals(pceMovie,engine.extract(Input.bytes(pceBuilt.files.get(0).copyBytes()),false,true,false).files.get(0).copyBytes()),"PCE movie bytes retained across JNI build/extract");
-    SyntaxContracts.run(name->Files.readAllBytes(syntax.resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"host-jni");
+    SyntaxContracts.run(name->Files.readAllBytes(("contract-suites.json".equals(name)?syntax.getParent():syntax).resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"host-jni");
     Path vendor=bindings.getParent().resolve("vendor");
-    SyntaxContracts.run(name->Files.readAllBytes(vendor.resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"vendor-host-jni",(id,fields,files,sha)->{},13);
+    SyntaxContracts.run(name->Files.readAllBytes(("contract-suites.json".equals(name)?vendor.getParent():vendor).resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"vendor-host-jni",(id,fields,files,sha)->{},13);
+    Path selection=bindings.getParent().resolve("vendor-selection");
+    SyntaxContracts.run(name->Files.readAllBytes(("contract-suites.json".equals(name)?selection.getParent():selection).resolve(name)),(request,p,m)->engine.executeJson(request,Input.bytes(p),m.length==0?null:Input.bytes(m),(phase,n,total)->{}),"vendor-selection-host-jni",(id,fields,files,sha)->{},20);
     System.out.println("JNI_SMOKE passed: existing regressions plus all42 new syntax/preservation/exact-time cases");
   }
 }

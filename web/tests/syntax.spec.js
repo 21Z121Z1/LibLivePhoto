@@ -9,7 +9,7 @@ test('actual Chrome WASM: 42 syntax, byte preservation, exact-time and error vec
     await core.default();
     const {runSyntaxContracts} = await import('/syntax-contracts.mjs');
     return runSyntaxContracts({label:'chrome-wasm',process:core.process_operation,load:async name => {
-      const response = await fetch('/syntax/'+name); if (!response.ok) throw Error(name);
+      const response = await fetch((name==='contract-suites.json'?'/':'/syntax/')+name); if (!response.ok) throw Error(name);
       return new Uint8Array(await response.arrayBuffer());
     }});
   });

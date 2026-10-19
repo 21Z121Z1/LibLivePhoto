@@ -56,7 +56,7 @@ jobs:
       - run: npm --prefix web test
       - run: npm --prefix web run build
       - name: Actual Node WASM syntax and preservation contracts
-        run: node --test web/tests/syntax.test.mjs
+        run: node --test web/tests/syntax.test.mjs web/tests/vendor.test.mjs
       - run: cd web && npx playwright install --with-deps chromium
       - name: Diagnose bundled browser readiness independently
         working-directory: web
