@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Harness fault injection only; these tests never claim Android execution."""
+import contextlib
+import io
 import json
 import subprocess
 import tempfile
@@ -77,8 +79,12 @@ class Readiness(unittest.TestCase):
             responses = [subprocess.CompletedProcess([], 224, 'pm partial', 'Broken pipe'),
                          subprocess.TimeoutExpired([], 1, output=b'boot partial', stderr=b'timeout stderr')]
             with patch.object(harness.subprocess, 'run', side_effect=responses):
-                adb.command(['shell', 'pm'], timeout=1)
-                adb.command(['shell', 'getprop'], timeout=1)
+                with contextlib.redirect_stdout(io.StringIO()) as visible:
+                    adb.command(['shell', 'pm'], timeout=1)
+                    adb.command(['shell', 'getprop'], timeout=1)
+                self.assertIn('ANDROID_HARNESS_ADB_FAILURE', visible.getvalue())
+                self.assertIn('Broken pipe', visible.getvalue())
+                self.assertIn('timeout stderr', visible.getvalue())
             lines = [json.loads(s) for s in (Path(directory) / 'adb-commands.jsonl').read_text().splitlines()]
             self.assertEqual(lines[0]['returncode'], 224)
             self.assertEqual(lines[0]['stdout'], 'pm partial')
@@ -119,7 +125,10 @@ class RuntimeGates(unittest.TestCase):
                     patch.object(harness.subprocess, 'check_output', return_value='unit-sha\n'), \
                     patch.object(harness, 'wait_ready', side_effect=RuntimeError('readiness failed') if readiness_failure else None, return_value=[[]]):
                 try:
-                    harness.main([])
+                    # Synthetic acceptance markers must never look like actual
+                    # installed-service successes in the CI log.
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        harness.main([])
                 except RuntimeError as caught:
                     error = caught
             paths = list((root / 'android/build').glob('acceptance-*/runtime-receipt.json'))

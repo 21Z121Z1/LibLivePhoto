@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Install an owned acceptance APK after bounded, read-only readiness probes."""
 import argparse
+import datetime
 import json
 import re
 import subprocess
@@ -20,11 +21,14 @@ def string(value):
 class Adb:
     def __init__(self, prefix, out):
         self.prefix, self.out = prefix, out
+        self.sequence = 0
 
     def command(self, tail, timeout=20):
         started = time.monotonic()
+        self.sequence += 1
         result = {'command': tail, 'returncode': None, 'timed_out': False,
-                  'stdout': '', 'stderr': ''}
+                  'stdout': '', 'stderr': '', 'sequence': self.sequence,
+                  'observed_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='milliseconds')}
         try:
             completed = subprocess.run([*self.prefix, *tail], text=True,
                                        capture_output=True, timeout=timeout)
@@ -38,6 +42,8 @@ class Adb:
         recorded = {**result, 'stdout': result['stdout'][-24000:], 'stderr': result['stderr'][-24000:]}
         with (self.out / 'adb-commands.jsonl').open('a') as output:
             output.write(json.dumps(recorded) + '\n')
+        if result['returncode'] != 0 or result['timed_out']:
+            print('ANDROID_HARNESS_ADB_FAILURE ' + json.dumps(recorded), flush=True)
         return result
 
     def require(self, tail, timeout=60):
@@ -106,13 +112,17 @@ def verify_scope(scope, text):
 
 
 def diagnostics(adb):
+    states = []
     for tail in [['shell', 'getprop', 'sys.boot_completed'],
                  ['shell', 'service', 'check', 'package'],
                  ['shell', 'service', 'check', 'activity']]:
-        adb.command(tail, timeout=10)
+        states.append(adb.command(tail, timeout=10))
+    print('ANDROID_HARNESS_SERVICE_DIAGNOSTIC ' + json.dumps(states)[-24000:], flush=True)
     result = adb.command(['logcat', '-d', '-t', '200', '-s', 'LibLivePhotoAcceptance:*',
                           'AndroidRuntime:E', 'libc:F'], timeout=20)
     (adb.out / 'logcat.log').write_text(result['stdout'] + '\nSTDERR:\n' + result['stderr'])
+    print('ANDROID_HARNESS_GUEST_LOGCAT\n' + result['stdout'][-24000:] +
+          '\nSTDERR:\n' + result['stderr'][-4000:], flush=True)
 
 
 def main(argv=None):
@@ -144,7 +154,7 @@ def main(argv=None):
         install = adb.command(['install', '--no-streaming', str(build / 'liblivephoto-acceptance.apk')], timeout=120)
         if install['returncode'] != 0 or install['timed_out'] or not re.search(r'^Success\s*$', install['stdout'], re.MULTILINE):
             receipt['installation_outcome_uncertain'] = True
-            raise RuntimeError('APK installation did not confirm success; see adb-commands.jsonl')
+            raise RuntimeError('APK installation did not confirm success: ' + json.dumps(install)[-24000:])
         receipt['installation_confirmed'] = True
         transcripts = []
         for scope, count in SCOPES.items():

@@ -80,3 +80,7 @@ bounded logcat, scope logs and a receipt, including pre-install failures.
 Success requires all 65 assertions and removal of the confirmed owned test APK.
 `python3 scripts/test_android_harness.py` injects harness failures without a
 device; its success is not Android runtime acceptance.
+Failed ADB commands and bounded post-failure service/logcat snapshots also appear
+in CI stdout, so a failed artifact transfer cannot hide installation stderr.
+Host fault injection suppresses its synthetic service-success markers; only the
+installed-device phase and its runtime receipt can establish service acceptance.
