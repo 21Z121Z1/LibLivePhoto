@@ -21,6 +21,8 @@ evidence for the implemented subsets below. The initial tables that follow retai
 the pre-change assessment; they are not a claim that delivered features are still
 missing. Test paths are relative to `crates/liblivephoto/tests`, unless specified.
 See [integration](../CORE_INTEGRATION.md) for input/output distinctions and limits.
+The [run receipt](GOOGLE_CORE_RUN.md) binds results and remaining gaps to the
+validated implementation SHA and exact commands.
 
 | Capability | Delivered status | LibLivePhoto API and executed evidence | Remaining boundary |
 | --- | --- | --- | --- |

@@ -119,6 +119,8 @@ exports remain. `PathInput` adds a `Parts` variant; downstream exhaustive matche
 must handle it. New target profiles and diagnostics use the existing
 non-exhaustive enums. The public converter adds `google-avif` as a directory
 writer, not a device-certification profile.
+The unstable compatibility predicate `is_heif_mime` now includes `image/avif`;
+downstream HEIC-only product routes must distinguish AVIF explicitly.
 
 XDRemux PR #58 at `0688ea7d6270df52cc5968e2c36dd016f13bd31b` was read only.
 It still pins the old library SHA. No consumer file or pin is modified. The
