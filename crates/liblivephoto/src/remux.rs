@@ -128,3 +128,9 @@ pub fn remove_metadata_tracks(movie: &[u8], track_ids: &[u32]) -> Result<Metadat
     }
     Ok(result)
 }
+
+mod compose;
+pub use compose::{
+    import_tracks, optimization_support, optimize, remove_tracks, track_summary, OptimizeOptions,
+    RemuxReport, RemuxSidecar, RemuxedMovie, TrackMapping,
+};

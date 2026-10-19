@@ -489,6 +489,21 @@ impl<'a> MotionPhoto<'a> {
                     .ok_or(MotionPhotoReadError::InvalidResource)?,
             );
         }
+        if options.mode != ParseMode::Strict
+            && sef.is_none()
+            && crate::lpex::parse_first_lpex_object(data).is_none()
+        {
+            if let Some(meta) = crate::inspect_oplus_metadata(data)? {
+                if let Some(video) = meta.video {
+                    // Standard directory input still takes its established path.
+                    if !matches!(parse_android_motion_photo(data), Ok(Some(_))) {
+                        let mut photo = Self::from_oplus(data, &meta, video)?;
+                        photo.diagnostics.push(Diagnostic::VendorCompatibility);
+                        return Ok(photo);
+                    }
+                }
+            }
+        }
         let parsed = if options.mode == ParseMode::Strict {
             parse_android_motion_photo(data)
         } else {
@@ -670,6 +685,75 @@ impl<'a> MotionPhoto<'a> {
             },
             android_asset: None,
             diagnostics: vec![Diagnostic::VendorCompatibility],
+        })
+    }
+
+    fn from_oplus(
+        data: &'a [u8],
+        meta: &crate::OplusMetadata,
+        video: ByteRange,
+    ) -> ReadResult<Self> {
+        let mut auxiliary = Vec::new();
+        // Each directory extent remains an observed, generically named vendor
+        // resource. Unclaimed gaps and the directory/footer remain opaque.
+        let mut ranges = meta
+            .records
+            .iter()
+            .map(|r| (r.range, Some(r.name.as_str())))
+            .collect::<Vec<_>>();
+        ranges.sort_by_key(|r| r.0.lower_bound);
+        let mut cursor = video.upper_bound;
+        for (range, name) in ranges {
+            if range.lower_bound < cursor {
+                return Err(MotionPhotoReadError::InvalidResource);
+            }
+            if range.lower_bound > cursor {
+                auxiliary.push(resource(
+                    ResourceRole::Unknown,
+                    "application/octet-stream",
+                    0,
+                    ByteRange::new(cursor, range.lower_bound)?,
+                ));
+            }
+            let mut entry = resource(ResourceRole::Unknown, "application/octet-stream", 0, range);
+            entry.vendor_role = name.map(str::to_owned);
+            entry.provenance = Provenance::observed("JXRS backward-offset directory record");
+            auxiliary.push(entry);
+            cursor = range.upper_bound;
+        }
+        if cursor < data.len() as u64 {
+            auxiliary.push(resource(
+                ResourceRole::Unknown,
+                "application/octet-stream",
+                0,
+                ByteRange::new(cursor, data.len() as u64)?,
+            ));
+        }
+        Ok(Self {
+            sources: vec![Cow::Borrowed(data)],
+            asset: MotionAsset {
+                layout: PhysicalLayout::AppendedResources,
+                format: AssetFormat::Unspecified,
+                dialect: VendorDialect::Oplus,
+                provenance: Provenance::observed("OpCamera / JXRS JPEG trailer"),
+                sources: Vec::new(),
+                containers: Vec::new(),
+                still: resource(
+                    ResourceRole::PrimaryStill,
+                    "image/jpeg",
+                    0,
+                    ByteRange::new(0, video.lower_bound)?,
+                ),
+                motion: resource(ResourceRole::PrimaryMotionVideo, "video/mp4", 0, video),
+                presentation: meta.photo_time.map(|time| Presentation {
+                    time,
+                    source: TimeSource::VendorMetadata,
+                }),
+                pairing: PairingMetadata::default(),
+                auxiliary,
+            },
+            android_asset: None,
+            diagnostics: Vec::new(),
         })
     }
 

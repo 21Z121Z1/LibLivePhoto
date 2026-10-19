@@ -557,3 +557,28 @@ pub(crate) fn video_frames(
     });
     Ok(frames)
 }
+
+pub(crate) fn sample_ranges(data: &[u8], track: &Track) -> Result<Vec<crate::ByteRange>> {
+    let top = parse_boxes(data, 0..data.len()).map_err(|_| Error::InvalidResource)?;
+    let moov = find(&top, b"moov").ok_or(Error::InvalidResource)?;
+    let mc = children(data, moov)?;
+    let trak = mc
+        .iter()
+        .filter(|b| b.kind.as_bytes() == b"trak")
+        .nth(track.index)
+        .ok_or(Error::InvalidResource)?;
+    let tc = children(data, trak)?;
+    let mdia = find(&tc, b"mdia").ok_or(Error::InvalidResource)?;
+    let md = children(data, mdia)?;
+    let minf = find(&md, b"minf").ok_or(Error::InvalidResource)?;
+    let mi = children(data, minf)?;
+    let stbl = find(&mi, b"stbl").ok_or(Error::InvalidResource)?;
+    let tables = children(data, stbl)?;
+    let mut result = Vec::new();
+    let mut budget = 0;
+    validate_samples(data, &tables, &top, &mut budget, |_, _, r| {
+        result.push(r);
+        Ok(())
+    })?;
+    Ok(result)
+}

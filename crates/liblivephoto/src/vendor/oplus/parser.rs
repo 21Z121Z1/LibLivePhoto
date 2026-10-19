@@ -220,6 +220,39 @@ pub fn parse_oppo_fallback(data: &[u8]) -> Result<Option<MotionPhotoAsset>> {
         return Ok(None);
     }
 
+    if lpex.is_none() && crate::jpeg_write::read_xmp(data).ok().flatten().is_some() {
+        let olive = crate::inspect_oplus_metadata(data)
+            .map_err(|_| MotionPhotoError::InvalidVideoPayload)?;
+        if let Some(meta) = olive {
+            if let Some(video) = meta.video {
+                return Ok(Some(MotionPhotoAsset {
+                    source_kind: MotionPhotoSourceKind::OppoLivePhoto,
+                    items: vec![
+                        MotionPhotoItem {
+                            mime: "image/jpeg".into(),
+                            semantic: "Primary".into(),
+                            length: 0,
+                            padding: 0,
+                        },
+                        MotionPhotoItem {
+                            mime: "video/mp4".into(),
+                            semantic: "MotionPhoto".into(),
+                            length: video.length(),
+                            padding: 0,
+                        },
+                    ],
+                    still_resource_range: ByteRange::new(0, video.lower_bound)?,
+                    video_resource_range: video,
+                    presentation_timestamp_us: meta.photo_time.map(|t| t.value),
+                    presentation_source: meta.photo_time.map(|_| PresentationSource::AndroidXmp),
+                    vendor_metadata: Some(OppoMetadata {
+                        stream_count: 1,
+                        ..OppoMetadata::default()
+                    }),
+                }));
+            }
+        }
+    }
     let declared_length = xmp.and_then(extract_video_length);
     let presentation = xmp.and_then(extract_presentation_timestamp);
     let Some((video_range, stream_count)) =

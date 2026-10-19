@@ -19,8 +19,11 @@ mod lpex;
 mod media;
 mod model;
 mod motion_video;
+#[path = "vendor/oplus/olive.rs"]
+mod olive;
 #[path = "vendor/oplus/parser.rs"]
 mod oppo;
+pub use olive::{inspect_oplus_metadata, OplusMetadata, OplusRecord};
 mod presentation;
 pub mod remux;
 mod scanner;
