@@ -70,3 +70,13 @@ The lifecycle case still performs all eight parses; concurrency additionally
 checks three queued pipe readers and two callers racing to cancel one operation.
 Per-case logs, failure phase/stack and logcat are retained. SDK/AVD setup or a
 partial sequence cannot produce a runtime success receipt.
+
+After boot, the harness waits at most 120 seconds/40 attempts for package and
+activity services and a successful, clean `pm list packages` response. Exit224,
+timeouts and malformed/error output cannot mean "package absent". It never
+restarts ADB or changes system permissions. Each run writes a separate
+`android/build/acceptance-*/` directory with command stdout/stderr/exit status,
+bounded logcat, scope logs and a receipt, including pre-install failures.
+Success requires all 65 assertions and removal of the confirmed owned test APK.
+`python3 scripts/test_android_harness.py` injects harness failures without a
+device; its success is not Android runtime acceptance.

@@ -20,6 +20,8 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: Verify bounded Android harness gates (fault injection, no device claim)
+        run: python3 scripts/test_android_harness.py
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,x86_64-linux-android
@@ -77,5 +79,8 @@ jobs:
           path: |
             android/build/*receipt.json
             android/build/*.log
+            android/build/acceptance-*/*.json
+            android/build/acceptance-*/*.jsonl
+            android/build/acceptance-*/*.log
             android/build/liblivephoto-android.aar
             android/build/liblivephoto-acceptance.apk
