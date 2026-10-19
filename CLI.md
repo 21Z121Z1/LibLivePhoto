@@ -17,6 +17,8 @@ llp xmp metadata.xmp
 llp optimize movie.mp4 --out new-optimized
 llp import-tracks destination.mp4 --movie source.mp4 --tracks 1 --out new-imported
 llp remove-tracks movie.mp4 --tracks 3 --out new-removed
+llp conformance still.avif --options-json '{"profile":"heif-color-2025"}'
+llp conformance movie.mp4 --tracks 1,2 --options-json '{"profile":"google-video-container-1.0"}'
 ```
 
 Default building from separate still/movie inputs explicitly declares a parts
@@ -33,6 +35,14 @@ selected resource IDs and `--options-json` are exposed. Ranges refer to the sele
 snapshot and `inputRanges` preserves the enclosing file offset separately. Use `-`
 for bounded stdin. Standalone AGTM explicitly requires its time; no fabricated zero.
 AGTM output is metadata, not rendered pixels. No Moments construction arguments.
+
+`conformance` is an optional read-only profile query, separate from default
+preservation/check behavior. Video track IDs explicitly name primary and
+optional secondary roles. Reports distinguish required violations, unsupported
+facts and recommendations; they cover only their listed rules. See
+[the profile boundaries](CORE_INTEGRATION.md), including AAC declarations and
+the public44kHz/44100Hz ambiguity. A successful report is not decoder, complete
+format or native Gallery certification.
 
 Reports are JSON on stdout. Exit 0 means the operation/check passed; 1 means a
 library/plan/check failure with details; 2 means command/I/O/publication misuse.

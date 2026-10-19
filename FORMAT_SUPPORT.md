@@ -10,9 +10,11 @@ Statuses refer to the contracts below. A vendor name does not establish device s
 | Apple JPEG/HEIF + MOV pair | Original iPhone 15 pair and generated fixtures | Pairing metadata; exact timeline; media comparisons | Pairing and supported timed metadata | Unverified |
 | Legacy Google MicroVideo | Synthetic contract tests | Android conversion and source copy | Bounds and directory checks | Unverified |
 | OPlus ColorOS 15/16 extensions | Original fixtures, including dual streams | Source copy; explicit sidecar conversion | LPEX, topology and boundary tests | Unverified |
+| Oplus OpCamera/JXRS provider layouts | Synthetic same-input reference cases; HEIC declarations distinguished from video | Source copy or standard target with explicit unmapped-resource policy | Plain/short/checksum/JSON-directory framing and typed fields; checksum bytes retained without claiming verification | Unverified; original LPEX corpus does not establish these variants |
 | Samsung SEF 106/107 | Original direct and pointer records, including versionless HEIF | JPEG direct SEF with no known time; explicit unmapped policy | Directory and malformed tests | Unverified |
 | Xiaomi Android-style Live Photo | One original fixture | Android target and explicit sidecars | Standard contract checks | Unverified |
-| vivo Android-style single file | Two original fixtures | Android target and explicit sidecars | Standard contract checks | Unverified |
+| vivo Android-style single file / CameraAlbum43 footer | Two original fixtures; bounded raw footer/JSON inspection | Android target and explicit sidecars; no native footer writer | Standard contract plus exact footer ranges/bytes and declared-ID consistency | Unverified; imageTime unit and capture-pair uniqueness unresolved |
+| CameraAlbum55 footer | Synthetic/static contract only | No native writer | Exact framing, limits, raw JSON and malformed declarations | Unverified; no original-device corpus |
 | Xiaomi portrait/depth; vivo dual/portrait | No original corpus | No dedicated writer | Unknown bytes can be preserved | Unverified |
 | HarmonyOS MovingPhoto | Platform API researched | Caller-owned platform integration | No private on-disk contract claimed | Unverified |
 | Honor JPEG `LIVE_` 20/40-byte footer and backward TLV | Synthetic contracts and same-input reference comparisons | Source copy or explicit sidecars; no native Honor writer | Bounded records, time, ambiguity and malformed cases | Unverified; no original Honor corpus |
@@ -28,10 +30,12 @@ Other timed metadata encodings, fragmented movie remux and unsupported edit list
 remain explicit limits. Large files require an increased input budget; streaming
 random-access parsing is not implemented.
 
-Google's Oplus JXRS checksum/JSON-directory cases and pure OpCamera XMP are not
-established by the existing ColorOS LPEX corpus. These remain separate missing
-or partial contracts. No Oplus native writer or semantic role for stream 2 is added.
-See the [pinned Google comparison](evidence/GOOGLE_CORE_COVERAGE.md).
+Google's Oplus JXRS checksum/JSON-directory cases and pure OpCamera XMP have
+bounded synthetic/reference coverage, independently of the original ColorOS
+LPEX corpus. Checksum semantics and native Gallery compatibility remain open.
+No Oplus native writer or semantic role for stream2 is added. See the
+[current source/test map](evidence/SOURCE_TEST_MAP.md) and
+[five-vendor evidence matrix](evidence/VENDOR_RESEARCH_20261019.md).
 
 The repository contains synthetic test vectors and hashes of external originals.
 It does not redistribute the external photos or proprietary components.

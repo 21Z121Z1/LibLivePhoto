@@ -16,8 +16,11 @@ The [baseline receipt](stable-baseline-4848e5f.json) certifies only its SHA;
 the [76c25e4 receipt](standards-edit-76c25e4.json) independently records the new
 code/tests, exact-SHA native processes and all three successful workflows.
 H05's later implementation has its own [local receipt](h05-69ebefe.json).
-New optional Google declaration checks and explicit scoring projection require
-separate final changed-code platform evidence;76c25e4 does not certify them.
+Optional Google declaration checks and explicit scoring projection passed the
+three portable hosts and Apple/web at91fc380; actual Android acceptance failed
+at installation before service scopes. [Exact terminal evidence](conformance-91fc380.json)
+preserves that distinction;76c25e4 does not certify later code. CameraAlbum is a
+separate observed vendor contract, not a new normative Google/HEIF profile.
 
 ## Authorities and edition boundaries
 

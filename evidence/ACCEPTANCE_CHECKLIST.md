@@ -26,7 +26,8 @@ standards/edit regressions. One private-original analysis test remains unrun.
 Later evidence-only edits preserve the recorded code trees; their own CI status
 must still be checked independently.
 
-Post-baseline `91fc380` passed197 default/all-feature tests on all three hosts,
+Post-baseline `91fc380` passed197 default/all-feature tests on Linux/macOS and
+196 on Windows (one Unix-only FD test),
 public-fixture2, ASan1587969, actual packaged C/JNI consumers,11 macOS tests,
 the iOS26.2 Swift/Rust process and4 Node/7 Chrome tests. Android packaging passed
 but actual acceptance failed at installation before any service scope; see
@@ -38,6 +39,13 @@ ASan95130 passed. [Exact local evidence](vendor-footer-8dbe830.json) is distinct
 from the new changed-code platform gate. Five-vendor facts and limits are in
 [VENDOR_RESEARCH_20261019.md](VENDOR_RESEARCH_20261019.md); no native Gallery
 acceptance or downloaded vendor APK execution occurred.
+
+At `c15648c`, all portable/corpus/ASan and Apple/web jobs passed with the same
+production/test objects as8dbe830. Android installed core20 passed, then metadata
+returned Process crashed/code0; lifecycle/concurrency did not execute. The
+[terminal receipt](platform-c15648c.json) retains that failed overall gate and
+the empty filtered crash evidence. The next diagnostic change does not remove
+assertions, extend operation/scope deadlines or claim a root-cause fix.
 
 Stability is a hard gate for all boards. See [STABILITY_GATES.md](STABILITY_GATES.md)
 for malformed ranges, cumulative allocation/copy bounds, FFI ownership,

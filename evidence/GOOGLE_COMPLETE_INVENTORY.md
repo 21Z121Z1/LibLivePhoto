@@ -41,7 +41,9 @@ passed197 tests, with public fixture2 executed separately,85 same-input
 comparisons,1322483 ASan executions, actual C/JNI/CLI, unchanged XDRemux replay
 and seven Chromium tests. [Exact source/run receipt](conformance-91fc380.json)
 and [full differential receipts](differential-91fc380.json) keep native CI status
-separate. Its Linux/macOS/Windows, corpus/ASan and Apple/web workflows passed;
+separate. Its Linux/macOS/Windows, corpus/ASan and Apple/web workflows passed
+(197 tests per default/all-feature run on Linux/macOS,196 on Windows, which
+excludes one Unix-only FD test);
 Android packaging passed but actual acceptance failed during APK installation,
 before any service scope. [Install failure and inaccessible saved diagnostics](android-install-91fc380.json)
 remain explicit; host fault-injection markers are not native passes.
@@ -55,7 +57,12 @@ passed locally. [Exact source/command receipt](vendor-footer-8dbe830.json) and
 bytes, static inference, listing-only versions and absent native acceptance.
 The preceding Android diagnostics change makes install results visible in job
 logs and suppresses simulated host success output; no guest-startup root-cause
-fix is claimed. New platform execution remains a separate gate for these changes.
+fix is claimed. Atc15648c the same source objects passed all portable, corpus,
+ASan and Apple/web jobs. Android installed core20 passed, then metadata returned
+Process crashed/code0; later scopes did not execute. [Terminal evidence](platform-c15648c.json)
+keeps that failed overall gate. The follow-up [crash-diagnostic receipt](android-crash-harness-b5ceff4.json)
+records13 host fault tests and unchanged65 native assertions/deadlines; its new
+platform run remains required.
 
 | ID | Public capability / shipped interface | Google authority | Current implementation and status |
 | --- | --- | --- | --- |

@@ -123,7 +123,7 @@
   "vendor_acquisition": "vendor-acquisition-20261019.json",
   "independent_original_observations": "vendor-byte-observations-20261019.json",
   "matrix": "VENDOR_RESEARCH_20261019.md",
-  "platform_status": "Not yet executed for this new code; 91fc380 terminal results and Android install failure remain historical.",
+  "platform_status": "Same production/test/harness source objects were actually tested at c15648c: all portable/fixture/ASan and Apple/web passed; Android installed core20 passed then metadata Process crashed; see platform-c15648c.json.",
   "logs": {
     "vendor-allfeatures-rust.log": {
       "sha256": "ba494b909ca2bb7de3db8c9cecac8c1024521943abba2f055deb4207b276bd2a",
@@ -181,5 +181,6 @@
     "Older ExifTool Vivo magic ending B1 is a distinct format, not implemented here.",
     "No vendor APK/firmware bodies acquired or executed; blocked download endpoints remain blocked.",
     "No physical Gallery/Photos acceptance, Honor original corpus or native vendor writer added."
-  ]
+  ],
+  "platform_receipt": "platform-c15648c.json"
 }

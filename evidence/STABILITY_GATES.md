@@ -93,7 +93,7 @@ each at60 seconds requested per target/61 seconds actual, with no crash.
 | Inspection / Java JSON | 100000 projected frames across tracks; Java reader 1048576 values and 1024-character numeric literals | Actual two-track manifest regression and JVM flat-tree/huge-number rejection |
 | Android service | Combined 32 MiB source, 64 KiB request; one worker/two queued operations; duplicated descriptors, reliable output pipe, callback-death/cancel cleanup | Actual installed APK gate; per-operation bounds are not a universal process-memory ceiling |
 | Android client | Two readers/eight queued reads, 160 MiB response cap, input descriptors borrowed and duplicated | Actual installed APK gate; complete envelope required before result publication |
-| Android acceptance readiness |120s/40 attempts for boot/package/activity plus clean package query; both ADB output streams/exit/timeout preserved;240s per scope and all65 original assertions retained | Twelve host fault-injection tests; unique run directories; only a confirmed owned APK is removed. Exit224 cannot mean package absence.541b609 pre-install failure remains an actual failed run, not a service pass |
+| Android acceptance readiness |120s/40 attempts for boot/package/activity plus clean package query; both ADB output streams/exit/timeout preserved;240s per scope and all65 original assertions retained | Thirteen host fault-injection tests; unique run directories; only a confirmed owned APK is removed. Dedicated crash-buffer/package-exit diagnostics and final receipt also print to CI stdout. Exit224 cannot mean package absence. Partial native scopes cannot become a full pass |
 
 At91fc380, all three portable hosts, public fixtures, ASan and Apple/web passed;
 actual Android acceptance reached installation but failed before any scope.
@@ -106,6 +106,14 @@ Code8dbe830 passed205 default/all-feature Rust tests, both public-fixture tests,
 38 provider comparisons, actual C/JNI and unchanged XDRemux replay locally.
 The changed asset parser ran95130 ASan cases in61 actual seconds with no crash;
 platform verification for this new code remains separately required.
+
+The same source objects then passed portable/corpus/ASan and Apple/web atc15648c.
+Android installation and core20 passed; metadata returned Process crashed/code0,
+with no usable stack in the filtered log. [The terminal receipt](platform-c15648c.json)
+records the failed gate. The follow-up adds bounded dedicated crash-buffer and
+own-package exit-history snapshots before cleanup, plus instrumentation status
+phases and the final receipt in stdout. These diagnostics do not classify a
+crash without evidence or alter the original runtime assertions/deadlines.
 
 Source byte budgets bound inputs and copied payloads, not all allocator/runtime
 overhead. Process memory, caller concurrency and operating-system limits still

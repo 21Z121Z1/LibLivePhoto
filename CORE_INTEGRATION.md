@@ -2,8 +2,10 @@
 
 This phase extends the implementation at PR #1 commit
 `794ab552596db0f66095600d23cf7937a631b9ec`. It does not replace the existing
-resource model, Apple writer or plan/execute boundary. The [coverage matrix](evidence/GOOGLE_CORE_COVERAGE.md)
-separates implemented subsets from remaining Google functionality.
+resource model, Apple writer or plan/execute boundary. The [initial coverage matrix](evidence/GOOGLE_CORE_COVERAGE.md)
+is a historical checkpoint; the [current inventory](evidence/GOOGLE_COMPLETE_INVENTORY.md)
+and [source/test map](evidence/SOURCE_TEST_MAP.md) track implemented subsets,
+operation-specific contracts and remaining acceptance requirements.
 
 ## Inputs and outputs
 

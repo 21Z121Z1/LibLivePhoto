@@ -40,6 +40,8 @@ policies and exact-time limits.
 Read [format support](FORMAT_SUPPORT.md), [compatibility](COMPATIBILITY.md),
 [asset model](ASSET_MODEL.md), [architecture](ARCHITECTURE.md) and
 [vendor evidence](evidence/VENDORS.md) before making a compatibility claim.
+The [current five-vendor research matrix](evidence/VENDOR_RESEARCH_20261019.md)
+separates original-byte tests, static inference and unverified native behavior.
 The first Google core comparison is recorded in the [coverage matrix](evidence/GOOGLE_CORE_COVERAGE.md).
 The [run receipt](evidence/GOOGLE_CORE_RUN.md) records the tested SHA, commands and results.
 The [complete interface inventory](evidence/GOOGLE_COMPLETE_INVENTORY.md) and
@@ -50,6 +52,8 @@ and the [local browser demo](web/README.md).
 The [pinned source/test map](evidence/SOURCE_TEST_MAP.md) and
 [stability gates](evidence/STABILITY_GATES.md) make operation-specific coverage,
 cumulative resource limits and native acceptance boundaries explicit.
+The [review handoff](evidence/HANDOFF_20261019.md) links exact code/CI evidence
+and concrete remaining boundaries.
 See [core integration](CORE_INTEGRATION.md) for file ranges, AVIF, timed AGTM,
 display/color facts, explicit codec contracts and metadata-track removal.
 

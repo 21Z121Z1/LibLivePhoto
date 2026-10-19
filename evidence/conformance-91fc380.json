@@ -362,17 +362,46 @@
         "Linux",
         "macOS"
       ],
-      "rust_default_per_host": {
-        "passed": 197,
-        "failed": 0,
-        "ignored": 3
+      "actual_C_JNI_and_packaged_SDK_consumers": true,
+      "rust_per_host": {
+        "Windows": {
+          "default": {
+            "passed": 196,
+            "failed": 0,
+            "ignored": 3
+          },
+          "all_features": {
+            "passed": 196,
+            "failed": 0,
+            "ignored": 3
+          }
+        },
+        "Linux": {
+          "default": {
+            "passed": 197,
+            "failed": 0,
+            "ignored": 3
+          },
+          "all_features": {
+            "passed": 197,
+            "failed": 0,
+            "ignored": 3
+          }
+        },
+        "macOS": {
+          "default": {
+            "passed": 197,
+            "failed": 0,
+            "ignored": 3
+          },
+          "all_features": {
+            "passed": 197,
+            "failed": 0,
+            "ignored": 3
+          }
+        }
       },
-      "rust_all_features_per_host": {
-        "passed": 197,
-        "failed": 0,
-        "ignored": 3
-      },
-      "actual_C_JNI_and_packaged_SDK_consumers": true
+      "count_note": "Windows excludes the cfg(unix) range_and_borrowed_fd_use_the_same_relative_collection_without_moving_cursor test. This corrects the earlier generic per-host197 summary; terminal job logs supply the exact counts."
     },
     "public_fixture_tests": {
       "passed": 2,
