@@ -12,3 +12,7 @@
 /web/playwright-report/
 /apple/.build/
 /apple/.swiftpm/
+
+/java/build/
+/android/.gradle/
+/android/**/build/

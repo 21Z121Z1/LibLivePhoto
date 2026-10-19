@@ -91,6 +91,13 @@ impl Inspection {
 /// within a phase. Browser cancellation terminates the dedicated worker.
 pub fn inspect(
     input: Input<'_>,
+    progress: impl FnMut(Phase) -> ControlFlow<()>,
+) -> Result<Inspection, InspectError> {
+    inspect_with_handlers(input, &liblivephoto::HandlerOptions::default(), progress)
+}
+pub fn inspect_with_handlers(
+    input: Input<'_>,
+    handlers: &liblivephoto::HandlerOptions,
     mut progress: impl FnMut(Phase) -> ControlFlow<()>,
 ) -> Result<Inspection, InspectError> {
     let mut phase = |p| {
@@ -103,7 +110,7 @@ pub fn inspect(
     phase(Phase::Parse)?;
     let mut options = ParseOptions::compatible();
     options.max_input_bytes = 128 * 1024 * 1024;
-    let photo = MotionPhoto::parse(input, options)?;
+    let photo = MotionPhoto::parse_with_handlers(input, options, handlers)?;
     phase(Phase::Validate)?;
     let report = photo.validate()?;
     let mut diagnostics = photo

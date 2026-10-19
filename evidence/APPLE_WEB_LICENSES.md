@@ -16,3 +16,11 @@ license analysis in GOOGLE_CORE_RUN.md remains applicable to the reference build
 
 The web production build copies only project JS/CSS/HTML, generated WASM binding,
 and synthetic assets. Node/Playwright/Swift SDK binaries are not copied to it.
+
+The native interface stage adds pinned `jni 0.21.1`, `jni-sys`, `cesu8`, `combine`,
+`bytes`, `thiserror` and platform support crates. They are not assumed to have a
+single license; native-dependencies.json records each locked downloaded package's
+own Cargo license/source/checksum. The C ABI and Java protocol codec are project
+code; no Google Java/protobuf/JNI implementation was copied. OpenJDK is an external
+build/test runtime under its own GPL + Classpath Exception terms, not bundled or
+relicensed by this library. Android/Apple SDK terms remain separate.

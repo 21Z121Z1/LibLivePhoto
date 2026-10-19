@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/liblivephoto", "crates/liblivephoto-format", "crates/liblivephoto-bridge"]
+members = ["crates/liblivephoto", "crates/liblivephoto-format", "crates/liblivephoto-bridge", "crates/liblivephoto-interface", "crates/liblivephoto-cli", "crates/liblivephoto-native"]
 resolver = "2"
 
 [workspace.package]

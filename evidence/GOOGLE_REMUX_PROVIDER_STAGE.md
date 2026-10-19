@@ -52,7 +52,5 @@ complete BMFF candidates and retains the full movie. Google memory extraction ca
 also count a suffix as movie bytes; file extraction is compared separately. These
 are recorded differences, not reasons to reproduce truncation in this library.
 
-Remaining: broader provider/corpus/HEIF variants, full metadata engine/registry,
-scoring descriptor projection, complete CLI and Java/JNI/Android wrapping, and
-native Gallery acceptance. See the complete inventory; this stage does not claim
+At this historical checkpoint those items were open. Subsequent 3f5287e implemented the metadata engine/registry, scoring descriptor projection and additional Samsung HEIF variants; see GOOGLE_METADATA_STAGE.md and metadata-3f5287e.json. CLI/Java/JNI work now has real implementations and host tests; Android services, broader provider/layout audits and native Gallery acceptance remain open. See the complete inventory; this stage does not claim
 full ecosystem completion.
