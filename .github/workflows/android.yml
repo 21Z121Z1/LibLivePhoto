@@ -1,0 +1,61 @@
+name: Android native services
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  sdk-and-services:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,x86_64-linux-android
+      - name: Inspect installed SDK, NDK, licenses and virtualization
+        run: |
+          python3 - <<'PY'
+          import os,pathlib
+          sdk=pathlib.Path(os.environ['ANDROID_HOME'])
+          for directory in ['platforms','build-tools','ndk','licenses','system-images']:
+              print(directory, sorted(str(p.relative_to(sdk)) for p in (sdk/directory).glob('*')))
+          print('kvm exists/read/write:',os.path.exists('/dev/kvm'),os.access('/dev/kvm',os.R_OK),os.access('/dev/kvm',os.W_OK))
+          PY
+      - run: python3 scripts/build_android.py
+      - name: Install emulator image under the runner's existing licenses
+        run: sdkmanager 'system-images;android-35;default;x86_64' </dev/null
+      - name: Run an independent emulator without changing device permissions
+        run: |
+          echo no | avdmanager create avd -n llp_acceptance -k 'system-images;android-35;default;x86_64' --force
+          accel=off
+          if test -r /dev/kvm && test -w /dev/kvm; then accel=on; fi
+          "$ANDROID_HOME/emulator/emulator" -avd llp_acceptance -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel "$accel" > android/build/emulator.log 2>&1 &
+          emulator_pid=$!
+          trap 'kill "$emulator_pid" || true' EXIT
+          python3 - <<'PY'
+          import subprocess,time
+          deadline=time.monotonic()+600
+          while time.monotonic()<deadline:
+              r=subprocess.run(['adb','shell','getprop','sys.boot_completed'],capture_output=True,text=True,timeout=20)
+              if r.returncode==0 and r.stdout.strip()=='1': break
+              time.sleep(5)
+          else: raise SystemExit('emulator failed to boot within 600 seconds; see emulator.log')
+          PY
+          python3 scripts/test_android.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-service-evidence
+          path: |
+            android/build/*receipt.json
+            android/build/*.log
+            android/build/liblivephoto-android.aar
+            android/build/liblivephoto-acceptance.apk

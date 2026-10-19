@@ -16,3 +16,4 @@
 /java/build/
 /android/.gradle/
 /android/**/build/
+/scripts/__pycache__/

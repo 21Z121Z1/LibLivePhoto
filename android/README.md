@@ -1,0 +1,62 @@
+# Android bound services (API 26+)
+
+The AAR packages the maintained Java API, Rust JNI library (`arm64-v8a` and
+`x86_64`), AIDL and four non-exported services. `MetadataParserService` runs in an
+isolated process; builder, checker and extractor use separate application
+processes. No media permission, Internet permission, upload or file publication
+is performed. Moments construction is excluded.
+
+Build with an **already installed and licensed** Android SDK/NDK, full JDK 21 and
+Rust targets `aarch64-linux-android,x86_64-linux-android`:
+
+```sh
+python3 scripts/build_android.py
+python3 scripts/test_android.py # only on your authorized test device/emulator
+```
+
+The script does not accept SDK licenses. It reports missing paths. The resulting
+`android/build/liblivephoto-android.aar` can be consumed as a local AAR by a host
+Android application; it includes its service manifest and shrinker JNI rule.
+The separately signed acceptance APK uses only the project's synthetic media.
+Its generated test key is ignored and is not uploaded. No release is published.
+
+```java
+MotionPhotoClient client = new MotionPhotoClient(context, MetadataParserService.class);
+client.ready().thenAccept(connected -> {
+    // Keep this descriptor open until execute() returns; the host owns it.
+    try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)) {
+        connected.execute(new Request("metadata"), MotionPhotoClient.Source.whole(fd), null,
+            (phase, done, total) -> { /* dispatch UI updates yourself */ })
+            .result().thenAccept(result -> { /* owned metadata and original file bytes */ });
+    } catch (Exception error) { /* explicit connection/request/I/O error */ }
+});
+// Close when the host no longer needs this binding. Active operations cancel.
+```
+
+Use `MotionPhotoClient.Source.range(fd, offset, length)` for bounded descriptors.
+Reads are positional, leave the caller's cursor unchanged and never close the
+caller descriptor. A path is opened by the host; in-memory byte inputs can use
+`NativeEngine` directly or a host-owned temporary FD. The service limit is
+**32 MiB aggregate input**, 64 KiB request JSON, one running and two queued jobs
+per service. These are explicit wrapper limits, distinct from core/JVM limits.
+Pipes and non-seekable inputs are rejected by range validation. Responses use
+LLP1 over a reliable output pipe, with a 160 MiB client response budget; Binder
+carries only small request/progress/status values. A result is decoded fully
+before the host can explicitly write a new output file. The service rejects a
+regular output file, so it cannot overwrite an input by aliasing its descriptor.
+
+Build: `new Request("build").inputKind("parts").target("google-jpeg")`
+with two sources and an `ExactTime`. Check: `new Request("check")`. Extract:
+`new Request("extract").option("video",true)...`. Metadata parser also supports
+`parse`, `metadata`, `classify-metadata`, `xmp`, `agtm` and provider filters in
+the same request schema as the Java API/CLI. A service rejects actions outside
+its role. `NativeResult.success` and structured metadata contain core failures;
+connection, IPC and truncated response failures complete the future exceptionally.
+Cancellation stops reads/queued work and discards late results. A synchronous
+Rust phase is not interruptible internally. Callback process death cancels work.
+
+See [official AIDL threading/ownership guidance](https://developer.android.com/develop/background-work/services/aidl)
+and [ParcelFileDescriptor](https://developer.android.com/reference/android/os/ParcelFileDescriptor).
+The build receipt is separate from installed-APK runtime evidence. Emulator
+service success does not verify vendor Gallery support, camera capture or
+physical-device HDR rendering. No device access or permission bypass is used.

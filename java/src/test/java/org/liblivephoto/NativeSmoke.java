@@ -11,7 +11,10 @@ public final class NativeSmoke {
     NativeResult blocked=engine.build(Input.bytes(still),Input.bytes(movie),new ExactTime(1,3),"google-jpeg");check(!blocked.success&&blocked.files.isEmpty(),"non-exact time must not build");check(!engine.parse(Input.bytes(new byte[]{1,2,3})).success,"invalid input error");
     AtomicReference<Runnable> pending=new AtomicReference<>();AtomicInteger callbacks=new AtomicInteger();NativeEngine.Operation op=engine.submit(pending::set,new Request("parse"),Input.bytes(motion),null,(p,n,t)->{},(r,e)->callbacks.incrementAndGet());check(op.cancel(),"cancel pending");pending.get().run();check(callbacks.get()==1&&op.state()==NativeEngine.Operation.State.CANCELLED,"terminal cancellation");
     for(int i=0;i<32;i++){NativeResult loop=engine.parse(Input.bytes(motion));check(loop.success,"repeated JNI response lifetime");}
+    ByteArrayOutputStream wire=new ByteArrayOutputStream();extracted.writeEnvelope(wire);NativeResult transported=NativeResult.readEnvelope(new ByteArrayInputStream(wire.toByteArray()),wire.size());check(transported.success&&Arrays.equals(movie,transported.files.get(0).copyBytes()),"streamed response preserves original payload");
+    try{NativeResult.readEnvelope(new ByteArrayInputStream(wire.toByteArray()),16);throw new AssertionError("stream budget ignored");}catch(IOException expected){}
+    wire.reset();NativeResult.failure("service error \"quoted\" ").writeEnvelope(wire);check(!NativeResult.decode(wire.toByteArray()).success,"structured transport failure");
     try{NativeResult.decode(new byte[]{1,2,3,4});throw new AssertionError("bad envelope accepted");}catch(IOException expected){}
-    System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes");
+    System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded streamed envelope");
   }
 }
