@@ -320,3 +320,45 @@ pub fn sef(records: &[(u16, &str, Vec<u8>)]) -> Vec<u8> {
     d.extend_from_slice(b"SEFT");
     d
 }
+
+/// Synthetic metadata timeline fixture; mdat offsets precede the appended moov.
+pub fn metadata_edits(
+    mut movie: Vec<u8>,
+    movie_scale: u32,
+    edits: &[(u64, i64, i16, i16)],
+) -> Vec<u8> {
+    use liblivephoto_format::isobmff::parse_boxes;
+    let moov = parse_boxes(&movie, 0..movie.len())
+        .unwrap()
+        .into_iter()
+        .find(|b| b.kind.as_bytes() == b"moov")
+        .unwrap();
+    assert_eq!(moov.data_end, movie.len()); // mdat offsets precede moov.
+    let children = parse_boxes(&movie, moov.data_start..moov.data_end).unwrap();
+    let mvhd = children
+        .iter()
+        .find(|b| b.kind.as_bytes() == b"mvhd")
+        .unwrap();
+    movie[mvhd.data_start + 12..mvhd.data_start + 16].copy_from_slice(&movie_scale.to_be_bytes());
+    let trak = children
+        .iter()
+        .filter(|b| b.kind.as_bytes() == b"trak")
+        .nth(1)
+        .unwrap();
+    let mut payload = (edits.len() as u32).to_be_bytes().to_vec();
+    for (duration, start, integer, fraction) in edits {
+        payload.extend(duration.to_be_bytes());
+        payload.extend(start.to_be_bytes());
+        payload.extend(integer.to_be_bytes());
+        payload.extend(fraction.to_be_bytes());
+    }
+    let mut elst = full(b"elst", &payload);
+    elst[8] = 1;
+    let edts = boxed(b"edts", &elst);
+    movie.splice(trak.data_end..trak.data_end, edts.iter().copied());
+    for pos in [moov.box_start, trak.box_start] {
+        let old = u32::from_be_bytes(movie[pos..pos + 4].try_into().unwrap());
+        movie[pos..pos + 4].copy_from_slice(&(old + edts.len() as u32).to_be_bytes());
+    }
+    movie
+}

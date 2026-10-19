@@ -143,7 +143,7 @@ fn heif_primary_property_order_hdr_signaling_and_unknown_properties_survive_buil
     )
     .unwrap();
     let facts = source.still_metadata().unwrap();
-    assert_eq!(facts.heif_transform.unwrap().matrix, [0, 1, 1, 0]);
+    assert_eq!(facts.heif_transform.unwrap().matrix, [0, -1, -1, 0]);
     assert_eq!(facts.color[0].hdr_transfer(), Some(HdrTransfer::Pq));
     assert_eq!(
         facts.primary_properties.last().unwrap().bytes,

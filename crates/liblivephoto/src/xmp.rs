@@ -152,8 +152,20 @@ impl XmpDocument {
         description.push('>');
         if !fields.directory.is_empty() {
             description.push_str("<Container:Directory><rdf:Seq>");
-            for item in &fields.directory {
-                description.push_str(&format!("<rdf:li rdf:parseType=\"Resource\"><Container:Item Item:Mime=\"{}\" Item:Semantic=\"{}\" Item:Length=\"{}\" Item:Padding=\"{}\"/></rdf:li>",quick_xml::escape::escape(&item.mime),quick_xml::escape::escape(&item.semantic),item.length,item.padding));
+            for (index, item) in fields.directory.iter().enumerate() {
+                if index != 0 && item.padding != 0 {
+                    return Err(Error::MetadataMismatch(
+                        "padding on a secondary directory item",
+                    ));
+                }
+                // Motion Photo 1.0 permits the Padding attribute only on the
+                // primary item, including when a secondary value would be zero.
+                let padding = if index == 0 {
+                    format!(" Item:Padding=\"{}\"", item.padding)
+                } else {
+                    String::new()
+                };
+                description.push_str(&format!("<rdf:li rdf:parseType=\"Resource\"><Container:Item Item:Mime=\"{}\" Item:Semantic=\"{}\" Item:Length=\"{}\"{padding}/></rdf:li>",quick_xml::escape::escape(&item.mime),quick_xml::escape::escape(&item.semantic),item.length));
             }
             description.push_str("</rdf:Seq></Container:Directory>");
         }

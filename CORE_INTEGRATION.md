@@ -22,8 +22,9 @@ On Unix, `open_fd(BorrowedFd, offset, length, options)` duplicates a borrowed
 descriptor and uses positional reads. The caller retains ownership and its
 cursor. On Windows, `open_file` restores the cursor after `seek_read`; callers
 must synchronize other operations on the file and cloned handles. Windows and
-macOS execution were not available in this Linux run. The existing CI matrix
-still includes these tests. Other platforms report unsupported positional input.
+macOS tests and packaged consumers actually passed at verified baseline
+`4848e5f`; see [the exact execution receipt](evidence/stable-baseline-4848e5f.json).
+Other platforms report unsupported positional input.
 Zero length does not mean the remainder of the file.
 
 All input forms feed the same parser and resource extractor. `extract` writes
@@ -68,6 +69,8 @@ The library does not select an encoder or transcode media.
 
 `still_metadata()` exposes raw EXIF orientation and a shared orthogonal-transform
 representation for the eight EXIF orientations and HEIF `irot`/`imir` properties.
+`imir` axis0 exchanges top/bottom; axis1 exchanges left/right, following the
+clear user-provided ISO23008-12:2025 §6.5.12 text and libavif's public declaration.
 The matrix uses x-right/y-down coordinates. The API retains EXIF and HEIF
 declarations separately. It does not invent a composition order between them,
 apply a crop, or normalize an arbitrary movie matrix. An absent orientation and
@@ -79,6 +82,12 @@ explicit fields. Transfer codes 16 and 18 identify signaled PQ/HLG; absent or
 uninterpreted color metadata does not mean SDR. Primary HEIF property order,
 unknown properties, codec configuration and raw HDR properties are retained.
 ICC interpretation, gain-map application and HDR pixel rendering are absent.
+The [normative/source/runtime map](evidence/NORMATIVE_CONFORMANCE.md) records
+which clauses are supported subsets. HEIF self-contained construction0/1 is
+supported; construction2 and external item sources are rejected explicitly.
+Absolute item data inside the old meta payload survives append-only metadata
+replacement; construction1 ranges stay inside their idat. The bounded metadata
+payload assembler preflights4096 extents/16MiB referenced bytes before copying.
 Fact extraction allows at most 4096 primary property associations and 16 MiB of
 their payload bytes, so repeated references cannot amplify allocation without
 bound. A conversion plan reports inspection failures before writing.
@@ -93,9 +102,12 @@ not certify every color, crop, gain-map or vendor display semantic.
 `agtm_at(MediaTime)` returns original metadata sample bytes, track/sample IDs,
 presentation interval and decoded version-0 baseline fields. It reads validated
 sample tables and honors `ctts`. Explicit `it35`/T.35 signaling establishes the
-association. Missing samples return an empty vector. Unsupported metadata edit
-lists, unsupported versions, truncated baseline fields and nonintegral time
-conversion fail explicitly. The method does not scan arbitrary movie bytes,
+association. Missing samples return an empty vector. Unit-rate edit lists map
+empty, trimmed and repeated segments into movie time, clipping sample intervals
+at edit boundaries without changing payloads or source sample indices. Edit
+durations and queries must convert exactly to track ticks; non-unit rates,
+overflow, fragmentation, unsupported versions, truncated baseline fields and
+nonintegral time conversion fail explicitly. The method does not scan arbitrary movie bytes,
 substitute sample 1 or fabricate a baseline for missing/truncated samples.
 
 `decode_agtm` parses every version-0 field read by the pinned Google decoder:
@@ -112,6 +124,14 @@ stabilization descriptors are decoded by `decode_video_metadata` and
 `extract_video_metadata`: raw/unknown bits, exact times and semantic issues stay
 available. Nine same-input decoder vectors match the pinned reference. Moments
 construction remains explicitly excluded.
+
+`metadata_packets` reports raw decode-order packets, including composition
+offsets, on the track media timeline before edits. These raw packets remain
+inspectable for unsupported edit rates. Scoring semantic validation with edits
+still rejects explicitly because payload-internal score timestamps have not
+been mapped; it never labels their raw times as edited movie times. Timed AGTM
+selects one sequential edit before scanning samples, avoiding a samples × edits
+allocation/work expansion; the existing aggregate extraction budgets remain.
 
 `remux::remove_metadata_tracks(movie, ids)` is explicit opt-in deletion. Only
 unique metadata track IDs are accepted. The operation rejects fragmented/indexed

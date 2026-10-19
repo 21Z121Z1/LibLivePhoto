@@ -1,0 +1,74 @@
+{
+  "record_kind": "Local post-baseline execution bound to exact source trees; final commit CI is independently required.",
+  "implementation_base_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f",
+  "source_trees": {
+    "crates": "9e5f1123ca904916c45c65aa3c61c61ab33eec51",
+    "fuzz": "dcaa2efbbb08e73625e60829a0671dfe599fcf54",
+    "scripts": "ff904586131a2f4c854c71b25cf5698bb29f75be",
+    "java/src/main": "eb60fa2082bf7b43f9810744af8d4cfa967e3a85",
+    "android/src/main": "d3ca52f86ff9e7d150a306314f2309a997efd84e",
+    "apple/Sources": "63b36261408ca63aabf483ebc1c65a82f301e85a",
+    "web/src": "1af74ff208d1d93ee6a60be927256f95f6c06359",
+    "native/include": "f8640a086548f2a01b71a7d0aefbeedcaea2fa62"
+  },
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "commands": [
+    {
+      "command": "cargo test --locked --workspace --all-targets",
+      "log": "evidence/local/standards-edit-default.log",
+      "log_sha256": "c9ddbcade8a5f812f56c0c2e29e159b568288704ccacf07361788fbc2ca45942",
+      "result": "passed",
+      "passed": 171,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "cargo test --locked --workspace --all-targets --all-features",
+      "log": "evidence/local/standards-edit-core.log",
+      "log_sha256": "d0f31340c0b60643dcd8d25bde0b91aa6d347bfd8bb353b2d410eac04eb8f2ea",
+      "result": "passed",
+      "passed": 171,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "cargo clippy --locked --workspace --all-targets --all-features -- -D warnings",
+      "log": "evidence/local/standards-edit-clippy.log",
+      "log_sha256": "f74cc021ebb0703da379ca4af32f095c96d84c419149896413e1f4893f13759c",
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/test_java.py --compiler-java-home /workspace/toolchains/jdk21-overlay",
+      "log": "evidence/local/standards-edit-jni.log",
+      "log_sha256": "a254dcdb812fbaf0bba6af77f3ff29dc1bf1ab619c4a279f438a182823ce3add",
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/test_c_abi.py",
+      "log": "evidence/local/standards-edit-c-abi.log",
+      "log_sha256": "f430d5be83644b9c7c1e0614ac0c7139a69507116fa44b36796e562b02051152",
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/agtm_differential.py --reference-source /workspace/libmotionphoto-reference",
+      "log": "evidence/local/standards-edit-agtm-diff.log",
+      "log_sha256": "5a1debef7d4bf459aafb415222b17f686cd301c47f243d0cf6f895c19dcd8d19",
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/timed_metadata_differential.py --reference-source /workspace/libmotionphoto-reference",
+      "log": "evidence/local/standards-edit-time-diff.log",
+      "log_sha256": "cff9296cc303bdb4d42ef3540a12e4fd3657d3b1c02cdbf83cd90b9048aaf6e1",
+      "result": "passed"
+    }
+  ],
+  "new_rust_tests": 17,
+  "same_input_timed_cases": 20,
+  "raw_agtm_differential_cases": 12,
+  "limits": [
+    "Local Swift/Android SDK runs unavailable; current exact-SHA CI is pending.",
+    "Three original-fixture tests are ignored locally and run explicitly in fixture CI.",
+    "ISO2025 text is provided and selected sections are readable through Library; container transfer failed CONNECT403, no local body.",
+    "No universal Google/XMP/HEIF/UWA/native Gallery/Photos compliance claim."
+  ]
+}

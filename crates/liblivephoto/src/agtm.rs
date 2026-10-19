@@ -145,7 +145,7 @@ pub fn extract_agtm_from_video(video: &[u8], time: MediaTime) -> Result<Vec<Agtm
         {
             continue;
         }
-        for sample in crate::tracks::metadata_at(video, track, time)? {
+        for sample in crate::tracks::metadata_at(video, track, container.movie_timescale, time)? {
             let signaled = sample.description == *b"it35"
                 && sample.description_bytes.get(8..).is_some_and(explicit_t35);
             if !signaled && !explicit_t35(sample.bytes) {

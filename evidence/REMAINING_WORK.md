@@ -1,0 +1,24 @@
+# Remaining implementation and acceptance
+
+The immutable verified baseline is
+`4848e5fb80b650fdefcedbe9aebedef9de7e627f`:
+[receipt](stable-baseline-4848e5f.json), [complete checklist](ACCEPTANCE_CHECKLIST.md),
+[Google source/test bindings](SOURCE_TEST_MAP.md).
+Subsequent code changes require their own tests; the baseline does not certify
+them. No board is called universally compatible or 100% complete.
+
+| Requirement | Status and next concrete work | Required evidence / boundary |
+| --- | --- | --- |
+| Supplied ISO23008-12:2025 text | User-provided339029-byte Chinese transcription is accessible through authorized Library section reads. Required prepare_materialize succeeded, but its signed download to the private container directory failed with proxy CONNECT403; no local body file exists. | [Exact transfer/access receipt](iso23008-materialization-access.json). Local materialization remains blocked on authorized transport/platform placement. No signed URL guessing, proxy bypass, public body commit or full-text artifact. Relevant clear clauses already bind actual mirror/source-boundary regressions. |
+| Timed metadata with MP4 edit lists | Unit-rate AGTM selection through empty/clipped/repeated edits is implemented; eight targeted regressions passed locally. Raw packet media times remain separate. Full post-change verification is pending. Scoring semantic validation with edits still rejects explicitly; payload-internal timestamps are not silently rewritten. | Exact interval/byte/index/error/overflow regressions and aggregate budgets. Non-unit/dwell/reverse edits, nonintegral track-tick conversion and fragmented samples remain explicit unsupported layouts. Pinned Google selects by stts without ctts/edit mapping; equivalence is not claimed for those cases. |
+| General remux layouts | Bounded support is implemented. Fragmented/indexed/external/reference-bearing layouts are rejected; importing them is further implementation, not a missing device permission. | Each additional layout needs an explicit reference/offset/timing contract and preservation tests before support can be claimed. No unrelated rewrite is planned. |
+| Media semantics and rendering | Observed transform/CICP/ICC/HDR facts and caller codec contracts exist. AAC PCE, QuickTime-v2/wave and codec VUI/SEI interpretation, arbitrary crop/matrix normalization and HDR/gain-map pixel rendering are not implemented. | Distinguish inspection/preservation from decoder/rendering requirements. AGTM extraction and byte preservation do not establish rendered HDR fidelity. |
+| Apple Photos import/edit/render/commit and hardware playback/capture/HDR | Blocked on external acceptance resources: authorized Photos test library, representative editable assets and supported physical device/host app. Core adapters can still receive independent fixes. | Real permissioned operations and output/display checks. Current macOS local-pair resource export, compile and iOS26.2 process tests do not close this gate. Do not change TCC/privacy controls. |
+| iOS26.5 Simulator startup | Recorded CoreLocation-migration/System-App readiness failure remains unresolved. iOS26.2/SE3 passed actual Swift/Rust execution. | A distinct successful boot plus the original native assertions on 26.5 would be required. SDK26.5 compilation and tests on26.2 cannot substitute. Do not alter installed runtime images or permissions. |
+| Honor original variants and vendor Gallery | Blocked on legal redistributable original-device samples and authorized devices/Gallery versions. Synthetic/reference provider tests already run. | Record sample provenance and exact format/device/version; native experience claims must match that evidence. Samsung writer remains direct JPEG only; no general Oplus/Xiaomi/vivo native writer claim. |
+| Android arm64/device range | arm64 and x86_64 packages build; all four API35/x86_64 remote scopes passed65 assertions. Physical arm64, other Android versions and vendor Gallery are unverified. | Execute the same bounded lifecycle/FD/cancel assertions on each additional claimed runtime; an arm64 build is not arm64 runtime evidence. |
+| Apple LivePhotosKit SDK runtime | Blocked: official CDN fetch received proxy CONNECT HTTP403. SDK body was not fetched or executed; full official document bodies were unavailable. | Authorized SDK/document access and actual runtime media tests. Optional binding contract tests and the independent WASM/Chrome frontend remain separately verified. No access-control bypass or SDK redistribution. |
+
+Moments construction is excluded by the user's explicit instruction. Existing
+score/flag reading and preservation remain in scope. No merge, release, public
+deployment, new Codex task, or model/service-tier change is part of this work.

@@ -14,6 +14,11 @@ pub struct MetadataPacket<'a> {
     pub duration: MediaTime,
     pub bytes: &'a [u8],
 }
+/// Raw packets in decode order. Presentation/duration use the track media
+/// timeline (including composition offsets), before any edit list. Packet bytes
+/// and embedded timestamps are unchanged, including for non-unit edits.
+/// Fragmented samples are unsupported. For edited movie-time AGTM selection,
+/// use `extract_agtm_from_video` instead.
 pub fn metadata_packets(video: &[u8], track_id: u32) -> Result<Vec<MetadataPacket<'_>>, Error> {
     let container = crate::tracks::inspect(video, ResourceId(0), false)?;
     let track = container
@@ -57,6 +62,11 @@ pub fn extract_video_metadata(
     for track in container.tracks.iter().filter(|t| {
         !matches!(t.kind, TrackKind::Video | TrackKind::Audio) && t.sample_entries.contains(b"mett")
     }) {
+        if !track.edits.is_empty() {
+            return Err(Error::UnsupportedLayout(
+                "scoring metadata validation with edit lists is not implemented",
+            ));
+        }
         // Test the actual sample description before interpreting the sample bytes.
         for packet in crate::tracks::metadata_samples(video, track)? {
             const MIME: &[u8] = b"application/motionphoto-image-meta";

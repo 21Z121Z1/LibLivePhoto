@@ -10,12 +10,24 @@ remain in [GOOGLE_COMPLETE_INVENTORY.md](GOOGLE_COMPLETE_INVENTORY.md), includin
 source/header/implementation/test authority. This list adds delivery/acceptance
 gates; it does not remove or replace those rows.
 
+Verified baseline: **4848e5fb80b650fdefcedbe9aebedef9de7e627f**, preserved as
+local `baseline/verified-4848e5f` and an [immutable receipt](stable-baseline-4848e5f.json).
+All three exact-SHA workflows completed successfully: [hosts/corpus/ASan](https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39262250914),
+[Apple/browser](https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39262250676),
+[installed Android services](https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39262250706).
+Later changes must supply their own execution evidence. Remaining implementation
+and external acceptance requirements are tracked in [REMAINING_WORK.md](REMAINING_WORK.md).
+
 Stability is a hard gate for all boards. See [STABILITY_GATES.md](STABILITY_GATES.md)
 for malformed ranges, cumulative allocation/copy bounds, FFI ownership,
 cancellation, failure rollback and the limits of each runtime acceptance claim.
 The [pinned source/test map](SOURCE_TEST_MAP.md) distinguishes public facade,
 internal builder use and operation-specific input/output differences. For the
-current branch SHA, Android is verified only if its CI artifact contains
+separate standard-clause mapping see [NORMATIVE_CONFORMANCE.md](NORMATIVE_CONFORMANCE.md):
+Google format requirements, pinned code parity and Apple system acceptance are
+different gates. The user-provided ISO2025 text is accessible through authorized
+Library section reads; its container download is blocked, recorded separately.
+For the current branch SHA, Android is verified only if its CI artifact contains
 `runtime-receipt.json` with all four completed scopes; a partial trace below is
 historical evidence, not a substituted pass. Emulator success covers that x86_64
 API35 runtime, not an arm64 device, every API26+ runtime, or vendor Gallery.
@@ -33,8 +45,8 @@ API35 runtime, not an arm64 device, every API26+ runtime, or vendor Gallery.
 | Remux R-OPTIMIZE | Support query, fast-start/compaction, correct offsets/large fields, hvc1 boundary, unknown bytes retained/reported | 31c9f93 tests/receipt; six pinned optimizer/copy/delete comparisons include real H.264 B frames, AAC, Apple metadata and hvc1; unsupported layouts remain explicit. |
 | Google G-CLI | Complete equivalent build/check/extract/metadata/AGTM/version commands, errors/exit codes and packaging | Maintained llp commands implemented and integration-tested; release CLI/C ABI/Java archive and external consumer checks passed on three host platforms at 9fa6208; complete metadata and AGTM interfaces have shared-core tests. |
 | Google G-JAVA | Maintained Java model and JNI build/check/extract/metadata/AGTM APIs, path/memory/range, callbacks/errors/ownership | Java/JNI and isolated C ABI implemented; actual host JVM memory/path/channel-range/build/extract/error/cancel/lifetime smoke and C calls passed. Three-platform packaged release/external Java consumer passed at 9fa6208; actual AGTM path/memory/range and raw metadata cases added. |
-| Google G-ANDROID | Metadata parser and builder/checker/extractor services, fd ownership/bounds, isolated service and usable package/client | Implemented and verified at a10e5d2: actual SDK36/NDK27.3 dual-ABI AAR/APK, API35 x86_64 installed runtime, all four remote services and scopes passed (core20/metadata11/lifecycle16/concurrency18; 65 assertions). Raw AGTM, exact bytes/time, range/cursor, repeated calls, queued readers and terminal cancellation executed. [Runtime receipt](android-runtime-a10e5d2.json). Arm64 device and native Gallery remain separate; no device permission changes. |
-| Apple A-CORE-BRIDGE | Native Swift actually invokes Rust core; exact resource/time/diagnostic contract and real tests | Actual C ABI binding and mandatory native library CI tests passed at 83018c4 (10 Swift tests total). iOS static XCFramework and actual statically linked Swift/Rust operations passed in iOS 26.5 Simulator at d5729c7; physical signed-app/display acceptance remains separate. |
+| Google G-ANDROID | Metadata parser and builder/checker/extractor services, fd ownership/bounds, isolated service and usable package/client | Verified at 4848e5f: actual SDK36/NDK27.3 dual-ABI AAR/APK, API35 x86_64 installed runtime, all four remote services and scopes passed (core20/metadata11/lifecycle16/concurrency18; 65 assertions). Raw AGTM, exact bytes/time, range/cursor, repeated calls, queued readers and terminal cancellation executed. [Baseline receipt](stable-baseline-4848e5f.json). Arm64 device and native Gallery remain separate; no device permission changes. |
+| Apple A-CORE-BRIDGE | Native Swift actually invokes Rust core; exact resource/time/diagnostic contract and real tests | Verified at 4848e5f: 11 macOS Swift tests, static XCFramework, iOS SDK compile and actual Swift→static Rust process on SE3/iOS26.2 (23C54). Boot monitor completed and owned device was deleted. Compiler SDK26.5 is distinct from runtime26.2. Earlier iOS26.5 startup failures remain unresolved; physical signed-app/display acceptance remains separate. |
 | Apple A-RESOURCES | PHLivePhoto load, resource inventory and export; PHAsset creation/import with pairedVideo and correct permission/commit behavior | At 83018c4 actual macOS PhotoKit loads the generated valid pair and exports photo/pairedVideo bytes exactly; 10 native tests passed. Permitted Photos-library import/edit acceptance remains open. |
 | Apple A-PLAYBACK | System live view, playback state, mute and gesture behavior | iOS SDK compile passed; macOS system-view object/lifecycle test passed at d5729c7 (11 Swift tests); macOS public gesture accessor is unavailable in the SDK; physical playback/gesture/display acceptance remains open. |
 | Apple A-EDIT | Frame processor/audio/preview/output and asset edit commit, cancellation/progress/errors | Editing input, host adjustment/output and explicit commit APIs compile after the SDK callback fix; permissioned asset/render/commit/color runs remain open. |
@@ -42,12 +54,12 @@ API35 runtime, not an arm64 device, every API26+ runtime, or vendor Gallery.
 | Web W-BINDING | Actual Rust WASM, local motion/pair inputs, exact photo/frame timing and extraction | Implemented; local and remote Chrome tests passed; no remote upload, deploy or implicit transcode. |
 | Web W-INTERACTION | Responsive/keyboard load/switch/play/pause/mute/seek/step/cancel, clear invalid/unsupported states and compatible preview | Seven actual Chrome tests include AAC decode/mute, HEIC and unsupported-movie codec errors, original-byte downloads, URL disposal and replacement/cancel races; no physical speaker/HDR claim. |
 | Web W-TIMING | Cover/video pixel and timeline test; HTMLVideoElement photoTime/frameTimes explicitly supplied; original metadataVideoSrc path | 48 sample times, frame 13, exact rational seek, independent compositor mediaTime=13/16 observation, pixel comparison and optional LPK-binding unit test. Apple Player runtime/full document-body verification remains open. |
-| Release V-REGRESSION | Exact-SHA Linux/macOS/Windows, corpus, consumers, sanitizers, frontend/native builds with evidence | Existing jobs retained; read every checkpoint result. Compile success is not device Gallery/Photos acceptance. |
+| Release V-REGRESSION | Exact-SHA Linux/macOS/Windows, corpus, consumers, sanitizers, frontend/native builds with evidence | At 4848e5f all three workflows passed: 154 all-feature Rust tests plus explicit original-fixture job, packaged C/JNI/Java consumers on three hosts, 3142603 ASan executions, 4 Node and 7 actual Chrome tests, 11 macOS Swift tests, actual iOS26.2 process and Android four-scope runtime. Historical differential receipts retain their original SHAs. Compile success is not device Gallery/Photos acceptance. |
 | Release V-DATA | Legal redistributable test data, dependency-specific licensing, no private images/credentials, original worktrees intact | Synthetic CC0 demo and locked fixture provenance; no private media committed. SDK/AAR/XCFramework now retain 46 locked dependency inventories/notices; missing jni-sys-macros workspace licenses were recovered from its exact recorded source commit. |
 
 Known environment/source limits must be reported as concrete blockers with the
 minimal required input. Current examples: a permissioned Apple device/Photos
-library for import/edit/playback UX; a passing Android installed-service runtime;
+library for import/edit/playback UX; physical arm64 Android/vendor Gallery acceptance;
 legally redistributable original Honor variants for corpus/device acceptance;
 full Apple document bodies unavailable through the current reader/container.
 Independent implementation/testing continues while those gates are unavailable.

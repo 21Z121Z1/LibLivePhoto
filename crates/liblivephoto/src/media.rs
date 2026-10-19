@@ -210,9 +210,9 @@ pub(crate) fn inspect_still(data: &[u8], mime: &str) -> Result<StillMetadata> {
                 b"imir" if p.len() == 1 && p[0] & !1 == 0 => {
                     transform = transform.then(OrthogonalTransform {
                         matrix: if p[0] == 0 {
-                            [-1, 0, 0, 1]
-                        } else {
                             [1, 0, 0, -1]
+                        } else {
+                            [-1, 0, 0, 1]
                         },
                     });
                     transformed = true;

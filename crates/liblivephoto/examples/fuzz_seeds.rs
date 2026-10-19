@@ -13,6 +13,20 @@ fn main() -> std::io::Result<()> {
             ("ambiguous-tracks", common::input(123, 3)),
             ("movie", common::movie(1000, 2)),
             ("score-empty", vec![0xc0, 0]),
+            ("heif-idat", common::heif(b"avif")),
+            (
+                "agtm-edits",
+                common::metadata_edits(
+                    common::metadata_movie(
+                        b"it35",
+                        &[5, 0xb5, 0, 0x90, 0, 1],
+                        &[(&[0, 0], 1000)],
+                        500,
+                    ),
+                    1000,
+                    &[(1000, 500, 1, 0), (500, -1, 1, 0), (1000, 500, 1, 0)],
+                ),
+            ),
             (
                 "agtm-overlap",
                 common::overlapping_metadata_movie(b"it35", &[5, 0xb5, 0, 0x90, 0, 1], &[0, 0], 3),

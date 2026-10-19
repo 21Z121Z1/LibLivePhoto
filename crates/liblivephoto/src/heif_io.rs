@@ -102,18 +102,17 @@ pub(crate) fn items(data: &[u8], start_id: usize) -> Result<Vec<Resource>> {
             continue;
         };
         if entry.data_reference_index != 0 {
-            return Err(Error::InvalidResource);
+            return Err(Error::UnsupportedLayout(
+                "external HEIF item data reference",
+            ));
         }
-        let base = match entry.construction_method {
-            0 => 0,
+        let (base, limit) = match entry.construction_method {
+            0 => (0, data.len() as u64),
             1 => {
-                parsed
-                    .idat
-                    .as_ref()
-                    .ok_or(Error::InvalidResource)?
-                    .data_start as u64
+                let idat = parsed.idat.as_ref().ok_or(Error::InvalidResource)?;
+                (idat.data_start as u64, idat.data_end as u64)
             }
-            _ => return Err(Error::InvalidResource),
+            _ => return Err(Error::UnsupportedLayout("HEIF item construction method")),
         };
         let mut extents = Vec::new();
         for e in &entry.extents {
@@ -129,7 +128,7 @@ pub(crate) fn items(data: &[u8], start_id: usize) -> Result<Vec<Resource>> {
                 .ok_or(Error::InvalidResource)?;
             let end = start
                 .checked_add(e.length)
-                .filter(|v| *v <= data.len() as u64)
+                .filter(|v| *v <= limit)
                 .ok_or(Error::InvalidResource)?;
             extents.push(ByteRange::new(start, end)?);
         }
@@ -299,9 +298,10 @@ fn replace_metadata(data: &[u8], packet: &[u8], exif: bool) -> Result<Vec<u8>> {
     }
     let new_meta = fmt(make_box(FourCC::new(*b"meta"), &payload))?;
     let mut output = data.to_vec();
-    // Replace meta with an equal-size free box. All absolute source item offsets remain valid.
+    // Replace meta with an equal-size free box. Retain its payload: absolute
+    // item extents may point into its idat or other bytes. Clearing those bytes
+    // would silently invalidate preserved coded items before final validation.
     output[m.box_start + 4..m.box_start + 8].copy_from_slice(b"free");
-    output[m.data_start..m.data_end].fill(0);
     // A size-zero final box must become explicit before bytes are appended.
     for b in fmt(parse_boxes(data, 0..data.len()))? {
         if data[b.box_start..b.box_start + 4] == [0, 0, 0, 0] {

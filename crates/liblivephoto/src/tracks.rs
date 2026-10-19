@@ -306,14 +306,15 @@ pub(crate) fn metadata_samples<'a>(
     if track.kind == TrackKind::Video || track.kind == TrackKind::Audio {
         return Ok(Vec::new());
     }
-    if !track.edits.is_empty() {
-        return Err(Error::UnsupportedLayout(
-            "timed metadata extraction with edit lists is not implemented",
-        ));
-    }
     let top = parse_boxes(data, 0..data.len()).map_err(|_| Error::InvalidResource)?;
+    if find(&top, b"moof").is_some() {
+        return Err(Error::UnsupportedLayout("fragmented metadata samples"));
+    }
     let moov = find(&top, b"moov").ok_or(Error::InvalidResource)?;
     let children = children(data, moov)?;
+    if find(&children, b"mvex").is_some() {
+        return Err(Error::UnsupportedLayout("fragmented metadata samples"));
+    }
     let trak = children
         .iter()
         .filter(|b| b.kind.as_bytes() == b"trak")
@@ -369,6 +370,7 @@ pub(crate) fn metadata_samples<'a>(
 pub(crate) fn metadata_at<'a>(
     data: &'a [u8],
     track: &Track,
+    movie_timescale: Option<u32>,
     time: crate::MediaTime,
 ) -> Result<Vec<MetadataSample<'a>>> {
     let target = time
@@ -376,8 +378,65 @@ pub(crate) fn metadata_at<'a>(
         .filter(|t| t.value >= 0)
         .ok_or(Error::InvalidPresentation)?
         .value;
-    Ok(metadata_samples(data, track)?
+    let samples = metadata_samples(data, track)?;
+    // Raw packets use the track's media timeline. Selection uses the edited
+    // movie timeline; payload bytes and embedded timestamps are never changed.
+    let selected_edit = if track.edits.is_empty() {
+        None
+    } else {
+        let movie_scale = movie_timescale.ok_or(Error::InvalidPresentation)?;
+        let (mut elapsed, mut selected) = (0i64, None);
+        for edit in &track.edits {
+            if edit.rate_integer != 1 || edit.rate_fraction != 0 || edit.media_start < -1 {
+                return Err(Error::UnsupportedLayout("non-unit metadata timing edit"));
+            }
+            let duration = crate::MediaTime {
+                value: i64::try_from(edit.movie_duration)
+                    .map_err(|_| Error::InvalidPresentation)?,
+                timescale: movie_scale,
+            }
+            .rescale_exact(track.timescale)
+            .ok_or(Error::InvalidPresentation)?
+            .value;
+            let end = elapsed
+                .checked_add(duration)
+                .ok_or(Error::InvalidPresentation)?;
+            if edit.media_start >= 0 {
+                let media_end = edit
+                    .media_start
+                    .checked_add(duration)
+                    .ok_or(Error::InvalidPresentation)?;
+                if target >= elapsed && target < end {
+                    selected = Some((elapsed, edit.media_start, media_end));
+                }
+            }
+            elapsed = end;
+        }
+        // Edits are sequential movie intervals: at most one can contain target.
+        // Select before mapping samples, avoiding a samples × edits expansion.
+        let Some(selected) = selected else {
+            return Ok(Vec::new());
+        };
+        Some(selected)
+    };
+    Ok(samples
         .into_iter()
+        .filter_map(|mut sample| {
+            if let Some((elapsed, media_start, media_end)) = selected_edit {
+                let start = i128::from(sample.presentation.value).max(i128::from(media_start));
+                let end = (i128::from(sample.presentation.value) + i128::from(sample.duration))
+                    .min(i128::from(media_end));
+                if start >= end {
+                    return None;
+                }
+                // The intersection is inside the validated edit, so its mapped
+                // start fits elapsed..end and its duration fits the raw u32.
+                sample.presentation.value =
+                    (i128::from(elapsed) + start - i128::from(media_start)) as i64;
+                sample.duration = (end - start) as u32;
+            }
+            Some(sample)
+        })
         .filter(|s| {
             i128::from(target) >= i128::from(s.presentation.value)
                 && i128::from(target) < i128::from(s.presentation.value) + i128::from(s.duration)

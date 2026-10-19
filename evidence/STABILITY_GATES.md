@@ -53,6 +53,17 @@ remains in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
 
 ## Existing bounded contracts retained
 
+The standards/edit continuation fixes HEIF mirror-axis interpretation and retains
+the old meta payload when replacing it with free, because absolute item extents
+may reference those bytes. Construction1 extents cannot escape their idat into
+another box. The format metadata payload helper preflights all ranges and caps
+copied/repeated bytes at16MiB/4096 extents before allocating. AGTM unit-rate edit
+selection validates exact conversion/overflow and chooses one sequential edit
+before scanning samples, avoiding samples×edits amplification. Raw packet media
+times and scoring-payload timestamps remain distinct; unsupported scoring edit
+validation, metadata fragmentation and non-unit rates fail explicitly. New
+positive/negative bindings are in [NORMATIVE_CONFORMANCE.md](NORMATIVE_CONFORMANCE.md).
+
 | Boundary | Retained limit / ownership | Verification |
 | --- | --- | --- |
 | File/fd input | Checked nonempty exact range, regular file, overflow/EOF checks; combined caller-configured snapshot budget | Range/borrowed descriptor regression and JVM/Android acceptance; Unix positional read; Windows cursor restoration requires caller synchronization |
@@ -85,6 +96,14 @@ legal original Honor corpus/native Gallery behavior, and the unavailable Apple
 LivePhotosKit SDK fetch remain explicit acceptance gaps. The CDN request was
 blocked with proxy tunnel HTTP 403; no bypass or SDK redistribution occurred.
 The software Android emulator boots without changing `/dev/kvm` permissions.
+
+Verified baseline [4848e5f](stable-baseline-4848e5f.json) subsequently passed all
+three workflows, including all four installed Android scopes/65 assertions and
+the original Swift/Rust process on SE3/iOS26.2. The boot monitor completed without
+timeout recovery and the owned device was deleted. The compiler used SDK26.5;
+the actual runtime identified itself as 26.2/23C54. This does not resolve the
+older iOS26.5 startup failures described below. The receipt preserves exact job,
+artifact, source-tree and ASan execution details for later regression comparison.
 
 At `a10e5d2`, all four installed Android scopes passed (65 assertions). Apple
 passed 11 macOS tests, iOS SDK compilation and XCFramework packaging, but two

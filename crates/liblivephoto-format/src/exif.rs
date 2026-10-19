@@ -74,6 +74,10 @@ impl Orientation {
     }
 }
 
+/// Assemble one self-contained HEIF item, with at most 4096 extents and 16 MiB
+/// of referenced payload. Repeated ranges each consume the budget. All ranges
+/// are validated before payload allocation; idat-relative extents stay inside
+/// that idat's payload. This bounded metadata helper does not decode images.
 pub fn read_item_payload(
     data: &[u8],
     entry: &IlocEntry,
@@ -85,16 +89,16 @@ pub fn read_item_payload(
             value: u64::from(entry.data_reference_index),
         });
     }
-    if entry.extents.is_empty() {
+    if entry.extents.is_empty() || entry.extents.len() > 4096 {
         return Err(FormatError::invalid(
             "HEIF item",
-            format!("item {} has no extents", entry.item_id),
+            format!("item {} requires 1..=4096 extents", entry.item_id),
         ));
     }
-    let construction_base = match entry.construction_method {
-        0 => 0usize,
+    let (construction_base, source_end) = match entry.construction_method {
+        0 => (0usize, data.len()),
         1 => {
-            idat.ok_or_else(|| {
+            let idat = idat.ok_or_else(|| {
                 FormatError::invalid(
                     "HEIF item",
                     format!(
@@ -102,8 +106,17 @@ pub fn read_item_payload(
                         entry.item_id
                     ),
                 )
-            })?
-            .data_start
+            })?;
+            if idat.kind.as_bytes() != b"idat"
+                || idat.data_start > idat.data_end
+                || idat.data_end > data.len()
+            {
+                return Err(FormatError::invalid(
+                    "HEIF item",
+                    "invalid idat payload bounds",
+                ));
+            }
+            (idat.data_start, idat.data_end)
         }
         other => {
             return Err(FormatError::Unsupported {
@@ -112,7 +125,8 @@ pub fn read_item_payload(
             })
         }
     };
-    let mut output = Vec::new();
+    let mut ranges = Vec::new();
+    let mut total = 0usize;
     for extent in &entry.extents {
         let relative = entry
             .base_offset
@@ -128,16 +142,26 @@ pub fn read_item_payload(
         let end = start
             .checked_add(length)
             .ok_or_else(|| FormatError::overflow("HEIF item extent end"))?;
-        let bytes = data.get(start..end).ok_or_else(|| {
-            FormatError::invalid(
+        if end > source_end {
+            return Err(FormatError::invalid(
                 "HEIF item",
                 format!(
-                    "item {} extent {start}..{end} is outside the file",
+                    "item {} extent {start}..{end} is outside its file/idat source",
                     entry.item_id
                 ),
-            )
-        })?;
-        output.extend_from_slice(bytes);
+            ));
+        }
+        total = total
+            .checked_add(length)
+            .filter(|n| *n <= 16 * 1024 * 1024)
+            .ok_or_else(|| {
+                FormatError::invalid("HEIF item", "referenced payload exceeds 16 MiB limit")
+            })?;
+        ranges.push(start..end);
+    }
+    let mut output = Vec::with_capacity(total);
+    for range in ranges {
+        output.extend_from_slice(&data[range]);
     }
     Ok(output)
 }
@@ -428,5 +452,68 @@ mod tests {
             read_item_payload(data, &relative, Some(&idat)).unwrap(),
             b"9ab"
         );
+    }
+
+    #[test]
+    fn item_payload_bounds_idat_before_copy_and_counts_repeated_ranges() {
+        let data = vec![0xa5; 8192];
+        let idat = BoxHeader {
+            kind: FourCC::new(*b"idat"),
+            box_start: 0,
+            data_start: 8,
+            data_end: 16,
+            size: 16,
+        };
+        let mut entry = IlocEntry {
+            item_id: 1,
+            construction_method: 1,
+            data_reference_index: 0,
+            base_offset: 0,
+            extents: vec![IlocExtent {
+                index: None,
+                offset: 7,
+                length: 2,
+            }],
+        };
+        // The same bytes fit the file, but cross this idat's payload boundary.
+        assert!(read_item_payload(&data, &entry, Some(&idat)).is_err());
+        entry.extents[0].length = 1;
+        assert_eq!(
+            read_item_payload(&data, &entry, Some(&idat)).unwrap(),
+            vec![0xa5]
+        );
+        let mut invalid = idat.clone();
+        invalid.data_end = 7;
+        assert!(read_item_payload(&data, &entry, Some(&invalid)).is_err());
+        entry.construction_method = 0;
+        entry.extents = vec![
+            IlocExtent {
+                index: None,
+                offset: 0,
+                length: 4097
+            };
+            4096
+        ];
+        let error = read_item_payload(&data, &entry, None).unwrap_err();
+        assert!(error.to_string().contains("16 MiB limit"));
+        entry.extents = vec![
+            IlocExtent {
+                index: None,
+                offset: 0,
+                length: 1
+            };
+            4097
+        ];
+        assert!(read_item_payload(&data, &entry, None).is_err());
+        entry.extents = vec![IlocExtent {
+            index: None,
+            offset: 1,
+            length: 1,
+        }];
+        entry.base_offset = u64::MAX;
+        assert!(matches!(
+            read_item_payload(&data, &entry, None),
+            Err(FormatError::Overflow { .. })
+        ));
     }
 }

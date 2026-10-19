@@ -68,6 +68,12 @@ pub fn resolve_heif_motion_photo_ranges(
         return Err(MotionPhotoError::InvalidVideoPayload);
     }
     let mpvd = *mpvd[0];
+    let offset = usize::try_from(mpvd.offset).map_err(|_| MotionPhotoError::ArithmeticOverflow)?;
+    if data.get(offset..offset + 4) == Some(&[0, 0, 0, 0]) {
+        // Generic BMFF permits a zero-sized last box. Motion Photo 1.0
+        // explicitly forbids that encoding for mpvd.
+        return Err(MotionPhotoError::InvalidVideoPayload);
+    }
     if primary.padding != mpvd.header_size {
         return Err(MotionPhotoError::InvalidItemLength);
     }

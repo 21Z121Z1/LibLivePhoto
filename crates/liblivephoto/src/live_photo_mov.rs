@@ -1352,6 +1352,19 @@ mod tests {
     }
 
     #[test]
+    fn exact_apple_still_time_rejects_nonunit_and_noncanonical_edits() {
+        let source = write_live_photo_movie(&fake_video(), "EXACT-TIME", 0.123, None).unwrap();
+        let offset = source.windows(4).position(|p| p == b"elst").unwrap();
+        assert_eq!(&source[offset + 8..offset + 12], &2u32.to_be_bytes());
+        let mut nonunit = source.clone();
+        nonunit[offset + 20..offset + 24].copy_from_slice(&[0, 2, 0, 0]);
+        assert!(read_live_photo_still_presentation(&nonunit).is_err());
+        let mut noncanonical = source;
+        noncanonical[offset + 28..offset + 32].copy_from_slice(&1i32.to_be_bytes());
+        assert!(read_live_photo_still_presentation(&noncanonical).is_err());
+    }
+
+    #[test]
     fn writer_preserves_compressed_media_and_adds_required_metadata() {
         let source = fake_video();
         let source_media = media_mdat_payloads(&source).unwrap();
