@@ -6,6 +6,7 @@ libfuzzer_sys::fuzz_target!(|data:&[u8]| {
     let _=decode_agtm_header(data);
     let _=decode_agtm(data);
     let _=decode_video_metadata(data);
+    let _=validate_heif_color_information(data);
     let _=extract_video_metadata(data,PhotoTimeExpectation::Unchecked);
     let _=extract_agtm_from_video(data,MediaTime::new(0,1).unwrap());
     let _=XmpDocument::parse(data);

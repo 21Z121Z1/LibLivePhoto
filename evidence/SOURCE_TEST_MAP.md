@@ -55,6 +55,13 @@ The pinned public header is at the repository root, `libmotionphoto_api.h`.
 
 ## Stability and native acceptance
 
+H05's optional `validate_heif_color_information` checks the user-provided
+ISO23008-12:2025 §6.5.5 count/pair/paired-nclx declarations. The five new
+`standards_contract` regressions bind per-item/multiple-ipma behavior, legal
+single declarations, both pair orders, normative violations versus unsupported
+facts, preservation and cumulative budgets. Whole ICC/BMFF conformance and
+rendering are separate; the original standard is not redistributed.
+
 See [STABILITY_GATES.md](STABILITY_GATES.md) for public-range preflight, JSON and
 metadata amplification, cross-track frame budgets, FFI ownership, cancellation
 and failure rollback. Exact frame times, media packet hashes, original auxiliary

@@ -1,0 +1,33 @@
+{
+  "implementation_sha": "541b609c95ec4121fddf8d67de85182d21f59501",
+  "code_trees_identical_to": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+  "run": 39272256248,
+  "job": 118127336740,
+  "result": "failure",
+  "build": "SDK36/NDK27.3 arm64+x86_64 and acceptance APK build succeeded",
+  "failed_stage": "pre-installation package ownership query",
+  "command": [
+    "adb",
+    "shell",
+    "pm",
+    "list",
+    "packages",
+    "org.liblivephoto.android.acceptance"
+  ],
+  "exit_status": 224,
+  "completed_service_scopes": [],
+  "service_assertions_executed": 0,
+  "observed": [
+    "adb devices reported emulator-5554 device",
+    "pre-install pm command failed",
+    "emulator log reported ADB daemon connection trouble and settings Broken pipe"
+  ],
+  "cause": "undetermined; logs do not establish a Rust/Java service assertion failure or a specific root cause",
+  "next_fix": "Capture stdout/stderr and bounded read-only package/activity readiness probes before installation; keep all four scopes and65 assertions unchanged",
+  "manual_rerun_requested": false,
+  "artifact": {
+    "id": 12196013924,
+    "digest": "sha256:aac989e5215393351c7334dacf45f33bfc4de24758305bca14dd8710289fda04"
+  },
+  "historical_success": "76c25e4 four-scope65-assertion pass remains separate evidence, not this run's outcome"
+}

@@ -362,3 +362,45 @@ pub fn metadata_edits(
     }
     movie
 }
+
+pub fn replace_heif_meta_child(still: &[u8], kind: &[u8; 4], replacement: &[u8]) -> Vec<u8> {
+    use liblivephoto_format::isobmff::parse_boxes;
+    let top = parse_boxes(still, 0..still.len()).unwrap();
+    let meta = top.iter().find(|b| b.kind.as_bytes() == b"meta").unwrap();
+    let children = parse_boxes(still, meta.data_start + 4..meta.data_end).unwrap();
+    let mut payload = vec![0; 4];
+    for child in children {
+        payload.extend_from_slice(if child.kind.as_bytes() == kind {
+            replacement
+        } else {
+            &still[child.box_range()]
+        });
+    }
+    [still[top[0].box_range()].to_vec(), boxed(b"meta", &payload)].concat()
+}
+
+pub fn heif_with_properties(properties: &[Vec<u8>]) -> Vec<u8> {
+    use liblivephoto_format::isobmff::{make_ipma_box, IpmaAssociation, IpmaEntry};
+    let iprp = boxed(
+        b"iprp",
+        &[
+            boxed(b"ipco", &properties.concat()),
+            make_ipma_box(
+                0,
+                0,
+                &[IpmaEntry {
+                    item_id: 1,
+                    associations: (1..=properties.len())
+                        .map(|i| IpmaAssociation {
+                            property_index: i as u16,
+                            essential: true,
+                        })
+                        .collect(),
+                }],
+            )
+            .unwrap(),
+        ]
+        .concat(),
+    );
+    replace_heif_meta_child(&heif(b"avif"), b"iprp", &iprp)
+}

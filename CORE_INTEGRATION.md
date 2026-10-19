@@ -88,6 +88,20 @@ supported; construction2 and external item sources are rejected explicitly.
 Absolute item data inside the old meta payload survives append-only metadata
 replacement; construction1 ranges stay inside their idat. The bounded metadata
 payload assembler preflights4096 extents/16MiB referenced bytes before copying.
+
+`validate_heif_color_information(still)` and
+`MotionPhoto::heif_color_conformance()` optionally check ISO23008-12:2025
+§6.5.5 count, ICC/nclx pairing and paired primaries/transfer=2 declarations.
+They merge supported image-item associations across all ipma boxes. The typed
+report separates `Violation` from `Unsupported`; `checked_rules_satisfied()`
+requires neither kind of issue. A standalone report covers its listed rules,
+not complete HEIF/BMFF, ICC profile validity or rendered color. Unknown item or
+color types/layouts and repeated associations are not guessed. Callers can
+require this report before planning/publishing; default preservation never
+silently changes a contradictory declaration to make the report pass.
+The query bounds items/properties/association rows/issues to4096,
+associations to65536 and referenced colr bytes to16MiB. These are explicit
+implementation budgets, not normative maximum image sizes.
 Fact extraction allows at most 4096 primary property associations and 16 MiB of
 their payload bytes, so repeated references cannot amplify allocation without
 bound. A conversion plan reports inspection failures before writing.

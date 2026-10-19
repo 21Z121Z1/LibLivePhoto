@@ -15,6 +15,14 @@ fn main() -> std::io::Result<()> {
             ("score-empty", vec![0xc0, 0]),
             ("heif-idat", common::heif(b"avif")),
             (
+                "heif-colr-pair",
+                common::heif_with_properties(&[
+                    liblivephoto_format::isobmff::make_ispe_box(2, 3).unwrap(),
+                    common::boxed(b"colr", b"profopaque-profile"),
+                    common::boxed(b"colr", b"nclx\0\x02\0\x02\0\x09\x80"),
+                ]),
+            ),
+            (
                 "agtm-edits",
                 common::metadata_edits(
                     common::metadata_movie(

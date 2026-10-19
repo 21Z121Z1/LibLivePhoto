@@ -65,49 +65,9 @@ fn directory_padding_is_preserved_and_secondary_nonzero_padding_is_rejected() {
     assert!(MotionPhoto::parse(Input::SingleFile(&invalid), ParseOptions::strict()).is_err());
 }
 
-fn replace_meta_child(still: &[u8], kind: &[u8; 4], replacement: &[u8]) -> Vec<u8> {
-    let top = parse_boxes(still, 0..still.len()).unwrap();
-    let meta = top.iter().find(|b| b.kind.as_bytes() == b"meta").unwrap();
-    let children = parse_boxes(still, meta.data_start + 4..meta.data_end).unwrap();
-    let mut payload = vec![0; 4];
-    for child in children {
-        payload.extend_from_slice(if child.kind.as_bytes() == kind {
-            replacement
-        } else {
-            &still[child.box_range()]
-        });
-    }
-    [
-        still[top[0].box_range()].to_vec(),
-        common::boxed(b"meta", &payload),
-    ]
-    .concat()
-}
-
-fn with_properties(properties: &[Vec<u8>]) -> Vec<u8> {
-    let iprp = common::boxed(
-        b"iprp",
-        &[
-            common::boxed(b"ipco", &properties.concat()),
-            make_ipma_box(
-                0,
-                0,
-                &[IpmaEntry {
-                    item_id: 1,
-                    associations: (1..=properties.len())
-                        .map(|i| IpmaAssociation {
-                            property_index: i as u16,
-                            essential: true,
-                        })
-                        .collect(),
-                }],
-            )
-            .unwrap(),
-        ]
-        .concat(),
-    );
-    replace_meta_child(&common::heif(b"avif"), b"iprp", &iprp)
-}
+use common::{
+    heif_with_properties as with_properties, replace_heif_meta_child as replace_meta_child,
+};
 
 #[test]
 fn heif_mirror_axes_and_order_match_asymmetric_coordinate_landmarks() {
@@ -276,4 +236,321 @@ fn heif_idat_extents_cannot_escape_into_other_boxes_that_fit_the_file() {
         ParseOptions::strict()
     )
     .is_err());
+}
+
+fn nclx(primaries: u16, transfer: u16) -> Vec<u8> {
+    [
+        b"nclx".to_vec(),
+        primaries.to_be_bytes().to_vec(),
+        transfer.to_be_bytes().to_vec(),
+        9u16.to_be_bytes().to_vec(),
+        vec![0x80],
+    ]
+    .concat()
+}
+fn colors(values: &[Vec<u8>]) -> Vec<u8> {
+    let mut properties = vec![make_ispe_box(2, 3).unwrap()];
+    properties.extend(values.iter().map(|p| common::boxed(b"colr", p)));
+    with_properties(&properties)
+}
+
+#[test]
+fn heif_color_count_and_legal_pairs_are_checked_without_changing_color_or_coded_bytes() {
+    let icc = b"rICCopaque-profile".to_vec();
+    let prof = b"profother-opaque-profile".to_vec();
+    for declarations in [
+        vec![],
+        vec![nclx(9, 16)],
+        vec![icc.clone()],
+        vec![prof.clone()],
+        vec![icc, nclx(2, 2)],
+        vec![nclx(2, 2), prof],
+    ] {
+        let still = colors(&declarations);
+        let original = still.clone();
+        let report = validate_heif_color_information(&still).unwrap();
+        assert!(report.checked_rules_satisfied(), "{report:?}");
+        let movie = common::movie(1000, 1);
+        let photo = MotionPhoto::parse(
+            Input::Parts {
+                still: &still,
+                movie: &movie,
+                presentation: MediaTime::new(1, 2),
+            },
+            ParseOptions::strict(),
+        )
+        .unwrap();
+        assert_eq!(photo.heif_color_conformance().unwrap(), report);
+        let before = photo.still_metadata().unwrap();
+        let output = photo
+            .plan(TargetProfile::AndroidAvif, WritePolicy::default())
+            .execute()
+            .unwrap();
+        let parsed = MotionPhoto::parse(
+            Input::SingleFile(&output.files[0].bytes),
+            ParseOptions::strict(),
+        )
+        .unwrap();
+        assert_eq!(parsed.still_metadata().unwrap(), before);
+        assert_eq!(parsed.motion_video_bytes().unwrap(), movie);
+        let image = parsed
+            .resources()
+            .find(|r| r.container_item_id == Some(1))
+            .unwrap();
+        let mut bytes = Vec::new();
+        parsed.extract(image, &mut bytes).unwrap();
+        assert_eq!(bytes, b"synthetic-encoded-item");
+        assert_eq!(parsed.heif_color_conformance().unwrap(), report);
+        assert_eq!(still, original);
+    }
+}
+
+#[test]
+fn heif_color_violations_are_explicit_and_never_repaired_by_preservation_writers() {
+    let icc = b"rICCopaque".to_vec();
+    let prof = b"profopaque".to_vec();
+    for (declarations, rule) in [
+        (
+            vec![icc.clone(), prof.clone(), nclx(2, 2)],
+            "H05.colr-count",
+        ),
+        (vec![icc.clone(), prof], "H05.colr-pair"),
+        (vec![nclx(2, 2), nclx(2, 2)], "H05.colr-pair"),
+        (vec![icc.clone(), nclx(1, 2)], "H05.paired-nclx-unspecified"),
+        (vec![icc.clone(), nclx(2, 1)], "H05.paired-nclx-unspecified"),
+        (vec![icc, nclx(9, 16)], "H05.paired-nclx-unspecified"),
+    ] {
+        let still = colors(&declarations);
+        let original = still.clone();
+        let report = validate_heif_color_information(&still).unwrap();
+        assert!(!report.checked_rules_satisfied());
+        assert!(report
+            .issues
+            .iter()
+            .all(|i| i.kind == FormatIssueKind::Violation));
+        assert!(report
+            .issues
+            .iter()
+            .any(|i| i.rule == rule && i.item_id == Some(1)));
+        let movie = common::movie(1000, 1);
+        let photo = MotionPhoto::parse(
+            Input::Parts {
+                still: &still,
+                movie: &movie,
+                presentation: MediaTime::new(1, 2),
+            },
+            ParseOptions::strict(),
+        )
+        .unwrap();
+        let output = photo
+            .plan(TargetProfile::AndroidAvif, WritePolicy::default())
+            .execute()
+            .unwrap();
+        let after = MotionPhoto::parse(
+            Input::SingleFile(&output.files[0].bytes),
+            ParseOptions::strict(),
+        )
+        .unwrap();
+        assert_eq!(
+            photo.still_metadata().unwrap(),
+            after.still_metadata().unwrap()
+        );
+        assert_eq!(after.heif_color_conformance().unwrap(), report);
+        assert_eq!(still, original);
+    }
+}
+
+#[test]
+fn unknown_color_syntax_and_duplicate_associations_are_unsupported_not_guessed() {
+    for payload in [
+        b"zzzzopaque".to_vec(),
+        b"nclc\0\x09\0\x10\0\x09".to_vec(),
+        b"nclx\0\x02".to_vec(),
+        vec![],
+    ] {
+        let still = colors(&[payload]);
+        let before = still.clone();
+        let report = validate_heif_color_information(&still).unwrap();
+        assert!(!report.checked_rules_satisfied());
+        assert!(report
+            .issues
+            .iter()
+            .all(|i| i.kind == FormatIssueKind::Unsupported));
+        assert_eq!(still, before);
+    }
+    let source = colors(&[nclx(9, 16)]);
+    let row = IpmaEntry {
+        item_id: 1,
+        associations: vec![
+            IpmaAssociation {
+                property_index: 2,
+                essential: false
+            };
+            2
+        ],
+    };
+    let iprp = common::boxed(
+        b"iprp",
+        &[
+            common::boxed(
+                b"ipco",
+                &[
+                    make_ispe_box(2, 3).unwrap(),
+                    common::boxed(b"colr", &nclx(9, 16)),
+                ]
+                .concat(),
+            ),
+            make_ipma_box(0, 0, &[row]).unwrap(),
+        ]
+        .concat(),
+    );
+    let still = replace_meta_child(&source, b"iprp", &iprp);
+    let report = validate_heif_color_information(&still).unwrap();
+    assert!(report
+        .issues
+        .iter()
+        .any(|i| i.rule == "H05.association-layout" && i.kind == FormatIssueKind::Unsupported));
+    assert!(!report
+        .issues
+        .iter()
+        .any(|i| i.kind == FormatIssueKind::Violation));
+    let iinf = make_iinf_box(1, &[make_infe_box(1, FourCC::new(*b"zzzz"), 0).unwrap()]).unwrap();
+    let unknown = replace_meta_child(&source, b"iinf", &iinf);
+    let report = validate_heif_color_information(&unknown).unwrap();
+    assert!(report
+        .issues
+        .iter()
+        .all(|i| i.kind == FormatIssueKind::Unsupported));
+    assert_eq!(report.issues[0].rule, "H05.item-kind");
+}
+
+#[test]
+fn auxiliary_image_colors_are_merged_across_ipma_boxes_and_checked_per_item() {
+    for (primaries, valid) in [(2, true), (9, false)] {
+        let properties = [
+            make_ispe_box(2, 3).unwrap(),
+            common::boxed(b"colr", &nclx(9, 16)),
+            common::boxed(b"colr", b"profopaque"),
+            common::boxed(b"colr", &nclx(primaries, 2)),
+        ];
+        let rows = |id, indices: &[u16]| IpmaEntry {
+            item_id: id,
+            associations: indices
+                .iter()
+                .map(|i| IpmaAssociation {
+                    property_index: *i,
+                    essential: false,
+                })
+                .collect(),
+        };
+        let iprp = common::boxed(
+            b"iprp",
+            &[
+                common::boxed(b"ipco", &properties.concat()),
+                make_ipma_box(0, 0, &[rows(1, &[1, 2]), rows(2, &[1, 3])]).unwrap(),
+                make_ipma_box(0, 0, &[rows(2, &[4])]).unwrap(),
+            ]
+            .concat(),
+        );
+        let still = replace_meta_child(&common::heif(b"avif"), b"iprp", &iprp);
+        let iinf = make_iinf_box(
+            1,
+            &[
+                make_infe_box(1, FourCC::new(*b"av01"), 0).unwrap(),
+                make_infe_box(2, FourCC::new(*b"av01"), 0).unwrap(),
+            ],
+        )
+        .unwrap();
+        let still = replace_meta_child(&still, b"iinf", &iinf);
+        let entry = |id, offset, length| IlocEntry {
+            item_id: id,
+            construction_method: 1,
+            data_reference_index: 0,
+            base_offset: 0,
+            extents: vec![IlocExtent {
+                index: None,
+                offset,
+                length,
+            }],
+        };
+        let iloc = make_iloc_box(1, 4, 4, 0, 0, &[entry(1, 0, 22), entry(2, 22, 22)]).unwrap();
+        let still = replace_meta_child(&still, b"iloc", &iloc);
+        let still = replace_meta_child(
+            &still,
+            b"idat",
+            &common::boxed(b"idat", b"synthetic-encoded-itemauxiliary-encoded-item"),
+        );
+        let report = validate_heif_color_information(&still).unwrap();
+        assert_eq!(report.checked_rules_satisfied(), valid);
+        assert!(report.issues.iter().all(|i| i.item_id == Some(2)));
+        if !valid {
+            assert_eq!(report.issues[0].rule, "H05.paired-nclx-unspecified");
+        }
+        let movie = common::movie(1000, 1);
+        let photo = MotionPhoto::parse(
+            Input::Parts {
+                still: &still,
+                movie: &movie,
+                presentation: MediaTime::new(1, 2),
+            },
+            ParseOptions::strict(),
+        )
+        .unwrap();
+        let output = photo
+            .plan(TargetProfile::AndroidAvif, WritePolicy::default())
+            .execute()
+            .unwrap();
+        let after = MotionPhoto::parse(
+            Input::SingleFile(&output.files[0].bytes),
+            ParseOptions::strict(),
+        )
+        .unwrap();
+        assert_eq!(after.heif_color_conformance().unwrap(), report);
+        for (id, expected) in [
+            (1, b"synthetic-encoded-item".as_slice()),
+            (2, b"auxiliary-encoded-item".as_slice()),
+        ] {
+            let resource = after
+                .resources()
+                .find(|r| r.container_item_id == Some(id))
+                .unwrap();
+            let mut bytes = Vec::new();
+            after.extract(resource, &mut bytes).unwrap();
+            assert_eq!(bytes, expected);
+        }
+    }
+}
+
+#[test]
+fn color_validation_preflights_rows_and_counts_repeated_payloads_across_items() {
+    let properties = [
+        make_ispe_box(2, 3).unwrap(),
+        common::boxed(b"colr", &[b"prof".to_vec(), vec![0x5a; 8192]].concat()),
+    ];
+    for (rows, kind) in [(4097, 0), (4096, 1)] {
+        let row = IpmaEntry {
+            item_id: 1,
+            associations: if kind == 0 {
+                vec![]
+            } else {
+                vec![IpmaAssociation {
+                    property_index: 2,
+                    essential: false,
+                }]
+            },
+        };
+        let iprp = common::boxed(
+            b"iprp",
+            &[
+                common::boxed(b"ipco", &properties.concat()),
+                make_ipma_box(0, 0, &vec![row; rows]).unwrap(),
+            ]
+            .concat(),
+        );
+        let still = replace_meta_child(&common::heif(b"avif"), b"iprp", &iprp);
+        assert!(matches!(
+            validate_heif_color_information(&still),
+            Err(MotionPhotoReadError::InputLimit)
+        ));
+    }
 }
