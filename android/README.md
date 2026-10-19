@@ -60,3 +60,13 @@ and [ParcelFileDescriptor](https://developer.android.com/reference/android/os/Pa
 The build receipt is separate from installed-APK runtime evidence. Emulator
 service success does not verify vendor Gallery support, camera capture or
 physical-device HDR rendering. No device access or permission bypass is used.
+
+Runtime acceptance runs four independent instrumentations (`core`, `metadata`,
+`lifecycle`, `concurrency`). All four must pass. Each retains a 240-second whole
+case deadline, 40-second operation deadline and 20-second bind deadline; service
+connections are established sequentially. This avoids one aggregate deadline
+expiring across eight complete parse/lifetime iterations on a software emulator.
+The lifecycle case still performs all eight parses; concurrency additionally
+checks three queued pipe readers and two callers racing to cancel one operation.
+Per-case logs, failure phase/stack and logcat are retained. SDK/AVD setup or a
+partial sequence cannot produce a runtime success receipt.

@@ -21,6 +21,10 @@ remains in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
   allows at most 4096 samples, 16 MiB referenced payload and 65536 semantic
   records across tracks; repeated source references count repeatedly. Budget
   errors retain `InputLimit`. No metadata or Moments construction was added.
+  Timed AGTM selection has the same 4096-sample/16 MiB aggregate bounds and
+  65536 decoded rule/control-point budget. Tests select genuinely overlapping
+  samples using signed composition offsets; a small source cannot expand into
+  unbounded wrapper JSON or copied metadata outputs.
 * CLI publication prevalidates names/duplicates, uses CREATE_NEW, writes the
   report last, and rolls back only files it created after ordinary write errors.
   Injected failure during the second file verifies removal of both a completed
@@ -37,6 +41,8 @@ remains in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
   decoder or linkage error cannot silently abandon a result future. Instrumented
   phases, full stack traces and logcat identify actual Binder/FD/pipe failures.
   The service acceptance result itself remains a separate required gate.
+  Concurrent cancellation returns true only for the winner of the terminal
+  transition. Java memory inputs reject oversize arrays before retaining a copy.
 
 ## Existing bounded contracts retained
 
@@ -47,6 +53,7 @@ remains in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
 | BMFF inspection | 256 tracks and 1000000 samples across tracks, checked table extents, offsets and exact timestamps | Track/media regressions and seeded ASan fuzz targets |
 | Remux | Combined 256 MiB import inputs; unsupported offsets/references/layouts rejected; encoded packets verified after rewrite | Six same-input Google/ffprobe packet comparisons, track regression, remux fuzz target |
 | Metadata engine | Source 256 MiB, 4096 blocks, cumulative 16 MiB raw manifest bytes, 64 KiB prefixes for large coded/trailer blocks | Raw-block/range/serialization tests and 38-case pinned provider differential |
+| Timed metadata extraction | AGTM and score extraction each bound selected/copied payload across tracks to 16 MiB, 4096 samples and 65536 semantic records | Overlapping-interval/descriptor amplification regressions and seeded ASan target |
 | LLP1 protocol | 64 MiB header, 4096 files, cumulative 320 MiB envelope; consumers validate fields, UTF-8 and trailing bytes | Malformed/streamed protocol and native consumer tests |
 | Android service | Combined 32 MiB source, 64 KiB request; one worker/two queued operations; duplicated descriptors, reliable output pipe, callback-death/cancel cleanup | Actual installed APK gate; per-operation bounds are not a universal process-memory ceiling |
 | Android client | Two readers/eight queued reads, 160 MiB response cap, input descriptors borrowed and duplicated | Actual installed APK gate; complete envelope required before result publication |

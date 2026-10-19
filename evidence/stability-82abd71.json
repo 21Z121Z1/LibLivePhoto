@@ -1,0 +1,117 @@
+{
+  "implementation_sha": "82abd717963f8c6e78ddce3babf22f49427c8048",
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "source_was_clean": true,
+  "rust": {
+    "command": "cargo test --locked --workspace --all-targets --all-features",
+    "passed": 152,
+    "failed": 0,
+    "ignored": 3
+  },
+  "clippy": {
+    "command": "cargo clippy --locked --workspace --all-targets --all-features -- -D warnings",
+    "result": "passed"
+  },
+  "jni": {
+    "command": "python3 scripts/test_java.py --compiler-java-home /workspace/toolchains/jdk21-overlay",
+    "result": "passed"
+  },
+  "c_abi": {
+    "command": "python3 scripts/test_c_abi.py",
+    "result": "passed"
+  },
+  "web": {
+    "commands": [
+      "npm --prefix web run build",
+      "BROWSER_EXECUTABLE=/usr/bin/chromium npm --prefix web run test:browser"
+    ],
+    "actual_browser_tests": 7,
+    "result": "passed"
+  },
+  "provider_differential": {
+    "command": "python3 scripts/metadata_differential.py --reference-source /workspace/libmotionphoto-reference --reference-build /workspace/reference-build-make --protobuf-include /workspace/toolchains/debian/sysroot/usr/include",
+    "implementation_sha": "82abd717963f8c6e78ddce3babf22f49427c8048",
+    "source_was_clean": true,
+    "cases": 38,
+    "receipt_sha256": "11a2a9b1d0e6b1a7fcf6a286cccaf226569a2f4869d25d88b53f994d0070d6fe",
+    "result": "passed"
+  },
+  "score_differential": {
+    "command": "python3 scripts/video_metadata_differential.py --reference-source /workspace/libmotionphoto-reference --reference-build /workspace/reference-build-make",
+    "implementation_sha": "82abd717963f8c6e78ddce3babf22f49427c8048",
+    "cases": 9,
+    "receipt_sha256": "bc899a96658c3edb258d3fe1fa07629d6203466b0c153545bd673373af8e3f1f",
+    "result": "passed"
+  },
+  "asan": {
+    "command": "bash scripts/fuzz.sh 20 evidence/local/fuzz-82abd71",
+    "requested_seconds_per_target": 20,
+    "max_input_bytes": 1048576,
+    "targets": {
+      "asset_input": {
+        "executions": 31592,
+        "seconds": 21,
+        "log_sha256": "b9f223d383795323b2608b7b9c5788816de962f89716c61cef76fdac84ba2e12",
+        "result": "passed"
+      },
+      "container_headers": {
+        "executions": 381157,
+        "seconds": 21,
+        "log_sha256": "bd12c45313c38421b87e3f96ad7eb4d2c14f2bcb3943e84dcdf512597fa5abd5",
+        "result": "passed"
+      },
+      "remux": {
+        "executions": 72723,
+        "seconds": 21,
+        "log_sha256": "553a02bc064958ffdbb2de89b3246d8447e0bf29e2e53560c66d0463743eff5e",
+        "result": "passed"
+      }
+    },
+    "total_executions": 485472
+  },
+  "logs": [
+    {
+      "path": "evidence/local/stability-82abd71-rust.log",
+      "sha256": "9afcdff5ca9daf4a62132723992c453f7158d72c9080c98ced8c8280c8da2140"
+    },
+    {
+      "path": "evidence/local/stability-82abd71-clippy.log",
+      "sha256": "41a2cada76ee3fb1569e5def1bca0cc6f0f026f00d5a7188f2d31abbe1a59df0"
+    },
+    {
+      "path": "evidence/local/stability-82abd71-jni.log",
+      "sha256": "3a1a3edb4302974156312891d5e16f300424fe57d2b0f919cac602e5485d0f43"
+    },
+    {
+      "path": "evidence/local/stability-82abd71-cabi.log",
+      "sha256": "b799219ba2688c904774069892f450e111b6b0568f673b669b564a1a3baa21f6"
+    },
+    {
+      "path": "evidence/local/stability-82abd71-web.log",
+      "sha256": "2662438a9e7ef67c86f7f95ee47ce6e1c5a26a940bd705e8c6b2be40e838a4a7"
+    }
+  ],
+  "remaining_gates": [
+    "Final-code cross-platform and native CI",
+    "Android service timeout diagnosis and passing installed-APK acceptance",
+    "Permissioned physical Apple Photos import/edit/camera/playback/HDR acceptance",
+    "Legal original Honor corpus and native Gallery acceptance",
+    "Apple LivePhotosKit CDN proxy HTTP 403; actual SDK runtime unavailable"
+  ],
+  "caveats": [
+    "No complete ecosystem/native-device acceptance claim",
+    "Three online fixture tests were ignored in this local workspace command; the separate CI fixture job runs them explicitly",
+    "General Write sinks remain caller-owned; CLI rollback is not cross-process atomic visibility or crash recovery",
+    "Budgets bound bytes/records/queues and are not a universal process-memory ceiling"
+  ],
+  "xdremux": {
+    "command": "python3 scripts/consumer_replay.py --xdremux-repository /workspace/xdremux-consumer-reference",
+    "result": "passed",
+    "log_sha256": "fd70f0a4a18e7769ef306111455f9ebae0ceae25db48350d2093844c4caa612e"
+  },
+  "consumer": {
+    "command": "python3 scripts/external_consumer.py",
+    "result": "passed",
+    "log_sha256": "fdd744320db92ef920ef51b2015185dd9308b167b1d3c1338002730350ed2e1d"
+  }
+}

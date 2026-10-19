@@ -167,6 +167,25 @@ pub fn metadata_movie(
     samples: &[(&[u8], u32)],
     composition_offset: i32,
 ) -> Vec<u8> {
+    metadata_movie_impl(description, config, samples, composition_offset, None)
+}
+pub fn overlapping_metadata_movie(
+    description: &[u8; 4],
+    config: &[u8],
+    sample: &[u8],
+    count: usize,
+) -> Vec<u8> {
+    let samples = vec![(sample, 1); count];
+    let offsets = (0..count).map(|i| -(i as i32)).collect::<Vec<_>>();
+    metadata_movie_impl(description, config, &samples, 0, Some(&offsets))
+}
+fn metadata_movie_impl(
+    description: &[u8; 4],
+    config: &[u8],
+    samples: &[(&[u8], u32)],
+    composition_offset: i32,
+    offsets: Option<&[i32]>,
+) -> Vec<u8> {
     let ftyp = boxed(b"ftyp", b"isom\0\0\0\0isom");
     let v = boxed(b"mdat", b"video");
     let m = boxed(
@@ -206,10 +225,24 @@ pub fn metadata_movie(
     let stsz = full(b"stsz", &sizes);
     let stsc = full(b"stsc", &words(&[1, 1, samples.len() as u32, 1]));
     let stco = full(b"stco", &words(&[1, (ftyp.len() + v.len() + 8) as u32]));
-    let mut ctts = full(
-        b"ctts",
-        &words(&[1, samples.len() as u32, composition_offset as u32]),
-    );
+    let mut ctts = if let Some(offsets) = offsets {
+        full(
+            b"ctts",
+            &[
+                words(&[offsets.len() as u32]),
+                offsets
+                    .iter()
+                    .flat_map(|o| words(&[1, *o as u32]))
+                    .collect(),
+            ]
+            .concat(),
+        )
+    } else {
+        full(
+            b"ctts",
+            &words(&[1, samples.len() as u32, composition_offset as u32]),
+        )
+    };
     ctts[8] = 1;
     let stbl = boxed(b"stbl", &[stsd, stts, stsz, stsc, stco, ctts].concat());
     let mdia = boxed(

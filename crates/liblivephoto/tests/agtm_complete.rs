@@ -56,8 +56,7 @@ fn all_shared_rules_custom_chromaticities_mix_values_and_slopes_are_parsed() {
     );
 }
 
-#[test]
-fn every_rule_and_maximum_point_count_is_preserved_with_pchip_absence() {
+fn maximum_curves() -> Vec<u8> {
     let mut bytes = vec![0, 0x40, 0x27, 0x10, 0x40]; // four independent rules, preset space 0.
     for index in 0..4 {
         bytes.extend(words(&[20000 + index * 1000]));
@@ -66,6 +65,11 @@ fn every_rule_and_maximum_point_count_is_preserved_with_pchip_absence() {
         bytes.extend(words(&(0..32).map(|i| i * 1000).collect::<Vec<_>>()));
         bytes.extend(words(&(0..32).map(|i| i * 500).collect::<Vec<_>>()));
     }
+    bytes
+}
+#[test]
+fn every_rule_and_maximum_point_count_is_preserved_with_pchip_absence() {
+    let bytes = maximum_curves();
     let parsed = decode_agtm(&bytes).unwrap();
     assert_eq!(parsed.rules.len(), 4);
     for rule in &parsed.rules {
@@ -81,6 +85,24 @@ fn every_rule_and_maximum_point_count_is_preserved_with_pchip_absence() {
             decode_agtm(&bytes[..prefix]).is_err(),
             "accepted prefix {prefix}"
         );
+    }
+}
+
+#[test]
+fn overlapping_agtm_samples_have_aggregate_count_payload_and_curve_budgets() {
+    let config = [5, 0xb5, 0, 0x90, 0, 1];
+    let at = MediaTime::new(0, 1).unwrap();
+    let allowed = common::overlapping_metadata_movie(b"it35", &config, &[0, 0], 4096);
+    assert_eq!(extract_agtm_from_video(&allowed, at).unwrap().len(), 4096);
+    let mut large = vec![0, 0];
+    large.resize(65_536, 0xaa); // Preserved extension bytes count in every sample.
+    for (payload, count) in [(vec![0, 0], 4097), (large, 257), (maximum_curves(), 497)] {
+        let movie = common::overlapping_metadata_movie(b"it35", &config, &payload, count);
+        assert_eq!(metadata_packets(&movie, 2).unwrap().len(), count);
+        assert!(matches!(
+            extract_agtm_from_video(&movie, at),
+            Err(MotionPhotoReadError::InputLimit)
+        ));
     }
 }
 

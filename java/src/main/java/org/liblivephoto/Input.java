@@ -6,7 +6,7 @@ import java.nio.file.*;
 /** Input snapshots. A supplied channel/descriptor remains caller-owned and open. */
 public interface Input {
   byte[] snapshot(int budget,NativeEngine.Progress progress) throws IOException;
-  static Input bytes(byte[] source){final byte[] retained=source.clone();return (budget,progress)->{if(retained.length>budget)throw new IOException("input budget exceeded");progress.update("read",retained.length,retained.length);return retained.clone();};}
+  static Input bytes(byte[] source){if(source.length>NativeEngine.MAX_INPUT_BYTES)throw new IllegalArgumentException("input budget exceeded before snapshot retention");final byte[] retained=source.clone();return (budget,progress)->{if(retained.length>budget)throw new IOException("input budget exceeded");progress.update("read",retained.length,retained.length);return retained.clone();};}
   static Input path(Path path){return (budget,progress)->{try(FileChannel channel=FileChannel.open(path,StandardOpenOption.READ)){return read(channel,0,channel.size(),budget,progress,false);}};}
   /** Actual file-descriptor plus range capability via its public FileChannel.
    * Positional reads leave the cursor unchanged; this method never closes it. */

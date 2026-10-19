@@ -129,9 +129,13 @@ impl AgtmSample<'_> {
 
 /// Extract from a standalone MP4/MOV, with the same preservation and exact-time
 /// contract as MotionPhoto::agtm_at. No still-image association is required.
+/// Across tracks, selected samples are limited to 4096, referenced payload to
+/// 16 MiB, and decoded rules/control points to 65536. Overlapping samples and
+/// repeated references each consume the budget before a result is returned.
 pub fn extract_agtm_from_video(video: &[u8], time: MediaTime) -> Result<Vec<AgtmSample<'_>>> {
     let container = crate::tracks::inspect(video, crate::ResourceId(1), false)?;
     let mut result = Vec::new();
+    let (mut payload_bytes, mut records) = (0usize, 0usize);
     for track in &container.tracks {
         if matches!(track.kind, TrackKind::Video | TrackKind::Audio)
             || !track
@@ -147,6 +151,24 @@ pub fn extract_agtm_from_video(video: &[u8], time: MediaTime) -> Result<Vec<Agtm
             if !signaled && !explicit_t35(sample.bytes) {
                 continue;
             }
+            payload_bytes = payload_bytes
+                .checked_add(sample.bytes.len())
+                .filter(|n| *n <= 16 * 1024 * 1024)
+                .ok_or(Error::InputLimit)?;
+            if result.len() >= 4096 {
+                return Err(Error::InputLimit);
+            }
+            let metadata = crate::decode_agtm(sample.bytes)?;
+            records = records
+                .checked_add(
+                    metadata
+                        .rules
+                        .iter()
+                        .map(|r| r.curve.len() + 1)
+                        .sum::<usize>(),
+                )
+                .filter(|n| *n <= 65_536)
+                .ok_or(Error::InputLimit)?;
             result.push(AgtmSample {
                 track_id: track.id,
                 sample_index: sample.index,
@@ -156,7 +178,7 @@ pub fn extract_agtm_from_video(video: &[u8], time: MediaTime) -> Result<Vec<Agtm
                     timescale: track.timescale,
                 },
                 bytes: sample.bytes,
-                header: crate::decode_agtm(sample.bytes)?.header,
+                header: metadata.header,
             });
         }
     }

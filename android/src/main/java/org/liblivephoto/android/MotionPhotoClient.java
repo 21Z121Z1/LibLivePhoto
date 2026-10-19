@@ -79,7 +79,7 @@ public final class MotionPhotoClient implements AutoCloseable {
             op.id.set(id);
             if (op.terminal.get()) remote.cancel(id);
             return op;
-        } catch (IOException | RemoteException | RuntimeException e) {
+        } catch (IOException | RemoteException | RuntimeException | Error e) {
             try { pipe[1].close(); } catch (IOException ignored) {}
             op.fail(e); throw e;
         }
@@ -109,17 +109,18 @@ public final class MotionPhotoClient implements AutoCloseable {
             } catch (Throwable e) { fail(e); }
             finally { active.remove(this); }
         }
-        private void fail(Throwable error) {
+        private boolean fail(Throwable error) {
             if (terminal.compareAndSet(false, true)) {
                 result.completeExceptionally(error);
                 try { input.close(); } catch (IOException ignored) {}
                 active.remove(this);
-                long currentId = id.get(); if (currentId != 0) try { remote.cancel(currentId); } catch (RemoteException ignored) {}
+                long currentId = id.get(); if (currentId != 0) try { remote.cancel(currentId); } catch (RemoteException | RuntimeException ignored) {}
+                return true;
             }
+            return false;
         }
         public boolean cancel() {
-            if (terminal.get()) return false;
-            fail(new CancellationException("cancelled")); return result.isCompletedExceptionally();
+            return fail(new CancellationException("cancelled"));
         }
     }
     private void fail(Throwable error) {
