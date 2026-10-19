@@ -38,7 +38,9 @@ fn top_level_boxes(data: &[u8]) -> Result<Vec<TopLevelBox>> {
 }
 
 pub fn is_heif_mime(mime: &str) -> bool {
-    mime.eq_ignore_ascii_case("image/heic") || mime.eq_ignore_ascii_case("image/heif")
+    mime.eq_ignore_ascii_case("image/heic")
+        || mime.eq_ignore_ascii_case("image/heif")
+        || mime.eq_ignore_ascii_case("image/avif")
 }
 
 pub fn resolve_heif_motion_photo_ranges(
@@ -50,7 +52,7 @@ pub fn resolve_heif_motion_photo_ranges(
     if !is_heif_mime(&primary.mime) || !motion.semantic.eq_ignore_ascii_case("MotionPhoto") {
         return Err(MotionPhotoError::InvalidDirectory);
     }
-    if primary.padding != 8 {
+    if !matches!(primary.padding, 8 | 16) {
         return Err(MotionPhotoError::InvalidItemLength);
     }
 
@@ -66,6 +68,9 @@ pub fn resolve_heif_motion_photo_ranges(
         return Err(MotionPhotoError::InvalidVideoPayload);
     }
     let mpvd = *mpvd[0];
+    if primary.padding != mpvd.header_size {
+        return Err(MotionPhotoError::InvalidItemLength);
+    }
     let payload_start = mpvd.payload_offset()?;
     if payload_start >= mpvd.end_offset {
         return Err(MotionPhotoError::InvalidVideoPayload);
@@ -130,5 +135,43 @@ mod tests {
             extracted,
             ByteRange::new(payload_start, payload_start + video.len() as u64).unwrap()
         );
+    }
+
+    #[test]
+    fn extended_mpvd_requires_matching_directory_padding() {
+        let video = make_box(b"ftyp", b"isom\0\0\0\0");
+        let still = make_box(b"ftyp", b"avif\0\0\0\0");
+        let header = [
+            1u32.to_be_bytes().to_vec(),
+            b"mpvd".to_vec(),
+            ((video.len() + 16) as u64).to_be_bytes().to_vec(),
+        ]
+        .concat();
+        let data = [still.clone(), header, video.clone()].concat();
+        let mut items = vec![
+            MotionPhotoItem {
+                mime: "image/avif".into(),
+                semantic: "Primary".into(),
+                length: 0,
+                padding: 16,
+            },
+            MotionPhotoItem {
+                mime: "video/mp4".into(),
+                semantic: "MotionPhoto".into(),
+                length: video.len() as u64,
+                padding: 0,
+            },
+        ];
+        let (image, motion) = resolve_heif_motion_photo_ranges(&data, &items).unwrap();
+        assert_eq!(image, ByteRange::new(0, still.len() as u64).unwrap());
+        assert_eq!(
+            motion,
+            ByteRange::new((still.len() + 16) as u64, data.len() as u64).unwrap()
+        );
+        items[0].padding = 8;
+        assert!(matches!(
+            resolve_heif_motion_photo_ranges(&data, &items),
+            Err(MotionPhotoError::InvalidItemLength)
+        ));
     }
 }

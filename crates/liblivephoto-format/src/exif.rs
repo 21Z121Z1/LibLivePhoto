@@ -194,6 +194,15 @@ pub fn parse_heif_exif_orientation(exif_item: &[u8]) -> Result<Orientation> {
 }
 
 pub fn parse_tiff_orientation(tiff: &[u8]) -> Result<Orientation> {
+    read_tiff_orientation_value(tiff)?
+        .map(Orientation::from_exif)
+        .transpose()
+        .map(|v| v.unwrap_or(Orientation::Normal))
+}
+
+/// Return the declared raw value. Absence is not an observed normal orientation.
+/// Unknown vendor values remain inspectable without inventing a transform.
+pub fn read_tiff_orientation_value(tiff: &[u8]) -> Result<Option<u16>> {
     if tiff.len() < 8 {
         return Err(FormatError::invalid(
             "TIFF",
@@ -213,7 +222,7 @@ pub fn parse_tiff_orientation(tiff: &[u8]) -> Result<Orientation> {
     let ifd0_offset = usize::try_from(header.read_u32()?)
         .map_err(|_| FormatError::overflow("TIFF IFD0 offset"))?;
     if ifd0_offset == 0 {
-        return Ok(Orientation::Normal);
+        return Ok(None);
     }
     let mut ifd = Cursor::bounded(tiff, ifd0_offset..tiff.len(), endian, "TIFF IFD0")?;
     let entry_count = usize::from(ifd.read_u16()?);
@@ -264,11 +273,11 @@ pub fn parse_tiff_orientation(tiff: &[u8]) -> Result<Orientation> {
                     })
                 }
             };
-            return Orientation::from_exif(value);
+            return Ok(Some(value));
         }
         ifd.skip(12)?;
     }
-    Ok(Orientation::Normal)
+    Ok(None)
 }
 
 #[cfg(test)]

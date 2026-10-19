@@ -1,11 +1,13 @@
 #![forbid(unsafe_code)]
 //! Parse, inspect, validate and remux related still and motion resources.
+mod agtm;
 mod android;
 pub mod apple;
 mod asset;
 mod conversion;
 mod error;
 mod facade;
+mod file_input;
 mod heif;
 mod heif_io;
 mod jpeg_write;
@@ -13,10 +15,12 @@ mod live_photo_mov;
 mod live_photo_still;
 #[path = "vendor/oplus/lpex.rs"]
 mod lpex;
+mod media;
 mod model;
 mod motion_video;
 #[path = "vendor/oplus/parser.rs"]
 mod oppo;
+pub mod remux;
 mod scanner;
 mod timeline;
 #[path = "vendor/oplus/topology.rs"]
@@ -25,12 +29,16 @@ mod tracks;
 mod vendor;
 pub use conversion::*;
 
+pub use agtm::{decode_agtm_header, AgtmHeader, AgtmSample};
 pub use asset::*;
 pub use error::{MotionPhotoError, Result};
 pub use facade::{Input, MotionPhoto, MotionPhotoReadError, ParseMode, ParseOptions, PathInput};
+pub use file_input::{FileInput, FileRange};
 pub use live_photo_mov::{LivePhotoMovieError, LivePhotoMovieResult};
 pub use live_photo_still::{LivePhotoStillError, LivePhotoStillResult};
+pub use media::*;
 pub use model::ByteRange;
+pub use vendor::honor::{inspect_honor_metadata, HonorMetadata, HonorRecord, HonorVariant};
 
 pub(crate) use android::parse_android_motion_photo;
 pub(crate) use live_photo_mov::{

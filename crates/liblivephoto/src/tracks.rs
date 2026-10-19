@@ -46,6 +46,7 @@ fn validate_samples(
     tables: &[BoxHeader],
     top: &[BoxHeader],
     budget: &mut usize,
+    mut visit: impl FnMut(usize, u32, crate::ByteRange) -> Result<()>,
 ) -> Result<()> {
     let Some(stsz) = find(tables, b"stsz") else {
         return Ok(());
@@ -135,6 +136,7 @@ fn validate_samples(
             {
                 return Err(Error::InvalidResource);
             }
+            visit(sample, map[row].2, crate::ByteRange::new(offset, end)?)?;
             offset = end;
             sample += 1;
         }
@@ -195,7 +197,7 @@ pub(crate) fn inspect(
             let minfc = children(data, minf)?;
             if let Some(stbl) = find(&minfc, b"stbl") {
                 let stbc = children(data, stbl)?;
-                validate_samples(data, &stbc, &top, &mut sample_budget)?;
+                validate_samples(data, &stbc, &top, &mut sample_budget, |_, _, _| Ok(()))?;
                 if let Some(stsd) = find(&stbc, b"stsd") {
                     let count = u32_at(payload(data, stsd), 4)? as usize;
                     let entries = parse_boxes(data, stsd.data_start + 8..stsd.data_end)
@@ -284,4 +286,153 @@ pub(crate) fn inspect(
         movie_timescale,
         tracks,
     })
+}
+
+/// Raw sample descriptions and validated metadata samples. Offsets stay relative
+/// to the movie. No whole-file byte scanning can create an AGTM association.
+pub(crate) struct MetadataSample<'a> {
+    pub index: usize,
+    pub description: [u8; 4],
+    pub description_bytes: &'a [u8],
+    pub bytes: &'a [u8],
+    pub presentation: crate::MediaTime,
+    pub duration: u32,
+}
+
+pub(crate) fn metadata_at<'a>(
+    data: &'a [u8],
+    track: &Track,
+    time: crate::MediaTime,
+) -> Result<Vec<MetadataSample<'a>>> {
+    if track.kind == TrackKind::Video || track.kind == TrackKind::Audio {
+        return Ok(Vec::new());
+    }
+    if !track.edits.is_empty() {
+        return Err(Error::UnsupportedLayout(
+            "timed metadata extraction with edit lists is not implemented",
+        ));
+    }
+    let target = time
+        .rescale_exact(track.timescale)
+        .filter(|t| t.value >= 0)
+        .ok_or(Error::InvalidPresentation)?
+        .value;
+    let top = parse_boxes(data, 0..data.len()).map_err(|_| Error::InvalidResource)?;
+    let moov = find(&top, b"moov").ok_or(Error::InvalidResource)?;
+    let children = children(data, moov)?;
+    let trak = children
+        .iter()
+        .filter(|b| b.kind.as_bytes() == b"trak")
+        .nth(track.index)
+        .ok_or(Error::InvalidResource)?;
+    let tc = self::children(data, trak)?;
+    let mdia = find(&tc, b"mdia").ok_or(Error::InvalidResource)?;
+    let mc = self::children(data, mdia)?;
+    let minf = find(&mc, b"minf").ok_or(Error::InvalidResource)?;
+    let mi = self::children(data, minf)?;
+    let stbl = find(&mi, b"stbl").ok_or(Error::InvalidResource)?;
+    let tables = self::children(data, stbl)?;
+    let Some(stsz) = find(&tables, b"stsz") else {
+        return Ok(Vec::new());
+    };
+    let count = u32_at(payload(data, stsz), 8)? as usize;
+    if count > 1_000_000 {
+        return Err(Error::InvalidResource);
+    }
+    let stts = find(&tables, b"stts").ok_or(Error::InvalidResource)?;
+    let timing = payload(data, stts);
+    let mut times = Vec::with_capacity(count);
+    let mut decode = 0i64;
+    for row in timing
+        .get(8..)
+        .ok_or(Error::InvalidResource)?
+        .as_chunks::<8>()
+        .0
+    {
+        let n = u32_at(row, 0)? as usize;
+        let duration = u32_at(row, 4)?;
+        if times.len().checked_add(n).is_none_or(|v| v > count) {
+            return Err(Error::InvalidResource);
+        }
+        for _ in 0..n {
+            times.push((decode, duration));
+            decode = decode
+                .checked_add(i64::from(duration))
+                .ok_or(Error::InvalidPresentation)?;
+        }
+    }
+    if times.len() != count {
+        return Err(Error::InvalidResource);
+    }
+    if let Some(ctts) = find(&tables, b"ctts") {
+        let p = payload(data, ctts);
+        if !matches!(p.first(), Some(0 | 1))
+            || p.len()
+                != 8 + (u32_at(p, 4)? as usize)
+                    .checked_mul(8)
+                    .ok_or(Error::InvalidResource)?
+        {
+            return Err(Error::InvalidResource);
+        }
+        let mut index = 0usize;
+        for row in p[8..].as_chunks::<8>().0 {
+            let n = u32_at(row, 0)? as usize;
+            let offset = if p[0] == 1 {
+                i64::from(i32::from_be_bytes(field(row, 4)?))
+            } else {
+                i64::from(u32_at(row, 4)?)
+            };
+            let end = index
+                .checked_add(n)
+                .filter(|v| *v <= count)
+                .ok_or(Error::InvalidResource)?;
+            for value in &mut times[index..end] {
+                value.0 = value
+                    .0
+                    .checked_add(offset)
+                    .ok_or(Error::InvalidPresentation)?;
+            }
+            index = end;
+        }
+        if index != count {
+            return Err(Error::InvalidResource);
+        }
+    }
+    let stsd = find(&tables, b"stsd").ok_or(Error::InvalidResource)?;
+    let entries = parse_boxes(data, stsd.data_start + 8..stsd.data_end)
+        .map_err(|_| Error::InvalidResource)?;
+    let mut result = Vec::new();
+    let mut budget = 0;
+    validate_samples(
+        data,
+        &tables,
+        &top,
+        &mut budget,
+        |index, description, range| {
+            let entry = entries
+                .get(description as usize - 1)
+                .ok_or(Error::InvalidResource)?;
+            let (pts, duration) = times[index];
+            if target >= pts
+                && target
+                    < pts
+                        .checked_add(i64::from(duration))
+                        .ok_or(Error::InvalidPresentation)?
+            {
+                result.push(MetadataSample {
+                    index,
+                    description: *entry.kind.as_bytes(),
+                    description_bytes: payload(data, entry),
+                    bytes: &data[range.lower_bound as usize..range.upper_bound as usize],
+                    presentation: crate::MediaTime {
+                        value: pts,
+                        timescale: track.timescale,
+                    },
+                    duration,
+                });
+            }
+            Ok(())
+        },
+    )?;
+    Ok(result)
 }

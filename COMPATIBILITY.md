@@ -4,7 +4,7 @@ Read, write, validation and target-consumer status are separate fields.
 Runtime reports use `Unverified` for target consumers. A successful parser or
 writer does not establish Camera, Gallery, Photos, editing or device acceptance.
 
-`TargetProfile` selects source preservation, Android JPEG, Android HEIF, Apple
+`TargetProfile` selects source preservation, Android JPEG, Android HEIF/AVIF, Apple
 pairing, or the limited Samsung JPEG SEF contract. `WritePolicy` selects pairing
 identity and the treatment of unmapped resources. No writer transcodes media.
 A JPEG/HEIF container change reports `TranscodeRequired` and blocks execution.
@@ -67,11 +67,14 @@ The Android targets currently validate container, resource and time structure.
 They do not establish the specification's video codec or AAC channel/sample-rate
 requirements. The `google-*` example names select these directory writers; they
 do not certify full Google codec conformance or Google Photos acceptance. Callers
-must check those media capabilities. Explicit codec negotiation is follow-up work.
+can use `plan_with_capabilities` to enforce a caller-declared sample-entry, AAC
+object-type, channel and sample-rate contract. Unknown AAC configuration blocks
+that stricter plan. The default `plan` retains its container/resource contract;
+neither API proves codec decodability or a device profile. See [integration](CORE_INTEGRATION.md).
 
 `cargo run -p liblivephoto --example convert -- PROFILE NEW_OUTPUT_DIR STILL
 [MOVIE] [--pair-id ID] [--sidecars|--allow-drop]` is a complete standalone consumer.
-Profiles are `preserve`, `google-jpeg`, `google-heif`, `apple` and
+Profiles are `preserve`, `google-jpeg`, `google-heif`, `google-avif`, `apple` and
 `samsung-jpeg-sef`. The example prints the plan before execution, validates output
 through the library's reader, and publishes only into a new directory. It rejects
 unmapped resources by default. Sidecars are separate files with resource IDs;

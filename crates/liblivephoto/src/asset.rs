@@ -62,6 +62,7 @@ pub enum VendorDialect {
     LegacyMicroVideo,
     Oplus,
     SamsungSef,
+    Honor,
     Unknown,
 }
 
@@ -256,6 +257,11 @@ pub enum Diagnostic {
     /// and original consumer behavior require separate evidence.
     PresentationOutsideMovieHeader,
     VendorCompatibility,
+    MetadataMismatch {
+        field: String,
+        declared: String,
+        observed: String,
+    },
     RecoveredWithoutDirectory,
     RecoveredAfterParseError {
         code: String,

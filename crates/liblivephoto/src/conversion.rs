@@ -10,6 +10,7 @@ pub enum TargetProfile {
     PreserveSource,
     AndroidJpeg,
     AndroidHeif,
+    AndroidAvif,
     SamsungJpegSef,
     ApplePair,
 }
@@ -84,6 +85,8 @@ pub enum PreservationEvidence {
     EncodedStillPayloadsEqual,
     ExactPresentationEqual,
     ExtractedResourceBytesEqual,
+    StillDisplayMetadataEqual,
+    StillColorMetadataEqual,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -121,6 +124,100 @@ pub struct ConversionPlan<'p, 'a> {
 type Result<T> = std::result::Result<T, Error>;
 
 impl<'a> MotionPhoto<'a> {
+    /// Add a caller-declared codec/audio contract to a conversion plan. Default
+    /// `plan` only promises container/resource preservation. Unknown AAC facts
+    /// block this stricter plan rather than being treated as supported.
+    pub fn plan_with_capabilities<'p>(
+        &'p self,
+        target: TargetProfile,
+        policy: WritePolicy,
+        capabilities: &crate::MediaCapabilities,
+    ) -> ConversionPlan<'p, 'a> {
+        let mut plan = self.plan(target, policy);
+        let descriptions = match self.sample_descriptions() {
+            Ok(v) => v,
+            Err(e) => {
+                plan.compatibility
+                    .blockers
+                    .push(format!("cannot establish media capabilities: {e}"));
+                return plan;
+            }
+        };
+        for d in descriptions {
+            let mut reasons = Vec::new();
+            let mut unknown = false;
+            if d.kind == crate::TrackKind::Video
+                && !capabilities.video_sample_entries.contains(&d.format)
+            {
+                reasons.push("video sample entry is outside the caller's target contract");
+            }
+            if d.kind == crate::TrackKind::Audio {
+                if !capabilities.audio_sample_entries.contains(&d.format) {
+                    reasons.push("audio sample entry is outside the caller's target contract");
+                }
+                let facts = d.audio.as_ref().and_then(|a| a.aac.as_ref());
+                if d.format == *b"mp4a" {
+                    if let Some(aac) = facts {
+                        if !capabilities.aac_object_types.contains(&aac.object_type) {
+                            reasons.push("AAC object type is outside the caller's target contract");
+                        }
+                        if !capabilities.audio_sample_rates.contains(&aac.sample_rate) {
+                            reasons.push("AAC sample rate is outside the caller's target contract");
+                        }
+                        match aac.channels {
+                            Some(ch) if ch > capabilities.max_audio_channels => reasons
+                                .push("AAC channel count exceeds the caller's target contract"),
+                            None => {
+                                unknown = true;
+                                reasons.push(
+                                    "AAC channel count requires unsupported program-config parsing",
+                                );
+                            }
+                            _ => {}
+                        }
+                    } else {
+                        unknown = true;
+                        reasons.push("AAC AudioSpecificConfig is absent or unsupported");
+                    }
+                } else if let Some(audio) = &d.audio {
+                    if audio.sample_entry_channels > capabilities.max_audio_channels {
+                        reasons.push("audio channel count exceeds the caller's target contract");
+                    }
+                    if audio.sample_entry_rate_16_16 & 0xffff != 0
+                        || !capabilities
+                            .audio_sample_rates
+                            .contains(&(audio.sample_entry_rate_16_16 >> 16))
+                    {
+                        reasons.push("audio sample rate is outside the caller's target contract");
+                    }
+                } else {
+                    unknown = true;
+                    reasons.push("audio parameters are unavailable");
+                }
+            }
+            if !reasons.is_empty() {
+                let reason = format!(
+                    "track {} description {} ({}): {}",
+                    d.track_id,
+                    d.index,
+                    String::from_utf8_lossy(&d.format),
+                    reasons.join("; ")
+                );
+                plan.compatibility.blockers.push(reason.clone());
+                plan.report.resources.push(ResourceConversion {
+                    resource: Some(self.motion_video().id),
+                    disposition: if unknown {
+                        Disposition::Unmapped
+                    } else {
+                        Disposition::TranscodeRequired
+                    },
+                    reason,
+                });
+            }
+        }
+        plan
+    }
+
     pub fn plan<'p>(
         &'p self,
         target: TargetProfile,
@@ -134,11 +231,23 @@ impl<'a> MotionPhoto<'a> {
         };
         let mut blockers: Vec<String> = Vec::new();
         let mut unmapped = Vec::new();
+        let copy_pair = target == TargetProfile::ApplePair
+            && self.format() == AssetFormat::AppleLivePhoto
+            && policy.pairing == PairingPolicy::Preserve;
+        if target != TargetProfile::PreserveSource && !copy_pair {
+            if let Err(error) = self.still_metadata() {
+                blockers.push(format!(
+                    "cannot establish preservation of still display/color metadata: {error}"
+                ));
+            }
+        }
         if matches!(
             target,
             TargetProfile::AndroidJpeg | TargetProfile::SamsungJpegSef
         ) && self.still().mime != "image/jpeg"
             || target == TargetProfile::AndroidHeif && self.still().mime != "image/heic"
+            || target == TargetProfile::AndroidAvif && self.still().mime != "image/avif"
+            || target == TargetProfile::ApplePair && self.still().mime == "image/avif"
         {
             blockers.push("target still container requires caller-controlled transcoding".into());
             report.resources.push(ResourceConversion {
@@ -186,7 +295,7 @@ impl<'a> MotionPhoto<'a> {
         }
         if matches!(
             target,
-            TargetProfile::AndroidJpeg | TargetProfile::AndroidHeif
+            TargetProfile::AndroidJpeg | TargetProfile::AndroidHeif | TargetProfile::AndroidAvif
         ) && self
             .presentation_time()
             .is_some_and(|t| t.rescale_exact(1_000_000).is_none())
@@ -213,7 +322,10 @@ impl<'a> MotionPhoto<'a> {
                 || r.role == ResourceRole::PrimaryMotionVideo
                 || (r.role == ResourceRole::ContainerMetadata && r.parent.is_some())
                 || (r.vendor_role.as_deref() == Some("mpvd header")
-                    && target == TargetProfile::AndroidHeif)
+                    && matches!(
+                        target,
+                        TargetProfile::AndroidHeif | TargetProfile::AndroidAvif
+                    ))
                 || (target == TargetProfile::SamsungJpegSef
                     && r.provenance.evidence.starts_with("Samsung SEF"))
                 || (r.parent == Some(self.still().id) && !r.mime.starts_with("video/")))
@@ -238,13 +350,13 @@ impl<'a> MotionPhoto<'a> {
                 } else if !copy
                     && (r.id == self.still().id
                         || target == TargetProfile::ApplePair && r.id == self.motion_video().id || xmp
-                        || r.vendor_role.as_deref()==Some("JPEG MPF") || (target==TargetProfile::ApplePair && r.mime=="application/x-exif"))
+                        || matches!(r.vendor_role.as_deref(),Some("JPEG MPF" | "mpvd header")) || (target==TargetProfile::ApplePair && r.mime=="application/x-exif"))
                 {
                     Disposition::Rewritten
                 } else {
                     Disposition::Preserved
                 },
-                reason: if !copy && native && (r.id==self.still().id || xmp || r.vendor_role.as_deref()==Some("JPEG MPF") || target==TargetProfile::ApplePair && r.id==self.motion_video().id || target==TargetProfile::ApplePair && r.mime=="application/x-exif") {
+                reason: if !copy && native && (r.id==self.still().id || xmp || matches!(r.vendor_role.as_deref(),Some("JPEG MPF" | "mpvd header")) || target==TargetProfile::ApplePair && r.id==self.motion_video().id || target==TargetProfile::ApplePair && r.mime=="application/x-exif") {
                     "container metadata or references are rewritten; media preservation is checked separately".into()
                 } else if native {
                     "resource bytes remain in the native output".into()
@@ -425,11 +537,19 @@ impl ConversionPlan<'_, '_> {
                 bytes,
                 sidecar_for: None,
             });
-        } else if self.target == TargetProfile::AndroidHeif {
+        } else if matches!(
+            self.target,
+            TargetProfile::AndroidHeif | TargetProfile::AndroidAvif
+        ) {
             let video = self.photo.motion_video_bytes()?;
+            let still_mime = if self.target == TargetProfile::AndroidAvif {
+                "image/avif"
+            } else {
+                "image/heic"
+            };
             let description = crate::jpeg_write::android_description(
                 video.len(),
-                "image/heic",
+                still_mime,
                 &self.photo.motion_video().mime,
                 self.photo.presentation_time(),
                 &[],
@@ -454,7 +574,7 @@ impl ConversionPlan<'_, '_> {
             ]);
             files.push(OutputFile {
                 role: ResourceRole::PrimaryStill,
-                mime: "image/heic".into(),
+                mime: still_mime.into(),
                 bytes,
                 sidecar_for: None,
             });
@@ -559,6 +679,21 @@ impl ConversionPlan<'_, '_> {
                     reason: "caller explicitly allowed the unmapped resource to be dropped".into(),
                 });
             }
+        }
+        if self.target != TargetProfile::PreserveSource && !copy_pair {
+            let still = files
+                .iter()
+                .find(|f| f.role == ResourceRole::PrimaryStill && f.sidecar_for.is_none())
+                .ok_or(Error::InvalidStill)?;
+            let before = self.photo.still_metadata()?;
+            let after = crate::media::inspect_still(&still.bytes, &still.mime)?;
+            if before != after {
+                return Err(Error::MetadataMismatch("still display/color properties"));
+            }
+            report.evidence.extend([
+                PreservationEvidence::StillDisplayMetadataEqual,
+                PreservationEvidence::StillColorMetadataEqual,
+            ]);
         }
         Ok(ComposedAsset { files, report })
     }

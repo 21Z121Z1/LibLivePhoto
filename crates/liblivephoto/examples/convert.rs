@@ -10,6 +10,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some("preserve") => TargetProfile::PreserveSource,
         Some("google-jpeg") => TargetProfile::AndroidJpeg,
         Some("google-heif") => TargetProfile::AndroidHeif,
+        Some("google-avif") => TargetProfile::AndroidAvif,
         Some("apple") => TargetProfile::ApplePair,
         Some("samsung-jpeg-sef") => TargetProfile::SamsungJpegSef,
         _ => return Err("usage: convert PROFILE NEW_OUTPUT_DIR STILL [MOVIE] [--pair-id ID] [--sidecars|--allow-drop]".into()),

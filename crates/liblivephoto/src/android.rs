@@ -19,6 +19,7 @@ const MAX_METADATA_STRING_LENGTH: usize = 4096;
 
 #[derive(Debug, Default)]
 struct ParsedXmp {
+    camera_values: BTreeMap<String, i64>,
     motion_photo_enabled: bool,
     version: Option<i64>,
     presentation_timestamp_us: Option<i64>,
@@ -153,7 +154,44 @@ fn first_i64(attributes: &BTreeMap<String, String>, names: &[&str]) -> Option<i6
     None
 }
 
-fn parse_description(parsed: &mut ParsedXmp, attrs: &BTreeMap<String, String>) {
+fn camera_property(name: &str) -> bool {
+    matches!(
+        name,
+        "Camera:MotionPhoto"
+            | "Camera:MicroVideo"
+            | "Camera:MotionPhotoVersion"
+            | "Camera:MicroVideoVersion"
+            | "Camera:MicroVideoOffset"
+            | "Camera:MotionPhotoPresentationTimestampUs"
+            | "Camera:MicroVideoPresentationTimestampUs"
+    )
+}
+
+fn parse_description(parsed: &mut ParsedXmp, attrs: &BTreeMap<String, String>) -> Result<()> {
+    // Invalid numbers and conflicting declarations must not become unknown time
+    // or an inactive flag. Unknown properties remain opaque.
+    for (name, raw) in attrs {
+        if !camera_property(name) {
+            continue;
+        }
+        let value = raw
+            .parse::<i64>()
+            .map_err(|_| MotionPhotoError::MalformedXmp)?;
+        if parsed
+            .camera_values
+            .get(name)
+            .is_some_and(|old| *old != value)
+        {
+            return Err(MotionPhotoError::MalformedXmp);
+        }
+        parsed.camera_values.insert(name.clone(), value);
+    }
+    let attrs: BTreeMap<_, _> = parsed
+        .camera_values
+        .iter()
+        .map(|(k, v)| (k.clone(), v.to_string()))
+        .collect();
+    let attrs = &attrs;
     if let Some(flag) = first_i64(attrs, &["Camera:MotionPhoto", "GCamera:MotionPhoto"]) {
         parsed.motion_photo_enabled = flag == 1;
     } else if let Some(flag) = first_i64(attrs, &["Camera:MicroVideo", "GCamera:MicroVideo"]) {
@@ -181,6 +219,19 @@ fn parse_description(parsed: &mut ParsedXmp, attrs: &BTreeMap<String, String>) {
         attrs,
         &["Camera:MicroVideoOffset", "GCamera:MicroVideoOffset"],
     );
+    if let (Some(a), Some(b)) = (
+        parsed
+            .camera_values
+            .get("Camera:MotionPhotoPresentationTimestampUs"),
+        parsed
+            .camera_values
+            .get("Camera:MicroVideoPresentationTimestampUs"),
+    ) {
+        if a != b {
+            return Err(MotionPhotoError::MalformedXmp);
+        }
+    }
+    Ok(())
 }
 
 fn parse_item(
@@ -246,11 +297,32 @@ fn parse_xmp(xmp: &[u8]) -> Result<ParsedXmp> {
         } else if matches!(event, Event::End(_)) {
             depth = depth.checked_sub(1).ok_or(MotionPhotoError::MalformedXmp)?;
         }
+        let started = matches!(&event, Event::Start(_));
         match event {
             Event::Start(element) | Event::Empty(element) => {
                 let name = canonical_name(&reader, element.name(), false);
-                if name.as_deref() == Some("rdf:Description") {
-                    parse_description(&mut parsed, &attributes(&element, &reader)?);
+                if name.as_deref().is_some_and(camera_property) {
+                    if !started {
+                        return Err(MotionPhotoError::MalformedXmp);
+                    }
+                    let text = reader
+                        .read_text(element.name())
+                        .map_err(|_| MotionPhotoError::MalformedXmp)?;
+                    if text.len() > MAX_METADATA_STRING_LENGTH {
+                        return Err(MotionPhotoError::MalformedXmp);
+                    }
+                    let value = quick_xml::escape::unescape(&text)
+                        .map_err(|_| MotionPhotoError::MalformedXmp)?;
+                    parse_description(
+                        &mut parsed,
+                        &BTreeMap::from([(
+                            name.ok_or(MotionPhotoError::MalformedXmp)?,
+                            value.trim().to_owned(),
+                        )]),
+                    )?;
+                    depth -= 1;
+                } else if name.as_deref() == Some("rdf:Description") {
+                    parse_description(&mut parsed, &attributes(&element, &reader)?)?;
                 } else if name.as_deref() == Some("Container:Directory") {
                     directory_prefix = Some("Container");
                 } else if let Some(prefix) = directory_prefix {

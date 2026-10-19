@@ -128,6 +128,16 @@ pub(crate) fn rewrite_packet(packet: &[u8], description: &str) -> Result<Vec<u8>
                     continue;
                 }
                 writer.write_event(Event::Start(retain_attributes(s, &reader)?))?;
+                // Emit the active description first. The pinned Google reader
+                // does not reactivate camera attribute handling when a namespace
+                // was first declared in an earlier sibling description.
+                if is_ns(&reader, s.name(), RDF, "RDF") {
+                    if inserted {
+                        return Err(Error::InvalidStill);
+                    }
+                    writer.get_mut().extend_from_slice(description.as_bytes());
+                    inserted = true;
+                }
             }
             Event::Empty(ref s) => {
                 if skip > 0 {
@@ -142,18 +152,11 @@ pub(crate) fn rewrite_packet(packet: &[u8], description: &str) -> Result<Vec<u8>
                 }
                 writer.write_event(Event::Empty(retain_attributes(s, &reader)?))?;
             }
-            Event::End(ref s) => {
+            Event::End(_) => {
                 depth = depth.checked_sub(1).ok_or(Error::InvalidStill)?;
                 if skip > 0 {
                     skip -= 1;
                     continue;
-                }
-                if is_ns(&reader, s.name(), RDF, "RDF") {
-                    if inserted {
-                        return Err(Error::InvalidStill);
-                    }
-                    writer.get_mut().extend_from_slice(description.as_bytes());
-                    inserted = true;
                 }
                 writer.write_event(e)?;
             }

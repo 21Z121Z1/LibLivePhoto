@@ -93,6 +93,151 @@ pub fn input(time: i64, tracks: usize) -> Vec<u8> {
     let video = movie(1000, tracks);
     [jpeg(&xmp(video.len(), time, "")), video].concat()
 }
+
+/// Synthetic HEIF/AVIF structure. Its item bytes are not a decodable picture.
+pub fn heif(brand: &[u8; 4]) -> Vec<u8> {
+    use liblivephoto_format::{isobmff::*, FourCC};
+    let ftyp = boxed(b"ftyp", &[brand.as_slice(), &[0; 4], b"mif1"].concat());
+    let image = b"synthetic-encoded-item";
+    let info = make_iinf_box(
+        1,
+        &[make_infe_box(
+            1,
+            FourCC::new(if brand == b"avif" { *b"av01" } else { *b"hvc1" }),
+            0,
+        )
+        .unwrap()],
+    )
+    .unwrap();
+    let iloc = make_iloc_box(
+        1,
+        4,
+        4,
+        0,
+        0,
+        &[IlocEntry {
+            item_id: 1,
+            construction_method: 1,
+            data_reference_index: 0,
+            base_offset: 0,
+            extents: vec![IlocExtent {
+                index: None,
+                offset: 0,
+                length: image.len() as u64,
+            }],
+        }],
+    )
+    .unwrap();
+    let iprp = boxed(
+        b"iprp",
+        &[
+            boxed(b"ipco", &make_ispe_box(2, 3).unwrap()),
+            make_ipma_box(
+                0,
+                0,
+                &[IpmaEntry {
+                    item_id: 1,
+                    associations: vec![IpmaAssociation {
+                        property_index: 1,
+                        essential: true,
+                    }],
+                }],
+            )
+            .unwrap(),
+        ]
+        .concat(),
+    );
+    let meta = full(
+        b"meta",
+        &[
+            make_pitm_box(0, 1).unwrap(),
+            info,
+            iloc,
+            iprp,
+            boxed(b"idat", image),
+        ]
+        .concat(),
+    );
+    [ftyp, meta].concat()
+}
+
+pub fn metadata_movie(
+    description: &[u8; 4],
+    config: &[u8],
+    samples: &[(&[u8], u32)],
+    composition_offset: i32,
+) -> Vec<u8> {
+    let ftyp = boxed(b"ftyp", b"isom\0\0\0\0isom");
+    let v = boxed(b"mdat", b"video");
+    let m = boxed(
+        b"mdat",
+        &samples
+            .iter()
+            .flat_map(|s| s.0.iter().copied())
+            .collect::<Vec<_>>(),
+    );
+    let duration: u32 = samples.iter().map(|s| s.1).sum();
+    let mvhd = full(b"mvhd", &[words(&[0, 0, 1000, 2000]), vec![0; 80]].concat());
+    let mut tkhd = words(&[0, 0, 2, 0, duration]);
+    tkhd.extend_from_slice(&[0; 60]);
+    let stsd = full(
+        b"stsd",
+        &[
+            words(&[1]),
+            boxed(
+                description,
+                &[vec![0, 0, 0, 0, 0, 0, 0, 1], config.to_vec()].concat(),
+            ),
+        ]
+        .concat(),
+    );
+    let stts = full(
+        b"stts",
+        &[
+            words(&[samples.len() as u32]),
+            samples.iter().flat_map(|s| words(&[1, s.1])).collect(),
+        ]
+        .concat(),
+    );
+    let mut sizes = words(&[0, samples.len() as u32]);
+    for s in samples {
+        sizes.extend_from_slice(&(s.0.len() as u32).to_be_bytes());
+    }
+    let stsz = full(b"stsz", &sizes);
+    let stsc = full(b"stsc", &words(&[1, 1, samples.len() as u32, 1]));
+    let stco = full(b"stco", &words(&[1, (ftyp.len() + v.len() + 8) as u32]));
+    let mut ctts = full(
+        b"ctts",
+        &words(&[1, samples.len() as u32, composition_offset as u32]),
+    );
+    ctts[8] = 1;
+    let stbl = boxed(b"stbl", &[stsd, stts, stsz, stsc, stco, ctts].concat());
+    let mdia = boxed(
+        b"mdia",
+        &[
+            full(
+                b"mdhd",
+                &[words(&[0, 0, 1000, duration]), vec![0; 4]].concat(),
+            ),
+            full(
+                b"hdlr",
+                &[words(&[0]), b"meta".to_vec(), vec![0; 12]].concat(),
+            ),
+            boxed(b"minf", &stbl),
+        ]
+        .concat(),
+    );
+    let moov = boxed(
+        b"moov",
+        &[
+            mvhd,
+            track(1, 1000, (ftyp.len() + 8) as u32),
+            boxed(b"trak", &[full(b"tkhd", &tkhd), mdia].concat()),
+        ]
+        .concat(),
+    );
+    [ftyp, v, m, moov].concat()
+}
 pub fn sef(records: &[(u16, &str, Vec<u8>)]) -> Vec<u8> {
     let mut d = vec![255, 216, 255, 217];
     let mut entries = Vec::new();

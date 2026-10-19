@@ -1,11 +1,16 @@
 #![no_main]
 use liblivephoto::*;
 libfuzzer_sys::fuzz_target!(|data:&[u8]| {
+    let _=inspect_honor_metadata(data);
+    let _=decode_agtm_header(data);
     for mode in [ParseMode::Strict,ParseMode::Compatible,ParseMode::Forensic] {
         let options=ParseOptions{mode,max_input_bytes:1_048_576,max_scan_bytes:1_048_576,max_candidates:16};
         if let Ok(p)=MotionPhoto::parse(Input::SingleFile(data),options) {
             assert!(p.validate().is_ok());
             for r in p.resources(){assert!(p.extract(r,std::io::sink()).is_ok());}
+            let _=p.still_metadata();
+            let _=p.sample_descriptions();
+            let _=p.agtm_at(MediaTime::new(0,1).unwrap());
         }
         if data.len()>2 {
             let split=usize::from(u16::from_be_bytes([data[0],data[1]]))%(data.len()-2)+2;

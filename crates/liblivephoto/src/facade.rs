@@ -86,7 +86,15 @@ pub enum Input<'a> {
 #[derive(Debug, Clone, Copy)]
 pub enum PathInput<'a> {
     SingleFile(&'a Path),
-    ApplePair { still: &'a Path, movie: &'a Path },
+    ApplePair {
+        still: &'a Path,
+        movie: &'a Path,
+    },
+    Parts {
+        still: &'a Path,
+        movie: &'a Path,
+        presentation: Option<MediaTime>,
+    },
 }
 
 #[derive(Debug)]
@@ -98,11 +106,14 @@ pub enum MotionPhotoReadError {
     Io(io::Error),
     Unrecognized,
     InputLimit,
+    InvalidInputRange,
     ScanLimit,
     AmbiguousRecovery,
     InvalidResource,
     InvalidStill,
     InvalidPresentation,
+    MetadataMismatch(&'static str),
+    UnsupportedLayout(&'static str),
     IdentifierMismatch,
     MissingPairMetadata,
     StrictViolation,
@@ -118,6 +129,9 @@ impl fmt::Display for MotionPhotoReadError {
             Self::Io(error) => error.fmt(f),
             Self::Unrecognized => f.write_str("input is not a supported motion asset"),
             Self::InputLimit => f.write_str("motion asset exceeds the input byte budget"),
+            Self::InvalidInputRange => {
+                f.write_str("input file range is empty, overflows or exceeds the file")
+            }
             Self::ScanLimit => f.write_str("motion asset recovery exceeds the scan budget"),
             Self::AmbiguousRecovery => {
                 f.write_str("multiple complete recovery candidates; selection requires metadata")
@@ -129,6 +143,10 @@ impl fmt::Display for MotionPhotoReadError {
                 f.write_str("motion asset still container is invalid or unsupported")
             }
             Self::InvalidPresentation => f.write_str("motion asset presentation time is invalid"),
+            Self::MetadataMismatch(field) => {
+                write!(f, "declared {field} differs from the encoded container")
+            }
+            Self::UnsupportedLayout(reason) => f.write_str(reason),
             Self::IdentifierMismatch => f.write_str("Apple still and movie identifiers differ"),
             Self::MissingPairMetadata => {
                 f.write_str("Apple pair lacks identifier or still-image-time metadata")
@@ -273,7 +291,7 @@ fn validate_boxes(data: &[u8], heif: bool) -> ReadResult<()> {
             let brand_is_heif = |brand: &[u8]| {
                 matches!(
                     brand,
-                    b"heic" | b"heix" | b"hevc" | b"hevx" | b"mif1" | b"msf1"
+                    b"heic" | b"heix" | b"hevc" | b"hevx" | b"mif1" | b"msf1" | b"avif" | b"avis"
                 )
             };
             if heif
@@ -302,7 +320,16 @@ fn still_mime(data: &[u8]) -> ReadResult<&'static str> {
         Ok("image/jpeg")
     } else {
         validate_boxes(data, true)?;
-        Ok("image/heic")
+        let ftyp =
+            parse_boxes(data, 0..data.len()).map_err(|_| MotionPhotoReadError::InvalidStill)?;
+        let payload = &data[ftyp[0].data_start..ftyp[0].data_end];
+        let avif = matches!(&payload[..4], b"avif" | b"avis")
+            || payload[8..]
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .any(|b| matches!(b, b"avif" | b"avis"));
+        Ok(if avif { "image/avif" } else { "image/heic" })
     }
 }
 
@@ -329,6 +356,41 @@ impl<'a> MotionPhoto<'a> {
         photo.complete_model()?;
         photo.asset.motion.mime =
             crate::motion_video::container_mime(photo.motion_video_bytes()?)?.into();
+        if let Some(android) = &photo.android_asset {
+            let first = android
+                .items
+                .first()
+                .ok_or(MotionPhotoReadError::InvalidResource)?;
+            let last = android
+                .items
+                .last()
+                .ok_or(MotionPhotoReadError::InvalidResource)?;
+            for (field, declared, observed) in [
+                (
+                    "primary MIME",
+                    first.mime.as_str(),
+                    photo.asset.still.mime.as_str(),
+                ),
+                (
+                    "video MIME",
+                    last.mime.as_str(),
+                    photo.asset.motion.mime.as_str(),
+                ),
+            ] {
+                if !declared.eq_ignore_ascii_case(observed)
+                    && !(declared.eq_ignore_ascii_case("image/heif") && observed == "image/heic")
+                {
+                    if options.mode == ParseMode::Strict {
+                        return Err(MotionPhotoReadError::MetadataMismatch(field));
+                    }
+                    photo.diagnostics.push(Diagnostic::MetadataMismatch {
+                        field: field.into(),
+                        declared: declared.into(),
+                        observed: observed.into(),
+                    });
+                }
+            }
+        }
         photo.validate()?;
         Ok(photo)
     }
@@ -412,6 +474,21 @@ impl<'a> MotionPhoto<'a> {
 
     fn parse_single(data: &'a [u8], options: ParseOptions) -> ReadResult<Self> {
         let sef = crate::vendor::samsung::parse(data)?;
+        let honor = crate::inspect_honor_metadata(data)?;
+        if honor.as_ref().is_some_and(|h| h.video.is_some()) {
+            if options.mode == ParseMode::Strict {
+                return Err(MotionPhotoReadError::StrictViolation);
+            }
+            if sef.is_some() {
+                return Err(MotionPhotoReadError::AmbiguousRecovery);
+            }
+            return Self::from_honor(
+                data,
+                honor
+                    .as_ref()
+                    .ok_or(MotionPhotoReadError::InvalidResource)?,
+            );
+        }
         let parsed = if options.mode == ParseMode::Strict {
             parse_android_motion_photo(data)
         } else {
@@ -485,6 +562,63 @@ impl<'a> MotionPhoto<'a> {
             }
         }
         Ok(photo)
+    }
+
+    fn from_honor(data: &'a [u8], honor: &crate::HonorMetadata) -> ReadResult<Self> {
+        let motion = honor.video.ok_or(MotionPhotoReadError::Unrecognized)?;
+        let declared = crate::android::declared_time(&data[..honor.jpeg_end as usize])?
+            .filter(|v| *v >= 0)
+            .and_then(|v| MediaTime::new(v, 1_000_000));
+        if honor
+            .presentation
+            .zip(declared)
+            .is_some_and(|(a, b)| !a.equivalent(b))
+        {
+            return Err(MotionPhotoReadError::MetadataMismatch(
+                "Honor presentation time",
+            ));
+        }
+        let mut auxiliary = Vec::new();
+        for record in &honor.records {
+            if record.payload == motion || record.payload.length() == 0 {
+                continue;
+            }
+            let mut r = resource(
+                ResourceRole::Unknown,
+                "application/octet-stream",
+                0,
+                record.payload,
+            );
+            r.vendor_role = Some(record.tag.clone());
+            r.provenance = Provenance::declared("Honor backward TLV payload");
+            auxiliary.push(r);
+        }
+        Ok(Self {
+            sources: vec![Cow::Borrowed(data)],
+            android_asset: None,
+            diagnostics: vec![Diagnostic::VendorCompatibility],
+            asset: MotionAsset {
+                layout: PhysicalLayout::AppendedResources,
+                format: AssetFormat::Unspecified,
+                dialect: VendorDialect::Honor,
+                provenance: Provenance::declared("Honor tagged JPEG trailer"),
+                sources: Vec::new(),
+                containers: Vec::new(),
+                still: resource(
+                    ResourceRole::PrimaryStill,
+                    "image/jpeg",
+                    0,
+                    ByteRange::new(0, honor.jpeg_end)?,
+                ),
+                motion: resource(ResourceRole::PrimaryMotionVideo, "video/mp4", 0, motion),
+                presentation: honor.presentation.or(declared).map(|time| Presentation {
+                    time,
+                    source: TimeSource::VendorMetadata,
+                }),
+                pairing: PairingMetadata::default(),
+                auxiliary,
+            },
+        })
     }
 
     fn from_sef(data: &'a [u8], sef: &crate::vendor::samsung::Sef) -> ReadResult<Self> {
@@ -630,7 +764,7 @@ impl<'a> MotionPhoto<'a> {
             sources: vec![Cow::Borrowed(data)],
             asset: MotionAsset {
                 format,
-                layout: if mime == "image/heic" {
+                layout: if crate::heif::is_heif_mime(mime) {
                     PhysicalLayout::BmffVideoBox
                 } else {
                     PhysicalLayout::AppendedResources
@@ -846,7 +980,7 @@ impl<'a> MotionPhoto<'a> {
                 }
             }
         }
-        if self.asset.still.mime == "image/heic" {
+        if crate::heif::is_heif_mime(&self.asset.still.mime) {
             let items = crate::heif_io::items(self.still_bytes()?, self.asset.auxiliary.len() + 2)?;
             self.asset.auxiliary.extend(items);
         } else if self.asset.still.mime == "image/jpeg" {
@@ -871,7 +1005,8 @@ impl<'a> MotionPhoto<'a> {
             )?)) {
                 if end < r.lower_bound {
                     let header = source.get(end as usize..r.lower_bound as usize);
-                    let mpvd = header.is_some_and(|h| h.len() == 8 && h.get(4..8) == Some(b"mpvd"));
+                    let mpvd = header
+                        .is_some_and(|h| matches!(h.len(), 8 | 16) && h.get(4..8) == Some(b"mpvd"));
                     let mut gap = resource(
                         if mpvd {
                             ResourceRole::ContainerMetadata
@@ -904,6 +1039,8 @@ impl<'a> MotionPhoto<'a> {
         }
         let still_kind = if self.asset.still.mime == "image/jpeg" {
             ContainerKind::Jpeg
+        } else if self.asset.still.mime == "image/avif" {
+            ContainerKind::Avif
         } else {
             ContainerKind::Heif
         };
@@ -958,6 +1095,16 @@ impl<'a> MotionPhoto<'a> {
     }
     pub fn motion_video_bytes(&self) -> ReadResult<&[u8]> {
         self.contiguous_bytes(self.motion_video())
+    }
+
+    /// Return the original primary XMP packet, without XML serialization or
+    /// motion-property removal. Absence is distinct from malformed metadata.
+    pub fn xmp_bytes(&self) -> ReadResult<Option<Cow<'_, [u8]>>> {
+        if self.still().mime == "image/jpeg" {
+            crate::jpeg_write::read_xmp(self.still_bytes()?).map(|p| p.map(Cow::Borrowed))
+        } else {
+            crate::heif_io::read_xmp(self.still_bytes()?).map(|p| p.map(Cow::Owned))
+        }
     }
 
     /// Copy an asset-owned resource to a caller-controlled sink. No files are
@@ -1100,15 +1247,39 @@ impl MotionPhoto<'static> {
         }
         let sources = match input {
             PathInput::SingleFile(path) => vec![read(path, options.max_input_bytes)?],
-            PathInput::ApplePair { still, movie } => {
+            PathInput::ApplePair { still, movie } | PathInput::Parts { still, movie, .. } => {
                 let still = read(still, options.max_input_bytes)?;
                 let movie = read(movie, options.max_input_bytes - still.len())?;
                 vec![still, movie]
             }
         };
-        let input = match sources.as_slice() {
-            [data] => Input::SingleFile(data),
-            [still, movie] => Input::ApplePair { still, movie },
+        let kind = match input {
+            PathInput::SingleFile(_) => crate::file_input::OwnedInputKind::Single,
+            PathInput::ApplePair { .. } => crate::file_input::OwnedInputKind::ApplePair,
+            PathInput::Parts { presentation, .. } => {
+                crate::file_input::OwnedInputKind::Parts(presentation)
+            }
+        };
+        Self::from_owned_sources(sources, kind, options)
+    }
+
+    pub(crate) fn from_owned_sources(
+        sources: Vec<Vec<u8>>,
+        kind: crate::file_input::OwnedInputKind,
+        options: ParseOptions,
+    ) -> ReadResult<Self> {
+        let input = match (sources.as_slice(), kind) {
+            ([data], crate::file_input::OwnedInputKind::Single) => Input::SingleFile(data),
+            ([still, movie], crate::file_input::OwnedInputKind::ApplePair) => {
+                Input::ApplePair { still, movie }
+            }
+            ([still, movie], crate::file_input::OwnedInputKind::Parts(presentation)) => {
+                Input::Parts {
+                    still,
+                    movie,
+                    presentation,
+                }
+            }
             _ => return Err(MotionPhotoReadError::Unrecognized),
         };
         let parsed = MotionPhoto::parse(input, options)?;
