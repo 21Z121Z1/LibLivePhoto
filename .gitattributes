@@ -1,0 +1,2 @@
+# The cross-platform acceptance receipt hashes the exact manifest bytes.
+fixtures/syntax/cases.json text eol=lf

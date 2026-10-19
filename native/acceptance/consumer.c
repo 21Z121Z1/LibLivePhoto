@@ -23,10 +23,20 @@ typedef const uint8_t *(*Bytes)(const LLPResponse *);
 typedef size_t (*Length)(const LLPResponse *);
 typedef void (*FreeResponse)(LLPResponse *);
 
+static FILE *open_file(const char *path, const char *mode) {
+#ifdef _WIN32
+    FILE *stream = NULL;
+    if (fopen_s(&stream,path,mode)!=0) return NULL;
+    return stream;
+#else
+    return fopen(path,mode);
+#endif
+}
+
 static uint8_t *read_input(const char *path, size_t *length) {
     *length = 0;
     if (strcmp(path,"-")==0) return NULL;
-    FILE *input = fopen(path,"rb");
+    FILE *input = open_file(path,"rb");
     if (!input || fseek(input,0,SEEK_END)!=0) exit(3);
     long end = ftell(input);
     if (end<0 || end>128*1024*1024 || fseek(input,0,SEEK_SET)!=0) exit(3);
@@ -56,7 +66,7 @@ int main(int argc, char **argv) {
     size_t n = length(response);
     const uint8_t *data = bytes(response);
     if (!data || n<12 || n>320*1024*1024) return 5;
-    FILE *output = fopen(argv[5],"wb");
+    FILE *output = open_file(argv[5],"wb");
     if (!output || fwrite(data,1,n,output)!=n || fclose(output)!=0) return 3;
     release(response);
     free(request); free(primary); free(movie);
