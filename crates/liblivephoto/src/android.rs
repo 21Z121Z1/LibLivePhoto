@@ -18,13 +18,13 @@ const MAX_DIRECTORY_ITEMS: usize = 64;
 const MAX_METADATA_STRING_LENGTH: usize = 4096;
 
 #[derive(Debug, Default)]
-struct ParsedXmp {
-    camera_values: BTreeMap<String, i64>,
+pub(crate) struct ParsedXmp {
+    pub(crate) camera_values: BTreeMap<String, i64>,
     motion_photo_enabled: bool,
     version: Option<i64>,
     presentation_timestamp_us: Option<i64>,
     legacy_micro_video_offset: Option<i64>,
-    items: Vec<MotionPhotoItem>,
+    pub(crate) items: Vec<MotionPhotoItem>,
 }
 
 fn find_bytes(haystack: &[u8], needle: &[u8], start: usize) -> Option<usize> {
@@ -267,7 +267,7 @@ fn parse_item(
     Ok(())
 }
 
-fn parse_xmp(xmp: &[u8]) -> Result<ParsedXmp> {
+pub(crate) fn parse_xmp(xmp: &[u8]) -> Result<ParsedXmp> {
     let text = std::str::from_utf8(xmp).map_err(|_| MotionPhotoError::MalformedXmp)?;
     let upper = text.to_ascii_uppercase();
     if upper.contains("<!DOCTYPE") || upper.contains("<!ENTITY") {
@@ -351,7 +351,7 @@ fn parse_xmp(xmp: &[u8]) -> Result<ParsedXmp> {
     Ok(parsed)
 }
 
-fn validate_directory(items: &[MotionPhotoItem]) -> Result<()> {
+pub(crate) fn validate_directory(items: &[MotionPhotoItem]) -> Result<()> {
     if !(2..=MAX_DIRECTORY_ITEMS).contains(&items.len()) {
         return Err(MotionPhotoError::InvalidDirectory);
     }

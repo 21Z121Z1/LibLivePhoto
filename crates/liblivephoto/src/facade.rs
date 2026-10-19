@@ -314,7 +314,7 @@ fn validate_boxes(data: &[u8], heif: bool) -> ReadResult<()> {
     Ok(())
 }
 
-fn still_mime(data: &[u8]) -> ReadResult<&'static str> {
+pub(crate) fn still_mime(data: &[u8]) -> ReadResult<&'static str> {
     if data.starts_with(&[0xff, 0xd8]) {
         jpeg_image_end(data, 0).map_err(|_| MotionPhotoReadError::InvalidStill)?;
         Ok("image/jpeg")
@@ -335,6 +335,13 @@ fn still_mime(data: &[u8]) -> ReadResult<&'static str> {
 
 impl<'a> MotionPhoto<'a> {
     pub fn parse(input: Input<'a>, options: ParseOptions) -> ReadResult<Self> {
+        Self::parse_with_handlers(input, options, &crate::HandlerOptions::default())
+    }
+    pub fn parse_with_handlers(
+        input: Input<'a>,
+        options: ParseOptions,
+        handlers: &crate::HandlerOptions,
+    ) -> ReadResult<Self> {
         let lengths = match input {
             Input::SingleFile(data) => Some(data.len()),
             Input::ApplePair { still, movie } | Input::Parts { still, movie, .. } => {
@@ -345,7 +352,7 @@ impl<'a> MotionPhoto<'a> {
             return Err(MotionPhotoReadError::InputLimit);
         }
         let mut photo = match input {
-            Input::SingleFile(data) => Self::parse_single(data, options)?,
+            Input::SingleFile(data) => Self::parse_single(data, options, handlers)?,
             Input::ApplePair { still, movie } => Self::parse_pair(still, movie)?,
             Input::Parts {
                 still,
@@ -472,9 +479,21 @@ impl<'a> MotionPhoto<'a> {
         })
     }
 
-    fn parse_single(data: &'a [u8], options: ParseOptions) -> ReadResult<Self> {
-        let sef = crate::vendor::samsung::parse(data)?;
-        let honor = crate::inspect_honor_metadata(data)?;
+    fn parse_single(
+        data: &'a [u8],
+        options: ParseOptions,
+        handlers: &crate::HandlerOptions,
+    ) -> ReadResult<Self> {
+        let sef = if handlers.allows("samsung_sef") {
+            crate::vendor::samsung::parse(data)?
+        } else {
+            None
+        };
+        let honor = if handlers.allows("honor_live_photo") {
+            crate::inspect_honor_metadata(data)?
+        } else {
+            None
+        };
         if honor.as_ref().is_some_and(|h| h.video.is_some()) {
             if options.mode == ParseMode::Strict {
                 return Err(MotionPhotoReadError::StrictViolation);
@@ -490,6 +509,7 @@ impl<'a> MotionPhoto<'a> {
             );
         }
         if options.mode != ParseMode::Strict
+            && handlers.allows("oplus_olive")
             && sef.is_none()
             && crate::lpex::parse_first_lpex_object(data).is_none()
         {
@@ -504,10 +524,19 @@ impl<'a> MotionPhoto<'a> {
                 }
             }
         }
-        let parsed = if options.mode == ParseMode::Strict {
+        let parsed = if options.mode == ParseMode::Strict || !handlers.allows("oplus_olive") {
             parse_android_motion_photo(data)
         } else {
             parse_oppo_motion_photo(data)
+        };
+        let parsed = match parsed {
+            Ok(Some(asset))
+                if asset.source_kind == MotionPhotoSourceKind::LegacyMicroVideoV1b
+                    && !handlers.allows("legacy_micro_video") =>
+            {
+                Ok(None)
+            }
+            other => other,
         };
         let result = match parsed {
             Ok(Some(asset)) => Self::from_android(data, asset, options),
@@ -539,7 +568,13 @@ impl<'a> MotionPhoto<'a> {
                 .auxiliary
                 .retain(|r| r.role != ResourceRole::Unknown && r.parent.is_some());
             for r in sef.records {
-                if r.payload == sef.motion || r.payload.length() == 0 {
+                if r.payload == sef.motion
+                    || r.payload.length() == 0
+                    || (r.kind == 0x0a30
+                        && r.name == "MotionPhoto_Data"
+                        && r.payload.lower_bound <= sef.motion.lower_bound
+                        && r.payload.upper_bound >= sef.motion.upper_bound)
+                {
                     continue;
                 }
                 let payload = &data[r.payload.lower_bound as usize..r.payload.upper_bound as usize];

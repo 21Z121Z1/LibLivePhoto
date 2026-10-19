@@ -64,7 +64,7 @@ fn read_at(file: &File, bytes: &mut [u8], offset: u64) -> io::Result<usize> {
     }
 }
 
-fn snapshot(range: FileRange<'_>, budget: usize) -> Result<Vec<u8>, Error> {
+pub(crate) fn snapshot(range: FileRange<'_>, budget: usize) -> Result<Vec<u8>, Error> {
     let end = range
         .offset
         .checked_add(range.length)

@@ -5,6 +5,11 @@ libfuzzer_sys::fuzz_target!(|data:&[u8]| {
     let _=inspect_oplus_metadata(data);
     let _=decode_agtm_header(data);
     let _=decode_agtm(data);
+    let _=decode_video_metadata(data);
+    let _=XmpDocument::parse(data);
+    let _=MetadataCollection::from_json(data);
+    let _=MetadataEngine::new().parse(data,&HandlerOptions::default());
+    let _=inspect_samsung_metadata(data);
     for mode in [ParseMode::Strict,ParseMode::Compatible,ParseMode::Forensic] {
         let options=ParseOptions{mode,max_input_bytes:1_048_576,max_scan_bytes:1_048_576,max_candidates:16};
         if let Ok(p)=MotionPhoto::parse(Input::SingleFile(data),options) {

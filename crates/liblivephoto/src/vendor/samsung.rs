@@ -1,8 +1,8 @@
 //! Independent implementation of evidence/SAMSUNG_SEF_SPEC.md.
 use crate::{ByteRange, MotionPhotoReadError as Error};
 type Result<T> = std::result::Result<T, Error>;
-#[derive(Debug)]
-pub(crate) struct Record {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Record {
     pub kind: u16,
     pub name: String,
     pub payload: ByteRange,
@@ -20,13 +20,56 @@ fn u32le(d: &[u8], p: usize) -> Result<u32> {
             .ok_or(Error::InvalidResource)?,
     ))
 }
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SamsungMetadata {
+    pub version: u32,
+    pub records: Vec<Record>,
+    pub video: Option<ByteRange>,
+    pub motion_photo_data_magic: Option<[u8; 4]>,
+}
 pub(crate) fn parse(d: &[u8]) -> Result<Option<Sef>> {
-    if d.len() < 8 || d.get(d.len() - 4..) != Some(b"SEFT") {
-        return Ok(None);
+    Ok(inspect_samsung_metadata(d)?.and_then(|m| {
+        m.video.map(|motion| Sef {
+            version: m.version,
+            records: m.records,
+            motion,
+        })
+    }))
+}
+/// Inspect complete JPEG SEF trailers or HEIF sefd/mpvd resources, including
+/// metadata-only directories. Every returned extent is an absolute source range.
+pub fn inspect_samsung_metadata(d: &[u8]) -> Result<Option<SamsungMetadata>> {
+    let mut footer_end = None;
+    let mut mpvd = None;
+    if d.len() >= 8 && d.get(d.len() - 4..) == Some(b"SEFT") {
+        footer_end = Some(d.len());
     }
-    let size = u32le(d, d.len() - 8)? as usize;
-    let start = d
-        .len()
+    if d.get(4..8) == Some(b"ftyp") {
+        let scan = liblivephoto_format::isobmff::scan_top_level_boxes(d)
+            .map_err(|_| Error::InvalidResource)?;
+        for b in scan.boxes {
+            if b.kind.as_bytes() == b"mpvd"
+                && mpvd
+                    .replace(ByteRange::new(b.data_start as u64, b.data_end as u64)?)
+                    .is_some()
+            {
+                return Err(Error::AmbiguousRecovery);
+            }
+            if b.kind.as_bytes() == b"sefd"
+                && d.get(b.data_end.saturating_sub(4)..b.data_end) == Some(b"SEFT")
+            {
+                if footer_end.is_some_and(|end| end != b.data_end) {
+                    return Err(Error::AmbiguousRecovery);
+                }
+                footer_end = Some(b.data_end);
+            }
+        }
+    }
+    let Some(footer_end) = footer_end else {
+        return Ok(None);
+    };
+    let size = u32le(d, footer_end - 8)? as usize;
+    let start = footer_end
         .checked_sub(8)
         .and_then(|e| e.checked_sub(size))
         .ok_or(Error::InvalidResource)?;
@@ -35,11 +78,12 @@ pub(crate) fn parse(d: &[u8]) -> Result<Option<Sef>> {
     }
     let version = u32le(d, start + 4)?;
     let count = u32le(d, start + 8)? as usize;
-    if count > 4096 || 12 + count * 12 != size {
+    if count > 4096 || 12 + count * 12 > size {
         return Err(Error::InvalidResource);
     }
     let mut records = Vec::new();
     let mut motion = None;
+    let mut motion_photo_data_magic = None;
     for n in 0..count {
         let e = start + 12 + n * 12;
         let offset = u32le(d, e + 4)? as usize;
@@ -63,17 +107,35 @@ pub(crate) fn parse(d: &[u8]) -> Result<Option<Sef>> {
         let payload = ByteRange::new((s + 8 + name_len) as u64, end as u64)?;
         if kind == 0x0a30 && name == "MotionPhoto_Data" {
             let p = &d[payload.lower_bound as usize..payload.upper_bound as usize];
-            let r = if p.len() == 12 && p.starts_with(b"mpv2") {
+            let magic = p.get(..4).filter(|m| matches!(*m, b"mpv2" | b"mpv3"));
+            let r = if let Some(magic) = magic {
+                motion_photo_data_magic =
+                    Some(magic.try_into().map_err(|_| Error::InvalidResource)?);
+                if p.len() < 12 {
+                    return Err(Error::InvalidResource);
+                }
                 let a = u32::from_be_bytes(p[4..8].try_into().map_err(|_| Error::InvalidResource)?)
                     as u64;
-                let l = u32::from_be_bytes(p[8..12].try_into().map_err(|_| Error::InvalidResource)?)
-                    as u64;
-                ByteRange::new(
-                    a,
-                    a.checked_add(l)
-                        .filter(|e| *e <= d.len() as u64)
-                        .ok_or(Error::InvalidResource)?,
-                )?
+                let length =
+                    u32::from_be_bytes(p[8..12].try_into().map_err(|_| Error::InvalidResource)?)
+                        as u64;
+                if p.len() > 12 {
+                    if length != 0 && length != p.len() as u64 - 12 {
+                        return Err(Error::MetadataMismatch("SEF inline movie length"));
+                    }
+                    ByteRange::new(payload.lower_bound + 12, payload.upper_bound)?
+                } else if length > 0 {
+                    ByteRange::new(
+                        a,
+                        a.checked_add(length)
+                            .filter(|e| *e <= d.len() as u64)
+                            .ok_or(Error::InvalidResource)?,
+                    )?
+                } else {
+                    mpvd.ok_or(Error::InvalidResource)?
+                }
+            } else if p.is_empty() {
+                mpvd.ok_or(Error::InvalidResource)?
             } else {
                 payload
             };
@@ -102,21 +164,21 @@ pub(crate) fn parse(d: &[u8]) -> Result<Option<Sef>> {
     {
         return Err(Error::InvalidResource);
     }
-    let Some(motion) = motion else {
-        return Ok(None);
-    };
-    for r in &records {
-        if !(r.kind == 0x0a30 && r.name == "MotionPhoto_Data")
-            && r.raw.lower_bound < motion.upper_bound
-            && motion.lower_bound < r.raw.upper_bound
-        {
-            return Err(Error::InvalidResource);
+    if let Some(motion) = motion {
+        for r in &records {
+            if !(r.kind == 0x0a30 && r.name == "MotionPhoto_Data")
+                && r.raw.lower_bound < motion.upper_bound
+                && motion.lower_bound < r.raw.upper_bound
+            {
+                return Err(Error::InvalidResource);
+            }
         }
     }
-    Ok(Some(Sef {
+    Ok(Some(SamsungMetadata {
         version,
         records,
-        motion,
+        video: motion,
+        motion_photo_data_magic,
     }))
 }
 

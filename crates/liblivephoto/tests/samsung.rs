@@ -100,3 +100,65 @@ fn sef_pointer_cannot_alias_an_unknown_record_with_the_primary_type_number() {
         .copy_from_slice(&(video_start as u32).to_be_bytes());
     assert!(MotionPhoto::parse(Input::SingleFile(&input), ParseOptions::compatible()).is_err());
 }
+#[test]
+fn metadata_only_sef_and_both_inline_mpv_headers_are_read_separately_from_movie_validation() {
+    let metadata = common::sef(&[(0x1234, "Opaque", b"metadata".to_vec())]);
+    let m = inspect_samsung_metadata(&metadata).unwrap().unwrap();
+    assert!(m.video.is_none());
+    assert_eq!(m.records[0].name, "Opaque");
+    assert!(!MetadataEngine::new()
+        .parse(&metadata, &HandlerOptions::default())
+        .unwrap()
+        .declares_motion(&HandlerOptions::default()));
+    let movie = common::movie(1000, 1);
+    for magic in [b"mpv2", b"mpv3"] {
+        let payload = [
+            magic.to_vec(),
+            100u32.to_be_bytes().to_vec(),
+            (movie.len() as u32).to_be_bytes().to_vec(),
+            movie.clone(),
+        ]
+        .concat();
+        let input = common::sef(&[(0x0a30, "MotionPhoto_Data", payload)]);
+        let m = inspect_samsung_metadata(&input).unwrap().unwrap();
+        assert_eq!(m.motion_photo_data_magic, Some(*magic));
+        let p = MotionPhoto::parse(Input::SingleFile(&input), ParseOptions::compatible()).unwrap();
+        assert_eq!(p.motion_video_bytes().unwrap(), movie);
+    }
+}
+#[test]
+fn heif_sefd_before_or_after_mpvd_supports_mpv3_pointer_and_empty_stub() {
+    let still = common::heif(b"heic");
+    let movie = common::movie(1000, 1);
+    for before in [false, true] {
+        for stub in [false, true] {
+            let placeholder = if stub {
+                vec![]
+            } else {
+                [b"mpv3".to_vec(), vec![0; 8]].concat()
+            };
+            let temporary = common::sef(&[(0x0a30, "MotionPhoto_Data", placeholder)]);
+            let mut payload = temporary[4..].to_vec();
+            let sefd_size = payload.len() + 8;
+            let movie_start = still.len() + if before { sefd_size } else { 0 } + 8;
+            if !stub {
+                let p = 8 + "MotionPhoto_Data".len();
+                payload[p + 4..p + 8].copy_from_slice(&(movie_start as u32).to_be_bytes());
+                payload[p + 8..p + 12].copy_from_slice(&(movie.len() as u32).to_be_bytes());
+            }
+            let sefd = common::boxed(b"sefd", &payload);
+            let mpvd = common::boxed(b"mpvd", &movie);
+            let input = if before {
+                [still.clone(), sefd, mpvd].concat()
+            } else {
+                [still.clone(), mpvd, sefd].concat()
+            };
+            let m = inspect_samsung_metadata(&input).unwrap().unwrap();
+            assert_eq!(m.video.unwrap().lower_bound, movie_start as u64);
+            let p =
+                MotionPhoto::parse(Input::SingleFile(&input), ParseOptions::compatible()).unwrap();
+            assert_eq!(p.motion_video_bytes().unwrap(), movie);
+            assert_eq!(p.asset().dialect, VendorDialect::SamsungSef);
+        }
+    }
+}

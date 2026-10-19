@@ -18,16 +18,26 @@ mod live_photo_still;
 mod lpex;
 mod media;
 mod model;
+mod providers;
+mod xmp;
+pub use providers::*;
+pub use xmp::*;
 mod motion_video;
 #[path = "vendor/oplus/olive.rs"]
 mod olive;
 #[path = "vendor/oplus/parser.rs"]
 mod oppo;
 pub use olive::{inspect_oplus_metadata, OplusMetadata, OplusRecord};
+mod metadata_engine;
+mod metadata_samples;
+pub use metadata_engine::*;
 mod presentation;
 pub mod remux;
 mod scanner;
 mod timeline;
+mod video_metadata;
+pub use metadata_samples::*;
+pub use video_metadata::*;
 #[path = "vendor/oplus/topology.rs"]
 mod topology;
 mod tracks;
@@ -48,6 +58,7 @@ pub use media::*;
 pub use model::ByteRange;
 pub use presentation::*;
 pub use vendor::honor::{inspect_honor_metadata, HonorMetadata, HonorRecord, HonorVariant};
+pub use vendor::samsung::{inspect_samsung_metadata, Record as SamsungRecord, SamsungMetadata};
 
 pub(crate) use android::parse_android_motion_photo;
 pub(crate) use live_photo_mov::{
@@ -75,4 +86,9 @@ pub mod compat {
     pub use crate::oppo::{enrich_oppo_asset, parse_oppo_fallback, parse_oppo_motion_photo};
     pub use crate::scanner::{ftyp_box_offsets, is_ftyp_box_start};
     pub use crate::topology::{enrich_oppo_video_range, resolve_video_stream_layout};
+}
+
+/// Version of the public Rust core, independent of the reference implementation.
+pub const fn version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
 }

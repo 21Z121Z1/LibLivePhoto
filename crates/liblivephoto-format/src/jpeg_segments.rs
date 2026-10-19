@@ -35,6 +35,39 @@ fn is_standalone_marker(marker: u8) -> bool {
 /// byte stuffing, and restart markers are therefore handled without accepting a
 /// false EOI from compressed scan data.
 pub fn jpeg_image_end(data: &[u8], start: usize) -> Result<usize> {
+    scan_jpeg(data, start, &mut |_, _, _| Ok(()))
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct JpegMetadataSegment {
+    pub marker: u8,
+    pub range: std::ops::Range<usize>,
+    pub payload: std::ops::Range<usize>,
+}
+/// Metadata markers across all scans, sharing the same bounded marker/entropy
+/// parser as jpeg_image_end. Returned offsets refer to the original source.
+pub fn jpeg_metadata_segments(data: &[u8]) -> Result<Vec<JpegMetadataSegment>> {
+    let mut result = Vec::new();
+    scan_jpeg(data, 0, &mut |marker, range, payload| {
+        if (0xe0..=0xef).contains(&marker) || marker == 0xfe {
+            if result.len() >= 4096 {
+                return Err(invalid("too many JPEG metadata segments"));
+            }
+            result.push(JpegMetadataSegment {
+                marker,
+                range,
+                payload,
+            });
+        }
+        Ok(())
+    })?;
+    Ok(result)
+}
+fn scan_jpeg(
+    data: &[u8],
+    start: usize,
+    visit: &mut impl FnMut(u8, std::ops::Range<usize>, std::ops::Range<usize>) -> Result<()>,
+) -> Result<usize> {
     let soi_end = checked_add(start, 2, "JPEG SOI offset")?;
     if data.get(start..soi_end) != Some(&[0xff, 0xd8]) {
         return Err(invalid(format!("missing SOI marker at offset {start}")));
@@ -68,6 +101,7 @@ pub fn jpeg_image_end(data: &[u8], start: usize) -> Result<usize> {
             continue;
         }
 
+        let raw_start = cursor;
         if data.get(cursor) != Some(&0xff) {
             return Err(invalid(format!(
                 "expected marker prefix at offset {cursor}"
@@ -112,6 +146,7 @@ pub fn jpeg_image_end(data: &[u8], start: usize) -> Result<usize> {
                 end: data.len(),
             });
         }
+        visit(marker, raw_start..segment_end, cursor + 2..segment_end)?;
         entropy_coded = marker == 0xda;
         cursor = segment_end;
     }

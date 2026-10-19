@@ -299,10 +299,9 @@ pub(crate) struct MetadataSample<'a> {
     pub duration: u32,
 }
 
-pub(crate) fn metadata_at<'a>(
+pub(crate) fn metadata_samples<'a>(
     data: &'a [u8],
     track: &Track,
-    time: crate::MediaTime,
 ) -> Result<Vec<MetadataSample<'a>>> {
     if track.kind == TrackKind::Video || track.kind == TrackKind::Audio {
         return Ok(Vec::new());
@@ -312,11 +311,6 @@ pub(crate) fn metadata_at<'a>(
             "timed metadata extraction with edit lists is not implemented",
         ));
     }
-    let target = time
-        .rescale_exact(track.timescale)
-        .filter(|t| t.value >= 0)
-        .ok_or(Error::InvalidPresentation)?
-        .value;
     let top = parse_boxes(data, 0..data.len()).map_err(|_| Error::InvalidResource)?;
     let moov = find(&top, b"moov").ok_or(Error::InvalidResource)?;
     let children = children(data, moov)?;
@@ -355,28 +349,40 @@ pub(crate) fn metadata_at<'a>(
                 .get(description as usize - 1)
                 .ok_or(Error::InvalidResource)?;
             let (pts, duration) = times[index];
-            if target >= pts
-                && target
-                    < pts
-                        .checked_add(i64::from(duration))
-                        .ok_or(Error::InvalidPresentation)?
-            {
-                result.push(MetadataSample {
-                    index,
-                    description: *entry.kind.as_bytes(),
-                    description_bytes: payload(data, entry),
-                    bytes: &data[range.lower_bound as usize..range.upper_bound as usize],
-                    presentation: crate::MediaTime {
-                        value: pts,
-                        timescale: track.timescale,
-                    },
-                    duration,
-                });
-            }
+            result.push(MetadataSample {
+                index,
+                description: *entry.kind.as_bytes(),
+                description_bytes: payload(data, entry),
+                bytes: &data[range.lower_bound as usize..range.upper_bound as usize],
+                presentation: crate::MediaTime {
+                    value: pts,
+                    timescale: track.timescale,
+                },
+                duration,
+            });
             Ok(())
         },
     )?;
     Ok(result)
+}
+
+pub(crate) fn metadata_at<'a>(
+    data: &'a [u8],
+    track: &Track,
+    time: crate::MediaTime,
+) -> Result<Vec<MetadataSample<'a>>> {
+    let target = time
+        .rescale_exact(track.timescale)
+        .filter(|t| t.value >= 0)
+        .ok_or(Error::InvalidPresentation)?
+        .value;
+    Ok(metadata_samples(data, track)?
+        .into_iter()
+        .filter(|s| {
+            i128::from(target) >= i128::from(s.presentation.value)
+                && i128::from(target) < i128::from(s.presentation.value) + i128::from(s.duration)
+        })
+        .collect())
 }
 
 fn sample_timing(data: &[u8], tables: &[BoxHeader], count: usize) -> Result<Vec<(i64, u32)>> {

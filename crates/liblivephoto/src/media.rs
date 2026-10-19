@@ -493,3 +493,11 @@ pub struct MediaCapabilities {
     pub max_audio_channels: u16,
     pub audio_sample_rates: Vec<u32>,
 }
+
+/// Inspect a standalone JPEG/HEIC/AVIF still without inventing a motion partner.
+pub fn inspect_image_metadata(data: &[u8]) -> Result<StillMetadata> {
+    if data.len() > 256 * 1024 * 1024 {
+        return Err(Error::InputLimit);
+    }
+    inspect_still(data, crate::facade::still_mime(data)?)
+}

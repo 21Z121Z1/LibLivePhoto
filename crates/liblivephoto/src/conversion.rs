@@ -235,6 +235,11 @@ impl<'a> MotionPhoto<'a> {
             && self.format() == AssetFormat::AppleLivePhoto
             && policy.pairing == PairingPolicy::Preserve;
         if target != TargetProfile::PreserveSource && !copy_pair {
+            match self.scoring_metadata() {
+                Ok(records)=>for record in records {if !record.issues.is_empty(){blockers.push(format!("track {} metadata sample {} conflicts with the source photo time or score contract: {:?}; remove that track explicitly before composition",record.track_id,record.sample_index,record.issues));}},
+                Err(Error::MetadataMismatch(field))=>blockers.push(format!("cannot compose inconsistent declared video metadata: {field}")),
+                Err(error)=>report.resources.push(ResourceConversion{resource:Some(self.motion_video().id),disposition:Disposition::Preserved,reason:format!("encoded timed metadata retained; semantic inspection is unavailable: {error}")}),
+            }
             if let Err(error) = self.still_metadata() {
                 blockers.push(format!(
                     "cannot establish preservation of still display/color metadata: {error}"
