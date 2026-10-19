@@ -1,6 +1,7 @@
 #if canImport(Photos)
 import Foundation
 import Photos
+import PhotosUI
 import CoreGraphics
 import CoreMedia
 

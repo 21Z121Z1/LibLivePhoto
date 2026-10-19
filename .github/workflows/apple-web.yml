@@ -39,7 +39,11 @@ jobs:
       - run: npm --prefix web test
       - run: npm --prefix web run build
       - run: cd web && npx playwright install --with-deps chromium
+      - name: Verify browser with H.264 decoder
+        run: google-chrome --version
       - run: npm --prefix web run test:browser
+        env:
+          BROWSER_EXECUTABLE: /usr/bin/google-chrome
       - uses: actions/upload-artifact@v4
         if: always()
         with:
