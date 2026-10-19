@@ -36,6 +36,12 @@ to overwrite existing paths. Success includes a valid check result; consult
 its semantic result (`valid`, `samples`, plan blockers and resource dispositions).
 No method uploads, publishes, transcodes or implicitly deletes tracks. Original
 inputs are cloned/snapshotted and remain unchanged.
+Oversize memory inputs are rejected before retaining a clone. The wire JSON
+reader limits headers to 64 MiB, nesting to 128 levels, values to 1048576, and
+number literals to 1024 characters; duplicate keys and malformed UTF-8 fail.
+Exact BigDecimal numbers and decimal-string media times are retained. The
+inspection wrapper projects at most 100000 frame times across tracks; additional
+timing reports an explicit limit, while the original movie remains available.
 
 Async `submit` uses the caller's Executor and explicit progress/completion. Reading
 reports real bytes; native parsing is indeterminate. Cancellation is terminal and

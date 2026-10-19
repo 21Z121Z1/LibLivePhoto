@@ -14,11 +14,14 @@ fn words(values: &[u32]) -> Vec<u8> {
     values.iter().flat_map(|v| v.to_be_bytes()).collect()
 }
 fn track(id: u32, scale: u32, offset: u32) -> Vec<u8> {
-    let mut tkhd = words(&[0, 0, id, 0, scale * 2]);
+    track_samples(id, scale, offset, 1, scale * 2, 5)
+}
+fn track_samples(id: u32, scale: u32, offset: u32, count: u32, step: u32, size: u32) -> Vec<u8> {
+    let mut tkhd = words(&[0, 0, id, 0, count * step]);
     tkhd.extend_from_slice(&[0; 60]);
     let mdhd = full(
         b"mdhd",
-        &[words(&[0, 0, scale, scale * 2]), vec![0; 4]].concat(),
+        &[words(&[0, 0, scale, count * step]), vec![0; 4]].concat(),
     );
     let hdlr = full(
         b"hdlr",
@@ -31,13 +34,32 @@ fn track(id: u32, scale: u32, offset: u32) -> Vec<u8> {
         .concat(),
     );
     let stsd = full(b"stsd", &[words(&[1]), boxed(b"avc1", &[0; 78])].concat());
-    let stts = full(b"stts", &words(&[1, 1, scale * 2]));
-    let stsc = full(b"stsc", &words(&[1, 1, 1, 1]));
-    let stsz = full(b"stsz", &words(&[5, 1]));
+    let stts = full(b"stts", &words(&[1, count, step]));
+    let stsc = full(b"stsc", &words(&[1, 1, count, 1]));
+    let stsz = full(b"stsz", &words(&[size, count]));
     let stco = full(b"stco", &words(&[1, offset]));
     let stbl = boxed(b"stbl", &[stsd, stts, stsc, stsz, stco].concat());
     let mdia = boxed(b"mdia", &[mdhd, hdlr, boxed(b"minf", &stbl)].concat());
     boxed(b"trak", &[full(b"tkhd", &tkhd), mdia].concat())
+}
+pub fn many_frame_movie(count: u32, tracks: usize) -> Vec<u8> {
+    let ftyp = boxed(b"ftyp", b"isom\0\0\0\0isom");
+    let mvhd = full(
+        b"mvhd",
+        &[words(&[0, 0, 1000, count]), vec![0; 80]].concat(),
+    );
+    let offset = (ftyp.len() + 8) as u32;
+    let moov = boxed(
+        b"moov",
+        &[
+            mvhd,
+            (0..tracks)
+                .flat_map(|n| track_samples((n + 1) as u32, 1000, offset, count, 1, 1))
+                .collect(),
+        ]
+        .concat(),
+    );
+    [ftyp, boxed(b"mdat", &vec![0x55; count as usize]), moov].concat()
 }
 pub fn movie(scale: u32, tracks: usize) -> Vec<u8> {
     let ftyp = boxed(b"ftyp", b"isom\0\0\0\0isom");

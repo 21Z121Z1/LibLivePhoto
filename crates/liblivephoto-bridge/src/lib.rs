@@ -132,9 +132,10 @@ pub fn inspect_with_handlers(
         Ok(list)=>list.iter().map(|s|json!({"trackId":s.track_id,"index":s.index,"codec":String::from_utf8_lossy(&s.format),"matrix":s.track_matrix,"color":s.color.iter().map(color).collect::<Vec<_>>(),"audio":s.audio.as_ref().map(|a|json!({"channels":a.sample_entry_channels,"rate16_16":a.sample_entry_rate_16_16,"aac":a.aac.as_ref().map(|c|json!({"objectType":c.object_type,"sampleRate":c.sample_rate,"channels":c.channels}))}))})).collect::<Vec<_>>(),
         Err(e)=>{diagnostics.push(format!("sample descriptions unavailable: {e}"));Vec::new()}
     };
+    let mut remaining_frames = 100_000;
     let tracks=photo.asset().containers.iter().filter(|c|c.resource==photo.motion_video().id).flat_map(|c|&c.tracks).map(|t| {
-        let frames=if t.kind==TrackKind::Video {match photo.frame_times(t.id,100_000) {
-            Ok(frames)=>json!({"status":"available","frames":frames.iter().map(|f|json!({"sampleIndex":f.sample_index,"time":exact_time(f.time)})).collect::<Vec<_>>()}),
+        let frames=if t.kind==TrackKind::Video {match photo.frame_times(t.id,remaining_frames) {
+            Ok(frames)=>{remaining_frames-=frames.len();json!({"status":"available","frames":frames.iter().map(|f|json!({"sampleIndex":f.sample_index,"time":exact_time(f.time)})).collect::<Vec<_>>()})},
             Err(e)=>{diagnostics.push(format!("track {} frame timing unavailable: {e}",t.id));json!({"status":"unavailable","reason":e.to_string()})}
         }} else {Value::Null};
         json!({"id":t.id,"kind":format!("{:?}",t.kind),"timescale":t.timescale,"duration":t.duration.to_string(),"codecs":t.sample_entries.iter().map(|v|String::from_utf8_lossy(v).into_owned()).collect::<Vec<_>>(),"frameTiming":frames})
@@ -200,8 +201,41 @@ mod wasm {
     }
 }
 #[cfg(test)]
+#[path = "../../liblivephoto/tests/common/mod.rs"]
+mod test_data;
+#[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn frame_manifest_budget_is_shared_across_video_tracks() {
+        let movie = test_data::many_frame_movie(60_000, 2);
+        let result = inspect(
+            Input::Parts {
+                still: &[255, 216, 255, 217],
+                movie: &movie,
+                presentation: None,
+            },
+            |_| ControlFlow::Continue(()),
+        )
+        .unwrap();
+        assert_eq!(result.movie, movie);
+        let manifest: Value = serde_json::from_str(&result.manifest()).unwrap();
+        assert_eq!(
+            manifest["tracks"][0]["frameTiming"]["frames"]
+                .as_array()
+                .unwrap()
+                .len(),
+            60_000
+        );
+        assert_eq!(
+            manifest["tracks"][1]["frameTiming"]["status"],
+            "unavailable"
+        );
+        assert!(manifest["tracks"][1]["frameTiming"]["reason"]
+            .as_str()
+            .unwrap()
+            .contains("limit"));
+    }
     #[test]
     fn cancellation_precedes_parsing_and_reports_real_phase() {
         let mut seen = Vec::new();

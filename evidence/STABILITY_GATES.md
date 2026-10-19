@@ -43,6 +43,13 @@ remains in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
   The service acceptance result itself remains a separate required gate.
   Concurrent cancellation returns true only for the winner of the terminal
   transition. Java memory inputs reject oversize arrays before retaining a copy.
+* The native/web inspection manifest shares a 100000-frame projection budget
+  across tracks. A second 60000-frame track cannot allocate another full tree;
+  its timing projection reports unavailable/limit while original movie bytes
+  remain intact. Full media timing is still available through the bounded core
+  track API. The Java wire reader separately caps JSON at 1048576 values and
+  numeric literals at 1024 characters before BigDecimal allocation, in addition
+  to its length/depth/duplicate-key/UTF-8 checks.
 
 ## Existing bounded contracts retained
 
@@ -55,6 +62,7 @@ remains in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
 | Metadata engine | Source 256 MiB, 4096 blocks, cumulative 16 MiB raw manifest bytes, 64 KiB prefixes for large coded/trailer blocks | Raw-block/range/serialization tests and 38-case pinned provider differential |
 | Timed metadata extraction | AGTM and score extraction each bound selected/copied payload across tracks to 16 MiB, 4096 samples and 65536 semantic records | Overlapping-interval/descriptor amplification regressions and seeded ASan target |
 | LLP1 protocol | 64 MiB header, 4096 files, cumulative 320 MiB envelope; consumers validate fields, UTF-8 and trailing bytes | Malformed/streamed protocol and native consumer tests |
+| Inspection / Java JSON | 100000 projected frames across tracks; Java reader 1048576 values and 1024-character numeric literals | Actual two-track manifest regression and JVM flat-tree/huge-number rejection |
 | Android service | Combined 32 MiB source, 64 KiB request; one worker/two queued operations; duplicated descriptors, reliable output pipe, callback-death/cancel cleanup | Actual installed APK gate; per-operation bounds are not a universal process-memory ceiling |
 | Android client | Two readers/eight queued reads, 160 MiB response cap, input descriptors borrowed and duplicated | Actual installed APK gate; complete envelope required before result publication |
 

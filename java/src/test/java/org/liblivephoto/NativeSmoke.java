@@ -31,6 +31,10 @@ public final class NativeSmoke {
     NativeResult blocks=engine.extractMetadata(Input.path(bindings.resolve("agtm-motion.jpg")));check(blocks.success&&!blocks.files.isEmpty(),"complete raw metadata blocks");boolean foundXmp=false;for(NativeResult.OutputFile file:blocks.files)if(file.mime.equals("application/rdf+xml")){foundXmp=true;check(new String(file.copyBytes(),java.nio.charset.StandardCharsets.UTF_8).contains("MotionPhoto"),"original XMP block");}check(foundXmp,"XMP not lost from metadata extraction");
     try{NativeResult.decode(new byte[]{1,2,3,4});throw new AssertionError("bad envelope accepted");}catch(IOException expected){}
     try{Input.bytes(new byte[NativeEngine.MAX_INPUT_BYTES+1]);throw new AssertionError("oversized retained snapshot accepted");}catch(IllegalArgumentException expected){}
+    StringBuilder dense=new StringBuilder("[");for(int i=0;i<1048576;i++)dense.append("null,");dense.append("null]");
+    try{Json.parse(dense.toString());throw new AssertionError("JSON node budget ignored");}catch(IOException expected){check(expected.getMessage().contains("node limit"),"aggregate JSON node diagnostic");}
+    char[] hugeNumber=new char[1025];Arrays.fill(hugeNumber,'9');
+    try{Json.parse(new String(hugeNumber));throw new AssertionError("JSON number length budget ignored");}catch(IOException expected){check(expected.getMessage().contains("number length limit"),"JSON numeric allocation diagnostic");}
     System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded streamed envelope, AGTM image/video/input parity, source-unverified collection classification and provider controls");
   }
 }
