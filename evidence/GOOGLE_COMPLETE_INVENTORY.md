@@ -1,6 +1,25 @@
 # Complete Google interface inventory
 
 Reference: `google/libmotionphoto@12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3`.
+Round6 tested source **03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b** closes the
+reference-harness and vendor transport acceptance gaps in the preceding round.
+[Handoff](HANDOFF_ROUND6_20261019.md), [local differential receipt](round6-local-verification.json)
+and [terminal platform receipt](platform-03d28dc.json) record all10 reference
+inputs executed,7 successful builds,3 exact fixed-input/time-mismatch refusals,
+16 checked expected reference differences and0 real failures. A time-consistent
+Honor positive retains the complete original movie including scoring metadata;
+core time/scoring validation is unchanged. The original42 syntax and13 vendor
+manifests are unchanged; a separate20-case selection suite and the existing13
+now execute through Android Binder, Swift/macOS+iOS, Node WASM and Chrome WASM,
+in addition to desktop CLI/C/JNI/extracted SDK consumers. All three workflows /
+eight jobs passed on that exact source; Android156 explicitly retains its115
+legacy assertions and confirms installation/removal. Round5's first installation
+outcome remains uncertain, with cleanup/root cause unresolved on that old runner.
+Explicit SEF record-index extraction is a read-only original-byte operation; it
+does not assign an unknown stream role or relax default ambiguous-asset parsing.
+OEM semantics, authenticated APKs and physical Gallery/Photos acceptance remain
+unclosed evidence gates. No unproved native writer is added.
+
 Round5's [vendor preservation matrix](VENDOR_PRESERVATION_ROUND5.md) records the
 Samsung explicit catalogue and vivo declaration-origin/conflict additions,
 operation-specific limits, authored/original tests and blocked APK evidence.

@@ -51,6 +51,9 @@ no new Codex task, agent/model/tier, vendor writer or upstream write.
   strict host case-ID/digest checks reject missing/duplicate/reordered reports.
 * Swift XCTest and an actual iOS simulator process, Node WASM and Chrome WASM
   now run13+20 in addition to42. The simulator's host receipt verifies the actual
-  process's ordered IDs and digests. The new suites remain runtime-pending until
-  the exact-source terminal platform receipt is collected; local C/JNI/Node and
- 242 Rust all-feature tests passed during implementation.
+  process's ordered IDs and digests. Exact source03d28dc has now completed all
+  three workflows /eight jobs successfully. [Terminal platform evidence](platform-03d28dc.json)
+  records all75 cases at each applicable runtime, Android156assertions retaining
+  legacy115, and confirmed owned-package/simulator cleanup. [The handoff](HANDOFF_ROUND6_20261019.md)
+  distinguishes these passes from unresolved historical installation failures
+  and the still-unverified physical/OEM gates.
