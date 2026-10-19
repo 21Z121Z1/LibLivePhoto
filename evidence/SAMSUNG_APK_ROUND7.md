@@ -4,6 +4,12 @@ Base delivery:272879c52ee60542754f0fdfbc3c24ccfdb7a196. The production Rust,
 bindings, fixtures and workflow configuration remain those of verified03d28dc.
 This round adds two owned synthetic tests and factual research evidence; no
 vendor implementation or APK body is committed, and no writer is added.
+Verified research/test checkpoint: **933601db46aa6abcdc880daacd74373e5a0f7af5**.
+Its clean-tree Linux runs pass formatting, strict Clippy,244 default and244
+all-feature tests, with0failures/3ignored each. The original-corpus tests run
+separately:2passed,0failed, all14 SHA-locked input paths verified. Three identical
+suite manifests and12 production/configuration root objects are checked against
+03d28dc. The later delivery commit only records these results in evidence files.
 
 ## Acquisition and identity
 

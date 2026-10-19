@@ -280,5 +280,6 @@
     "url": "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-gallery/samsung-gallery-15-9-00-45-release/samsung-gallery-15-9-00-45-android-apk-download/",
     "declared_certificate_sha256": "34df0e7a9f1cf1892e45c056b4973cd81ccf148a4050d11aea4ac5a65f900a42",
     "representation": "Parent-supplied public-page research declaration; not fetched again in this container; not an official authenticated trust anchor or an obtained15.9APK"
-  }
+  },
+  "research_test_source_sha": "933601db46aa6abcdc880daacd74373e5a0f7af5"
 }
