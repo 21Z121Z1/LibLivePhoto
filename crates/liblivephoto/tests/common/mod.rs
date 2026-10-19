@@ -7,6 +7,28 @@ pub fn boxed(kind: &[u8; 4], payload: &[u8]) -> Vec<u8> {
     ]
     .concat()
 }
+/// Independently authored vector from the documented CameraAlbum byte layout;
+/// not a production/native writer or a vendor acceptance fixture.
+pub fn camera_album_envelope(prefix: &[u8], json: &[u8], id: &[u8; 28], tail55: bool) -> Vec<u8> {
+    [
+        prefix.to_vec(),
+        json.to_vec(),
+        (json.len() as u32).to_be_bytes().to_vec(),
+        b"cameralbum!".to_vec(),
+        (if tail55 { 2u32 } else { 47 }).to_be_bytes().to_vec(),
+        if tail55 {
+            [vec![0; 11], vec![b'/']].concat()
+        } else {
+            Vec::new()
+        },
+        id.to_vec(),
+        vec![255; 4],
+        vec![
+            0x1b, 0x2a, 0x39, 0x48, 0x57, 0x66, 0x75, 0x84, 0x93, 0xa2, 0xb3,
+        ],
+    ]
+    .concat()
+}
 pub fn full(kind: &[u8; 4], payload: &[u8]) -> Vec<u8> {
     boxed(kind, &[vec![0; 4], payload.to_vec()].concat())
 }

@@ -273,6 +273,7 @@ impl MetadataEngine {
                 "samsung_sef",
                 "oplus_olive",
                 "honor_live_photo",
+                "camera_album",
             ]
             .contains(&n)
             || self.providers.iter().any(|p| p.name() == n)
@@ -462,6 +463,28 @@ impl MetadataEngine {
                 }
             }
         }
+        let camera_album = if options.allows("camera_album") {
+            match crate::inspect_camera_album_footer(data) {
+                Ok(metadata) => metadata,
+                Err(error) => {
+                    diagnostics.push(format!("camera_album: {error}"));
+                    None
+                }
+            }
+        } else {
+            None
+        };
+        if let Some(metadata) = &camera_album {
+            push(
+                "PROPRIETARY",
+                "camera-album.footer",
+                vec![metadata.extent],
+                vec![ByteRange::new(
+                    metadata.json_extent.upper_bound,
+                    data.len() as u64,
+                )?],
+            )?;
+        }
         let mut decoded = Vec::new();
         for (index, b) in blocks.iter().enumerate() {
             if b.kind == "XMP" {
@@ -570,6 +593,24 @@ impl MetadataEngine {
                 Ok(None) => {}
                 Err(e) => diagnostics.push(format!("samsung_sef: {e}")),
             }
+        }
+        if let Some(metadata) = camera_album {
+            if metadata.identifier_agreement == crate::DeclaredIdentifierAgreement::Different {
+                diagnostics.push(
+                    "camera_album: JSON and envelope identifiers disagree; no pairing proof".into(),
+                );
+            }
+            decoded.push(DecodedMetadata {
+                provider:"camera_album".into(),
+                block_index:blocks.iter().position(|b| b.format_identifier == "camera-album.footer"),
+                motion_declaration:metadata.declared_identifier.is_some(),
+                video_extents:Vec::new(),
+                value:json!({"layout":format!("{:?}",metadata.layout),"prefix":format!("{:?}",metadata.prefix),
+                    "footerExtent":range_json(metadata.extent),"jsonExtent":range_json(metadata.json_extent),
+                    "version":metadata.version,"imageTime":metadata.image_time.map(|v|v.to_string()),"imageTimeUnit":"unverified",
+                    "identifierAgreement":format!("{:?}",metadata.identifier_agreement),"pairingVerified":false,
+                    "rawJson":std::str::from_utf8(metadata.raw_json).map_err(|_| Error::InvalidResource)?}),
+            });
         }
         let verified_motion = match MotionPhoto::parse_with_handlers(
             Input::SingleFile(data),

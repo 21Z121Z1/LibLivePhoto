@@ -1,0 +1,206 @@
+{
+  "scope": "LibLivePhoto authorized vendor Motion Photo static research",
+  "initial_free_bytes": 25064755200,
+  "apk_or_firmware_body_bytes": 0,
+  "source_blobs_bytes": 394819,
+  "source_revision": "deec1e7c2470abefad63351247d31f8f04041d2f",
+  "license": "GPL-3.0; static inference only, no code copied or executed",
+  "source_manifest_sha256": "5db235cd9296463cf09c5536f4bc06bbd69d000006ed56b906038baf3ced15cc",
+  "source_files": [
+    {
+      "path": "LICENSE",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149
+    },
+    {
+      "path": "README.md",
+      "sha256": "db875762e2f0268fb17b26a9f52b4de7ca048b88f9fc795ef0c1cda7428ad471",
+      "bytes": 6642
+    },
+    {
+      "path": "app/src/androidTest/java/com/vliveconvert/app/ExampleInstrumentedTest.kt",
+      "sha256": "80e9ffefb87c236f125bf9583ded330c611480dbba8c6d6ff9969166c99e916f",
+      "bytes": 667
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/MainActivity.kt",
+      "sha256": "f5d16cb28b8717135475aa8a018b85321ee53359630685e3c2de4d3a2a62b784",
+      "bytes": 50011
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/convert/Converter.kt",
+      "sha256": "a8ce41e1caea54c72becfccc9ba3fdb9126978312d1ea3472ee761c28a1d1916",
+      "bytes": 1720
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/core/BinaryUtils.kt",
+      "sha256": "e21f1810d24b4cb9029e08257b83fce5db3dcd7553db2b216f0ea2d320ddf64d",
+      "bytes": 3556
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/core/FooterUtil.kt",
+      "sha256": "1650f21e6b68ccaf4a77c15328d7952e99c2c2ffab0f88fac93ef0b6a2dfbf55",
+      "bytes": 14696
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/core/JpegUtil.kt",
+      "sha256": "b34c78682b77707b9e12e577a5a19f43d7504e266d3ee47e609ced5a2ec64f16",
+      "bytes": 8334
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/core/LivePhotoAsset.kt",
+      "sha256": "82296286a27e008aa3d45c4df6c1bf9c569741cce8a310151bdf325412b5115b",
+      "bytes": 1904
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/core/Mp4Util.kt",
+      "sha256": "c027dc4f949d412862f5bcd40ea2c672e0376117c99c7bd935412b4f1278ad13",
+      "bytes": 9675
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/core/PhotoTime.kt",
+      "sha256": "9f9b95f792ac006e88fcd2f86d8de3e8ea29b778f2079f00e3841e856392661f",
+      "bytes": 1147
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/core/VivoDual.kt",
+      "sha256": "8c1fbdb01dce64952bacb04ae417b57aadfdff4981950a989b1fefd3183d0fba",
+      "bytes": 5587
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/core/VivoSingle.kt",
+      "sha256": "3d3769661634e3806b77687fc082de83283de083399d364157a95604a054bef1",
+      "bytes": 7384
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/core/XmpTemplate.kt",
+      "sha256": "fcb0d7367dd4ea74da56717f07426b34536dcc814f54bfeedb0e15b9afc99cd6",
+      "bytes": 6376
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/picker/MediaRepo.kt",
+      "sha256": "7c84b7b0e16ee945cf841d9a394d599ee084e57a772e0f438c22265467f4ce27",
+      "bytes": 6871
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/picker/PickerScanner.kt",
+      "sha256": "3dd1cdfbff33d09483e670de92ab1d70adf41d883307fb23ac02a7381f11ae22",
+      "bytes": 6752
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/picker/PickerScreen.kt",
+      "sha256": "39921a4823c4e75d3952431770dc0b7b5482fd70272affc1019b9b9bb114e964",
+      "bytes": 22148
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/picker/SingleLiveScanner.kt",
+      "sha256": "44da7f284f9974642c72c8d47f8b218f8ab188f245c1bc0f7e1d2f454e1c555c",
+      "bytes": 5533
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/ui/Components.kt",
+      "sha256": "bca93c19ed93b6e311fd370d7444cbe28a591572cb5425e3f9ce25b36eb3fe7f",
+      "bytes": 7665
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/ui/FixTimeScreen.kt",
+      "sha256": "bc1399088b244a1970b5d74f935d699677243d5558253262457b583b02040226",
+      "bytes": 19487
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/ui/MainScreen.kt",
+      "sha256": "8eb5489754679a4b52befee29148a69c531acb12cd4686c2f3f3a6222efbc639",
+      "bytes": 14951
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/ui/PermissionScreen.kt",
+      "sha256": "391d11d6e1960f57db45079e116345b21688a57483e6678dacaa127922d6b7b0",
+      "bytes": 2789
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/ui/theme/Color.kt",
+      "sha256": "0323bf6d7f60f2e30bc4a6b622f6a1f421dd8a61b49ee46230599d1d560d8be2",
+      "bytes": 2879
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/ui/theme/Theme.kt",
+      "sha256": "dcaa75d1453240b8f98ff3de4b8794f2c5c14c25b4f36b0cc1517356cce32036",
+      "bytes": 3273
+    },
+    {
+      "path": "app/src/main/java/com/vliveconvert/app/ui/theme/Type.kt",
+      "sha256": "87cc781bd9772bf6c07a0239959e182c80cfab71c9cd569d9c364d669780b6a0",
+      "bytes": 989
+    },
+    {
+      "path": "app/src/test/java/com/vliveconvert/app/ConverterPipelineTest.kt",
+      "sha256": "84aa3f24f149cde5728a9eab01e503a630edbb8f05cbae5f577fd111b43cdae8",
+      "bytes": 15993
+    },
+    {
+      "path": "app/src/test/java/com/vliveconvert/app/ExampleUnitTest.kt",
+      "sha256": "1b108a2d6d32cbd759bcc5b5d09104a88f63486fa991224480e9465c496ab451",
+      "bytes": 344
+    },
+    {
+      "path": "app/src/test/java/com/vliveconvert/app/RealSampleRegressionTest.kt",
+      "sha256": "982d2868353a41147c4f172e9deab6acb11eb69165ba29b48f5846d50d1c613e",
+      "bytes": 9798
+    }
+  ],
+  "download_attempts": [
+    {
+      "source_url": "https://developer.honor.com/cn/docs/11032/reference/com.hihonor.mcs.media.datacenter.livephoto/LivePhotoUtils",
+      "at_utc": "2026-10-19T16:01:02Z",
+      "purpose": "ordinary public document/download listing GET; no credentials or access bypass",
+      "status": "blocked",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "source_url": "https://www.apkmirror.com/apk/oneplus-ltd/oneplus-gallery/oneplus-gallery-15-30-30-release/oneplus-photos-15-30-30-android-apk-download/",
+      "at_utc": "2026-10-19T16:01:02Z",
+      "purpose": "ordinary public document/download listing GET; no credentials or access bypass",
+      "status": "blocked",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "source_url": "https://vivo-gallery.en.uptodown.com/android/download",
+      "purpose": "Public download listing resolution; no package execution",
+      "at_utc": "2026-10-19T15:56:11Z",
+      "status": "blocked",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    }
+  ],
+  "firmware_or_vendor_binary_committed": false,
+  "original_media_committed": false,
+  "security_settings_changed": false,
+  "additional_static_source": {
+    "source": "https://github.com/exiftool/exiftool",
+    "revision": "2200871d9cef988051d2a99d67df3bda6cbb30a8",
+    "files": [
+      {
+        "path": "LICENSE",
+        "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+        "bytes": 35149
+      },
+      {
+        "path": "lib/Image/ExifTool/Samsung.pm",
+        "sha256": "06112be5b4a34e9706a4c31a0c401cdf6ed41a5caa87da9290ab6b3a8b275b00",
+        "bytes": 73576
+      },
+      {
+        "path": "lib/Image/ExifTool/Trailer.pm",
+        "sha256": "71dd33f64d2126a3e14e0354d5ca540ccb83d1b7ed833788fc92e54b6b4948e9",
+        "bytes": 12585
+      },
+      {
+        "path": "html/TagNames/Vivo.html",
+        "sha256": "8d0f49237caa3bdaabf331ba8bfd898ec1f0f80ac56d86a6f7040b0dc5785250",
+        "bytes": 1189
+      }
+    ],
+    "scope": "static primary parser/tag evidence, no execution or code translation",
+    "license_evidence": "Repository LICENSE is GPLv3; Trailer.pm/Samsung.pm individually state same terms as Perl itself. No code is linked, copied or executed.",
+    "finding": "Trailer.pm validates a terminal magic endingB1 and uses a different scan-based Vivo trailer contract; owned originals here endB3. No automatic equivalence or new B1 parser claim."
+  }
+}

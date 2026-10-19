@@ -68,6 +68,52 @@ fn real_corpus_parses_validates_extracts_and_preserves_all_source_bytes() {
         let p = MotionPhoto::parse(Input::SingleFile(&data), ParseOptions::compatible())
             .unwrap_or_else(|e| panic!("{path}: {e}"));
         p.validate().unwrap();
+        if path.contains("/vivo/") {
+            let footer = inspect_camera_album_footer(&data).unwrap().unwrap();
+            assert_eq!(footer.layout, CameraAlbumLayout::LengthDelimited43);
+            assert_eq!(footer.prefix, CameraAlbumPrefix::VivoMediaExtInfo);
+            assert_eq!(footer.version, Some(2202));
+            assert_eq!(
+                footer.image_time,
+                Some(if path.ends_with("01.jpg") { 31 } else { 12 })
+            );
+            assert_eq!(
+                footer.identifier_agreement,
+                DeclaredIdentifierAgreement::Equal
+            );
+            let collection = MetadataEngine::new()
+                .parse(&data, &HandlerOptions::default())
+                .unwrap();
+            let projected = collection
+                .decoded
+                .iter()
+                .find(|d| d.provider == "camera_album")
+                .unwrap();
+            assert!(collection.verified_motion);
+            assert_eq!(projected.value["pairingVerified"], false);
+            let mut extracted = Vec::new();
+            collection
+                .extract_block(
+                    projected.block_index.unwrap(),
+                    &data,
+                    &mut extracted,
+                    131072,
+                )
+                .unwrap();
+            assert!(
+                extracted == data[footer.extent.lower_bound as usize..],
+                "original footer bytes changed: {path}"
+            );
+            let movie = p.motion_video_bytes().unwrap();
+            let boxes = liblivephoto_format::isobmff::parse_boxes(movie, 0..movie.len()).unwrap();
+            for identifier in [b"vivoMediaEStream", b"vivoMediaExtInfo"] {
+                assert!(
+                    boxes.iter().any(|b| b.kind.as_bytes() == b"uuid"
+                        && movie.get(b.data_start..b.data_start + 16) == Some(identifier)),
+                    "missing original UUID association: {path}"
+                );
+            }
+        }
         for r in p.resources() {
             let mut bytes = Vec::new();
             p.extract(r, &mut bytes).unwrap();
@@ -114,6 +160,17 @@ fn real_corpus_parses_validates_extracts_and_preserves_all_source_bytes() {
                 "{path}"
             );
             assert_eq!(parsed.presentation_time(), p.presentation_time(), "{path}");
+            if path.contains("/vivo/") {
+                let before = inspect_camera_album_footer(&data).unwrap().unwrap();
+                let after = inspect_camera_album_footer(&output.files[0].bytes)
+                    .unwrap()
+                    .unwrap();
+                assert!(
+                    before.raw_json == after.raw_json,
+                    "original footer JSON changed: {path}"
+                );
+                assert_eq!(before.image_time, after.image_time);
+            }
         } else {
             let policy = WritePolicy {
                 unmapped: UnmappedPolicy::PreserveSidecars,

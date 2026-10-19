@@ -18,6 +18,9 @@ public final class NativeSmoke {
     try{NativeResult.readEnvelope(new ByteArrayInputStream(wire.toByteArray()),16);throw new AssertionError("stream budget ignored");}catch(IOException expected){}
     wire.reset();NativeResult.failure("service error \"quoted\" ").writeEnvelope(wire);check(!NativeResult.decode(wire.toByteArray()).success,"structured transport failure");
     Path bindings=demo.getParent().getParent().getParent().resolve("fixtures/bindings");byte[] rawAgtm=Files.readAllBytes(bindings.resolve("agtm-raw.bin"));
+    NativeResult album=engine.metadata(Input.path(bindings.resolve("camera-album.jpg")));check(album.success&&Boolean.FALSE.equals(album.metadata.get("verifiedMotion")),"camera footer alone is not verified motion");boolean foundAlbum=false;
+    for(Object decoded:(List<?>)album.metadata.get("decoded")){Map<?,?> item=(Map<?,?>)decoded;if("camera_album".equals(item.get("provider"))){Map<?,?> value=(Map<?,?>)item.get("value");check("31".equals(value.get("imageTime"))&&Boolean.FALSE.equals(value.get("pairingVerified"))&&String.valueOf(value.get("rawJson")).contains("1.234567890123456789e100"),"raw footer/time/identity projection across JNI");foundAlbum=true;}}
+    check(foundAlbum,"bounded camera footer provider across JNI");
     byte[] agtmMovie=Files.readAllBytes(bindings.resolve("agtm-video.mp4")),agtmMotion=Files.readAllBytes(bindings.resolve("agtm-motion.jpg"));
     Path bounded=Files.createTempFile("liblivephoto-agtm-range-",".bin");try{
       try(OutputStream out=Files.newOutputStream(bounded)){out.write(new byte[19]);out.write(agtmMovie);out.write(new byte[3]);}

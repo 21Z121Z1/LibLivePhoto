@@ -5,6 +5,8 @@ mod agtm_decode;
 mod android;
 pub mod apple;
 mod asset;
+mod camera_album;
+pub use camera_album::*;
 mod conformance;
 mod conversion;
 mod error;

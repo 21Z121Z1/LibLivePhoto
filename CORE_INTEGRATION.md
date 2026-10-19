@@ -143,6 +143,18 @@ not certify every color, crop, gain-map or vendor display semantic.
 
 ## Timed AGTM and explicit remux
 
+`inspect_camera_album_footer` reads the exact terminal CameraAlbum envelope
+observed in two independent vivo originals. It exposes original JSON/ranges,
+integer declarations and envelope/JSON ID agreement under explicit size, nesting
+and duplicate-key limits. `MetadataEngine` exposes provider `camera_album` and a
+fully extractable `camera-album.footer` block through its memory/path/fd/range
+APIs and maintained `metadata` request. `disableThirdParty`/enable lists apply.
+Unknown JSON stays original text in `rawJson`, including number spelling; no
+unknown stream is called depth, no ID equality proves capture pairing, and raw
+`imageTime` is not converted through average FPS. The separate55-byte/length2=2
+variant has static/synthetic evidence only. This adds no native vendor writer or
+Gallery playback/editing claim. See [vendor evidence and gaps](evidence/VENDOR_RESEARCH_20261019.md).
+
 `agtm_at(MediaTime)` returns original metadata sample bytes, track/sample IDs,
 presentation interval and decoded version-0 baseline fields. It reads validated
 sample tables and honors `ctts`. Explicit `it35`/T.35 signaling establishes the

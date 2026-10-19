@@ -53,11 +53,15 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
             .parse(&output.files[0].bytes, &HandlerOptions::default())?
             .json(),
     )?;
+    let camera_album = [still.to_vec(), common::camera_album_envelope(b"vivo",
+        br#"{"version":2202,"com.android.camera.imageTime":31,"com.android.camera.livephoto":"synthetic-camera-id-00000000","opaque":1.234567890123456789e100}"#,
+        b"synthetic-camera-id-00000000", false)].concat();
     for (name, bytes) in [
         ("agtm-video.mp4", movie.as_slice()),
         ("agtm-motion.jpg", output.files[0].bytes.as_slice()),
         ("agtm-raw.bin", agtm.as_slice()),
         ("collection.json", collection.as_slice()),
+        ("camera-album.jpg", camera_album.as_slice()),
     ] {
         File::options()
             .write(true)
