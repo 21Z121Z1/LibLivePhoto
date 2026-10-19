@@ -58,3 +58,20 @@ unsupported remux reference contract, additional vendor or original Honor
 corpus claim follows from these transport tests. Historical Android readiness
 timeouts/process crashes remain causally unresolved; new passing runs do not
 retroactively explain them.
+
+## Executed result
+
+Fixed source **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** completed all three
+workflows/eight jobs successfully. [Terminal receipt](platform-bd6f85b.json),
+[detailed packet/reference/consumer facts](syntax-cross-platform-details-bd6f85b.json)
+and [handoff](HANDOFF_ROUND4_20261019.md) record every listed actual entry.
+The first source a8a6dff failed Windows C fopen warnings and Chrome.mjs MIME;
+fopen_s and the correct JS MIME repaired them while retaining-Werror/nosniff.
+The first a8a6dff and final bd6f85b snapshots ran full CI; the intermediate repair is included in the final tested snapshot. Android's final gate requires all42 individual
+case IDs/hash in addition to115assertions and owned-package cleanup.
+
+The actual original XDRemux facade's9source/example/test files also compile in
+an external copy using the explicit local-path dependency override and its
+original xdremux-compat feature; its unchanged interop test passes through that
+facade. No original consumer source/repository/pin is edited, and the full
+XDRemux application is not built. Use `--check-consumer-sources` to reproduce.

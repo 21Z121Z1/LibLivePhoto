@@ -80,3 +80,21 @@ Absent optional XMP appears in `unavailable`. Invalid checks have `success=false
 Use result/diagnostics rather than a signature or produced file as proof of
 Gallery/Photos acceptance. Unknown reference-bearing MP4 layouts remain rejected.
 Lossless remux preserves packets and exact time; opt-in compaction/drop is reported.
+
+Round4 verified source **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
+all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
+at every applicable native, mobile and actual browser entry. See the
+[handoff](evidence/HANDOFF_ROUND4_20261019.md),
+[terminal receipt](evidence/platform-bd6f85b.json) and
+[remaining boundaries](evidence/REMAINING_WORK.md). Native Gallery/Photos and
+full ICC/AAC/rendering/device compatibility are still unverified or partial.
+
+The shared operation protocol now has a minimal WASM export generated into
+`web/dist/operation-pkg` (browser) and `operation-node` (Node):
+`process_operation(requestJSON, primaryBytes, movieBytes)` returns owned LLP1
+bytes. It calls the same Rust implementation and does not publish files. The
+existing inspection/UI module remains separate. Its42-case tests validate raw
+ICC profiles, AAC declarations, compact tables, byte preservation and exact time.
+Android service allowlists stay unchanged: conformance/remux tests use actual
+in-app JNI, while existing parse/build/extract/AGTM tests use Binder/FD ranges.
+A built arm64 Android/iOS library is not physical-device runtime acceptance.

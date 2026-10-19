@@ -46,3 +46,11 @@ entry-version0/1 wave/esds inspection, plus one nonfragmented index alternative:
 stz2 widths4/8/16. These are bounded syntax/preservation contracts, not full ICC/
 AAC semantics, colour/audio rendering or native Gallery support. See
 [exact scope and execution](evidence/HANDOFF_ROUND3_20261019.md).
+
+Round4 verified source **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
+all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
+at every applicable native, mobile and actual browser entry. See the
+[handoff](evidence/HANDOFF_ROUND4_20261019.md),
+[terminal receipt](evidence/platform-bd6f85b.json) and
+[remaining boundaries](evidence/REMAINING_WORK.md). Native Gallery/Photos and
+full ICC/AAC/rendering/device compatibility are still unverified or partial.

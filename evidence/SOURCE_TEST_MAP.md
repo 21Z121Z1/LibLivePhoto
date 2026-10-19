@@ -19,7 +19,19 @@ framework's99-pass counter includes one explicit HEVC encoder early return;
 it does not establish reference pixel-encoding coverage. Lossless HEIF original
 preservation and native runtime gates have separate recorded tests.
 
-Latest scoped cloud implementation is [7cc8f33](syntax-contracts-7cc8f33.json):
+Latest verified code **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
+all three workflows/eight jobs. [Round4 handoff](HANDOFF_ROUND4_20261019.md) and
+[terminal receipt](platform-bd6f85b.json) bind Linux/macOS 227 and Windows 226 per
+default/all-feature run, actual three-host C/JNI and extracted SDK consumers,
+macOS Swift 12, real arm64/iOS26.2, Node 4 + the 42-case test and actual Chrome 8.
+The 42 new vectors run at each applicable entry, checking fields, errors, original
+bytes and exact times; Android passed all five scopes/115assertions with all 42
+case IDs/digest, 20 PID/wait records and confirmed cleanup. Three ASan targets
+completed 3,723,435 executions without crashes. This verifies the round3 shared
+parser changes on the listed platforms; it does not close full semantics,
+other device/runtime ranges or native Gallery/Photos gates.
+
+Round3 implementation checkpoint is [7cc8f33](syntax-contracts-7cc8f33.json):
 Linux223/default and all-feature plus actual CLI/C/JNI/packet checks. WASM is
 compiled only; mobile and non-Linux runtime gates retain their historical SHAs.
 
@@ -97,3 +109,18 @@ tests. Emulator/Simulator or Chrome success does not verify a permissioned
 Photos library, physical HDR/gesture/capture, vendor Gallery behavior, or the
 unavailable LivePhotosKit runtime. Moments construction remains the explicit
 feature exclusion. No board is called 100% while a required acceptance row is open.
+
+## Round4 cross-platform syntax bindings
+
+| Contract | Implementation | New regression/actual entry evidence |
+| --- | --- | --- |
+| Selected ICC4.4 structure | [icc.rs](../crates/liblivephoto/src/icc.rs) | [ICC tests](../crates/liblivephoto/tests/icc_structure.rs); raw-profile valid/Unsupported/truncation/budget cases in the42-case manifest |
+| AAC-LC PCE/wave and existing direct esds | [media.rs](../crates/liblivephoto/src/media.rs), [conversion policies](../crates/liblivephoto/src/conversion.rs) | [AAC regressions](../crates/liblivephoto/tests/aac_pce.rs): existing normal SLConfig/direct AAC, strict version/duplicate/extension errors, default byte preservation and strict per-resource Unmapped |
+| stsz/stz2 exact sample/remux contracts | [tracks.rs](../crates/liblivephoto/src/tracks.rs), [remux.rs](../crates/liblivephoto/src/remux.rs) | [Compact index regressions](../crates/liblivephoto/tests/stz2_remux.rs):4/8/16-bit tables, real unused media, mixed stsz+stz2, raw stts/ctts, import/remove/metadata paths;8outputs/198independent packet checks |
+| Shared operation entry | [Rust interface/WASM forwarder](../crates/liblivephoto-interface/src/lib.rs) | [42-case manifest](../fixtures/syntax/cases.json), [CLI independent checks](../scripts/test_syntax_contracts.py), [terminal platform evidence](platform-bd6f85b.json) |
+| Actual consumer source compatibility | [unchanged-source checker](../scripts/consumer_replay.py), [separate Rust workspace](../scripts/external_consumer.py) |9original XDRemux source/example/test files compile with explicit local dependency override; unchanged interop test executes through actual facade; old exhaustive AacConfiguration literals demonstrably need migration |
+
+The applicable42-case entries cover C ABI/JNI, extracted CLI/compiled C/JAR SDK
+consumers, macOS Swift, actual iOS process, Android JNI/existing Binder actions,
+and Node/actual Chrome WASM. [Contract scope](SYNTAX_CROSS_PLATFORM.md) keeps
+transport assertions separate from full ICC/AAC semantics and device acceptance.

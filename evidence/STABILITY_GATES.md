@@ -1,5 +1,18 @@
 # Stability gates and remaining acceptance
 
+Latest verified code **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
+all three workflows/eight jobs. [Round4 handoff](HANDOFF_ROUND4_20261019.md) and
+[terminal receipt](platform-bd6f85b.json) bind Linux/macOS 227 and Windows 226 per
+default/all-feature run, actual three-host C/JNI and extracted SDK consumers,
+macOS Swift 12, real arm64/iOS26.2, Node 4 + the 42-case test and actual Chrome 8.
+The 42 new vectors run at each applicable entry, checking fields, errors, original
+bytes and exact times; Android passed all five scopes/115assertions with all 42
+case IDs/digest, 20 PID/wait records and confirmed cleanup. Three ASan targets
+completed 3,723,435 executions without crashes. This verifies the round3 shared
+parser changes on the listed platforms; it does not close full semantics,
+other device/runtime ranges or native Gallery/Photos gates.
+
+
 This is an audit of supported contracts, not a claim that every input, device or
 vendor layout is supported. Google remains pinned to
 `12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3`. The full functional mapping remains in
@@ -93,7 +106,7 @@ each at60 seconds requested per target/61 seconds actual, with no crash.
 | Inspection / Java JSON | 100000 projected frames across tracks; Java reader 1048576 values and 1024-character numeric literals | Actual two-track manifest regression and JVM flat-tree/huge-number rejection |
 | Android service | Combined 32 MiB source, 64 KiB request; one worker/two queued operations; duplicated descriptors, reliable output pipe, callback-death/cancel cleanup | Actual installed APK gate; per-operation bounds are not a universal process-memory ceiling |
 | Android client | Two readers/eight queued reads, 160 MiB response cap, input descriptors borrowed and duplicated | Actual installed APK gate; complete envelope required before result publication |
-| Android acceptance readiness |120s/40 attempts for boot/package/activity plus clean package query; both ADB output streams/exit/timeout preserved;240s per scope and all65 original assertions retained | Thirteen host fault-injection tests; unique run directories; only a confirmed owned APK is removed. Dedicated crash-buffer/package-exit diagnostics and final receipt also print to CI stdout. Exit224 cannot mean package absence. Partial native scopes cannot become a full pass |
+| Android acceptance readiness |120s/40 attempts; both ADB streams/exit/timeout retained;240s per scope,40s operations,20s future waits after synchronous bind; original65 plus syntax50=115assertions | Sixteen host fault-injection tests and actual five-scope execution; all42case IDs and exact manifest hash required individually.20PID/UID/wait traces and confirmed owned-package cleanup. Exit224 or a total count alone cannot establish success; historical causes remain unresolved |
 
 At91fc380, all three portable hosts, public fixtures, ASan and Apple/web passed;
 actual Android acceptance reached installation but failed before any scope.
@@ -120,7 +133,7 @@ Apple/web gates passed. Android compiled/installed, then the first isolated
 MetadataParserService readiness exceeded20 seconds with zero core assertions.
 Its final stdout receipt confirms cleanup. Dedicated crash entries belong to
 Bluetooth; package exit records show teardown after the caught timeout.
-[Latest source-bound evidence](platform-71b778f.json) preserves this failed
+[Historical failed-source evidence](platform-71b778f.json) preserves this failed
 native gate and does not infer the earlier metadata-process failure's cause.
 
 Source byte budgets bound inputs and copied payloads, not all allocator/runtime

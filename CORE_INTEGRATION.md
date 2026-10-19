@@ -281,3 +281,23 @@ unchanged public interop test can be replayed against this library through
 XDRemux product build. The ordinary external consumer also exercises the
 Android → Apple → Android → Apple route. Native Photos/Gallery acceptance,
 private vendor writers and application codec/HDR policies remain separate work.
+
+Round4 verified source **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
+all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
+at every applicable native, mobile and actual browser entry. See the
+[handoff](evidence/HANDOFF_ROUND4_20261019.md),
+[terminal receipt](evidence/platform-bd6f85b.json) and
+[remaining boundaries](evidence/REMAINING_WORK.md). Native Gallery/Photos and
+full ICC/AAC/rendering/device compatibility are still unverified or partial.
+
+`AacConfiguration` gained public `channel_configuration` and `program_config`
+in round3. Existing methods/read-side fields and destructuring with `..` remain
+usable; old complete struct literals demonstrably fail E0063 and require the
+new observed fields. This is a Rust source compatibility change, not a C/JNI ABI
+change. Strict capability plans report uninspectable esds as per-resource
+Unmapped; default lossless plans still preserve the complete source movie.
+Non-PCE later raw AAC syntax is retained without full GA/extension validation.
+Use `scripts/consumer_replay.py --xdremux-repository PATH --check-consumer-sources`
+to compile original consumer facade/example/test sources in a separate harness
+with an explicit local dependency override. The actual XDRemux repository/pin
+stays unchanged; this is not a full product build.

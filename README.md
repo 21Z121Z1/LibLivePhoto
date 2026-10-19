@@ -71,3 +71,11 @@ bash scripts/fuzz.sh 60
 The last command requires nightly Rust and `cargo-fuzz`. It uses AddressSanitizer
 and libFuzzer coverage. A bounded campaign does not prove absence of parser defects.
 External analysis samples and proprietary APKs remain outside Git.
+
+Round4 verified source **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
+all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
+at every applicable native, mobile and actual browser entry. See the
+[handoff](evidence/HANDOFF_ROUND4_20261019.md),
+[terminal receipt](evidence/platform-bd6f85b.json) and
+[remaining boundaries](evidence/REMAINING_WORK.md). Native Gallery/Photos and
+full ICC/AAC/rendering/device compatibility are still unverified or partial.

@@ -10,14 +10,26 @@ remain in [GOOGLE_COMPLETE_INVENTORY.md](GOOGLE_COMPLETE_INVENTORY.md), includin
 source/header/implementation/test authority. This list adds delivery/acceptance
 gates; it does not remove or replace those rows.
 
-Latest code **7cc8f3316fd0031f574edfdb31ba2f331372a995** adds the scoped
+Latest verified code **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
+all three workflows/eight jobs. [Round4 handoff](HANDOFF_ROUND4_20261019.md) and
+[terminal receipt](platform-bd6f85b.json) bind Linux/macOS 227 and Windows 226 per
+default/all-feature run, actual three-host C/JNI and extracted SDK consumers,
+macOS Swift 12, real arm64/iOS26.2, Node 4 + the 42-case test and actual Chrome 8.
+The 42 new vectors run at each applicable entry, checking fields, errors, original
+bytes and exact times; Android passed all five scopes/115assertions with all 42
+case IDs/digest, 20 PID/wait records and confirmed cleanup. Three ASan targets
+completed 3,723,435 executions without crashes. This verifies the round3 shared
+parser changes on the listed platforms; it does not close full semantics,
+other device/runtime ranges or native Gallery/Photos gates.
+
+Round3 implementation checkpoint **7cc8f3316fd0031f574edfdb31ba2f331372a995** adds the scoped
 ICC4.4/AAC-LC-PCE-wave/stz2 contracts. [Round3 receipt](syntax-contracts-7cc8f33.json)
 records Linux223/default and all-feature, actual CLI/C/JNI, public-original2,
 153065 ASan executions, targeted reference26, unchanged consumer replay and
 WASM compilation. [Handoff](HANDOFF_ROUND3_20261019.md) distinguishes compiled,
-executed and unrun platforms. Mobile lifecycle, desktop non-Linux and browser
-runtime CI were deliberately not rerun;4d02be4 below remains historical platform
-evidence and does not certify the changed implementation.
+executed and unrun platforms. Those runtime layers were not rerun at that checkpoint; the fresh round4
+execution above now validates its shared parser changes. The earlier4d02be4
+platform evidence remains historical for its own exact SHA.
 
 Historical all-platform baseline **4d02be46804c13c19657bbd6d865342f6be816b7**
 passed all three workflows/eight jobs: Linux/macOS211 and Windows210 per
