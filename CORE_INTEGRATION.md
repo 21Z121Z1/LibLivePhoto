@@ -98,10 +98,18 @@ lists, unsupported versions, truncated baseline fields and nonintegral time
 conversion fail explicitly. The method does not scan arbitrary movie bytes,
 substitute sample 1 or fabricate a baseline for missing/truncated samples.
 
-Curve/mix payload bits remain opaque and preserved. Full ST 2094-50 curve JSON
-projection is partial work. The API extracts metadata; it does not tone-map or
-render pixels. Google `mett` Moments scores/stabilization descriptors have no
-complete semantic decoder or builder in this phase.
+`decode_agtm` parses every version-0 field read by the pinned Google decoder:
+all alternate-image rules, common/independent curves and mixes, x/y coordinates,
+explicit/PCHIP slope selection, angles and tangent slopes, mode selectors and
+custom chromaticities. Truncated fields fail. Full raw input and unknown trailing
+bits remain preserved. Google ignores the six encoded mix coefficients and
+leaves its mix struct at zero; this API exposes those original integers without
+inventing weight scaling. It also retains unknown preset selectors as selectors.
+`reference_json()` provides Google's first-rule projection; `details_json()`
+exposes every rule. `extract_agtm_from_video` supports standalone MP4/MOV inputs.
+The API extracts metadata, not rendered pixels. Existing Google scoring and
+stabilization descriptor interpretation remains pending; Moments construction is
+explicitly excluded by the user's latest scope instruction.
 
 `remux::remove_metadata_tracks(movie, ids)` is explicit opt-in deletion. Only
 unique metadata track IDs are accepted. The operation rejects fragmented/indexed

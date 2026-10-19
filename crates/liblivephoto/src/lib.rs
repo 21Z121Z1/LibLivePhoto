@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 //! Parse, inspect, validate and remux related still and motion resources.
 mod agtm;
+mod agtm_decode;
 mod android;
 pub mod apple;
 mod asset;
@@ -29,7 +30,10 @@ mod tracks;
 mod vendor;
 pub use conversion::*;
 
-pub use agtm::{decode_agtm_header, AgtmHeader, AgtmSample};
+pub use agtm::{decode_agtm_header, extract_agtm_from_video, AgtmHeader, AgtmSample};
+pub use agtm_decode::{
+    decode_agtm, AgtmComponentMix, AgtmControlPoint, AgtmMetadata, AgtmToneMappingRule,
+};
 pub use asset::*;
 pub use error::{MotionPhotoError, Result};
 pub use facade::{Input, MotionPhoto, MotionPhotoReadError, ParseMode, ParseOptions, PathInput};

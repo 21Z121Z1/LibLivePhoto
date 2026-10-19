@@ -3,6 +3,7 @@ use liblivephoto::*;
 libfuzzer_sys::fuzz_target!(|data:&[u8]| {
     let _=inspect_honor_metadata(data);
     let _=decode_agtm_header(data);
+    let _=decode_agtm(data);
     for mode in [ParseMode::Strict,ParseMode::Compatible,ParseMode::Forensic] {
         let options=ParseOptions{mode,max_input_bytes:1_048_576,max_scan_bytes:1_048_576,max_candidates:16};
         if let Ok(p)=MotionPhoto::parse(Input::SingleFile(data),options) {

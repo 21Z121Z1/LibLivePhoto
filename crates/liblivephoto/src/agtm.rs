@@ -11,7 +11,7 @@ pub struct AgtmHeader {
     pub has_adaptive_tone_map: bool,
     pub baseline_hdr_headroom_log2: Option<f32>,
     pub use_reference_white_tone_mapping: Option<bool>,
-    /// Remaining curve/mix bits are retained in AgtmSample::bytes, not decoded.
+    /// Offset where decode_agtm continues into the complete curve/mix fields.
     pub remaining_bit_offset: usize,
 }
 
@@ -26,7 +26,7 @@ pub struct AgtmSample<'a> {
     pub header: AgtmHeader,
 }
 
-fn raw_payload(data: &[u8]) -> &[u8] {
+pub(crate) fn raw_payload(data: &[u8]) -> &[u8] {
     let data = if data.starts_with(&[5, 0xb5, 0, 0x90]) {
         &data[1..]
     } else {
@@ -117,41 +117,48 @@ impl MotionPhoto<'_> {
     /// arbitrary whole-file scanner fallback is used.
     pub fn agtm_at(&self, time: MediaTime) -> Result<Vec<AgtmSample<'_>>> {
         let video = self.motion_video_bytes()?;
-        let container = self
-            .asset()
-            .containers
-            .iter()
-            .find(|c| c.resource == self.motion_video().id)
-            .ok_or(Error::InvalidResource)?;
-        let mut result = Vec::new();
-        for track in &container.tracks {
-            if matches!(track.kind, TrackKind::Video | TrackKind::Audio)
-                || !track
-                    .sample_entries
-                    .iter()
-                    .any(|e| matches!(e, b"it35" | b"mett" | b"mp4s"))
-            {
+        extract_agtm_from_video(video, time)
+    }
+}
+
+impl AgtmSample<'_> {
+    pub fn metadata(&self) -> Result<crate::AgtmMetadata> {
+        crate::decode_agtm(self.bytes)
+    }
+}
+
+/// Extract from a standalone MP4/MOV, with the same preservation and exact-time
+/// contract as MotionPhoto::agtm_at. No still-image association is required.
+pub fn extract_agtm_from_video(video: &[u8], time: MediaTime) -> Result<Vec<AgtmSample<'_>>> {
+    let container = crate::tracks::inspect(video, crate::ResourceId(1), false)?;
+    let mut result = Vec::new();
+    for track in &container.tracks {
+        if matches!(track.kind, TrackKind::Video | TrackKind::Audio)
+            || !track
+                .sample_entries
+                .iter()
+                .any(|e| matches!(e, b"it35" | b"mett" | b"mp4s"))
+        {
+            continue;
+        }
+        for sample in crate::tracks::metadata_at(video, track, time)? {
+            let signaled = sample.description == *b"it35"
+                && sample.description_bytes.get(8..).is_some_and(explicit_t35);
+            if !signaled && !explicit_t35(sample.bytes) {
                 continue;
             }
-            for sample in crate::tracks::metadata_at(video, track, time)? {
-                let signaled = sample.description == *b"it35"
-                    && sample.description_bytes.get(8..).is_some_and(explicit_t35);
-                if !signaled && !explicit_t35(sample.bytes) {
-                    continue;
-                }
-                result.push(AgtmSample {
-                    track_id: track.id,
-                    sample_index: sample.index,
-                    presentation: sample.presentation,
-                    duration: MediaTime {
-                        value: i64::from(sample.duration),
-                        timescale: track.timescale,
-                    },
-                    bytes: sample.bytes,
-                    header: decode_agtm_header(sample.bytes)?,
-                });
-            }
+            result.push(AgtmSample {
+                track_id: track.id,
+                sample_index: sample.index,
+                presentation: sample.presentation,
+                duration: MediaTime {
+                    value: i64::from(sample.duration),
+                    timescale: track.timescale,
+                },
+                bytes: sample.bytes,
+                header: crate::decode_agtm(sample.bytes)?.header,
+            });
         }
-        Ok(result)
     }
+    Ok(result)
 }

@@ -14,6 +14,11 @@ the stated subset exists; **missing** means there is no supported contract;
 **verified** requires an executed test named in the evidence; **blocked** identifies
 a concrete prerequisite. Implementation does not establish native Gallery support.
 
+Current scope is defined by [the complete inventory](GOOGLE_COMPLETE_INVENTORY.md).
+Java/JNI, CLI and Android wrappers are now in scope. **Moments construction is
+excluded by explicit user instruction**, not a gap or completion gate. Earlier
+initial-assessment rows below are historical.
+
 ## Delivered result
 
 This phase is **partial coverage of the complete Google core**, with executed
@@ -36,7 +41,7 @@ validated implementation SHA and exact commands.
 | Bounds / padding / resources | existing + strengthened, verified | `validate`, checked range snapshots, 8/16-byte `mpvd` padding unit vectors, property-allocation bounds; malformed tests and ASan campaigns | structural validation is not complete Google-spec or decoder validation |
 | Exact photo time | existing + Honor subset, verified | `MediaTime`, XMP time, caller time, supported Apple time and Honor cover milliseconds; unchanged 1/3-second rejection; encoded packet timestamps checked | no rounding, no unknown-time inference; AGTM metadata edit lists unsupported |
 | Static image / video extraction | existing, verified | `still_bytes`, `motion_video_bytes`, `extract`; original resource bytes, 9 differential inputs, AV packet hashes and rational packet times | retains metadata tracks by default; Google optional extraction side effects differ |
-| AGTM extraction | added, verified subset | `agtm_at`, `decode_agtm_header`; `metadata_contract.rs` intervals/ctts/truncation; original Google AGTM baseline comparison; Android and existing Apple route retain the sample bytes | full curve/mix semantic JSON missing; no pixel rendering; unsupported edit lists fail; no arbitrary byte-scanner fallback |
+| AGTM extraction | added, verified subset | `agtm_at`, `decode_agtm_header`; `metadata_contract.rs` intervals/ctts/truncation; original Google AGTM baseline comparison; Android and existing Apple route retain the sample bytes | complete Google version-0 field decoder added; all rules/slopes/custom chromaticities and encoded mix values retained; 12 reference vectors verified; no pixel rendering; unsupported edit lists fail |
 | Still orientation / color | added, verified subset | `still_metadata`, `OrthogonalTransform`, `ColorDescription`; EXIF 0/1–8, ICC, ordered HEIF irot/imir/CICP/PQ and unknown properties; measured preservation evidence | crop composition, ICC interpretation, full gain-map/HDR semantics remain partial |
 | Movie transform / codec / AAC | added, verified subset | `sample_descriptions`, `MediaCapabilities`, `plan_with_capabilities`; `media_contract.rs` unsupported entries, channels/rates, unknown PCE and malformed ASC | default plan is structural; VUI/SEI, QT v2/wave and full AAC/decoder conformance remain partial; no device profile inferred |
 | MicroVideo | existing, verified synthetic contract | `android.rs` tests, legacy format/dialect and exact time | no new native legacy writer; not every legacy variant |
@@ -45,7 +50,7 @@ validated implementation SHA and exact commands.
 | Honor | added, verified synthetic contract | `inspect_honor_metadata`; `LIVE_` 20/40-byte and backward TLV; sceneMode; metadata-only rejection; 3 reference comparisons | no original corpus or native writer; ambiguous video candidates fail; cover overflow fails; no broader Huawei claim |
 | MP4 track preservation | existing, verified | whole movie copy on Android, original tracks/media retained on Apple; unchanged resource tests and AGTM regression | arbitrary cross-file track import missing |
 | Metadata-track deletion | added, verified bounded subset | `remux::remove_metadata_tracks`; explicit IDs, raw media retention, removal/no-op/invalid selection tests | no implicit deletion; no fragmentation/index/reference rewriting; unreferenced bytes remain in mdat |
-| Google Moments `mett` descriptors | partial byte preservation | existing movie/resource retention; Google fixture contains metadata tracks that remain in the exact extracted/built movie | score/stabilization/frame descriptor semantics and construction remain missing |
+| Google Moments `mett` descriptors | partial byte preservation | existing movie/resource retention; Google fixture contains metadata tracks that remain in the exact extracted/built movie | score/stabilization/frame descriptor semantics remain pending; Moments construction explicitly excluded by user |
 | MP4 optimization | missing, explicitly scoped | append-only, offset-stable rewriting does not invoke mp4v2 | fast-start/compaction absent; Google optimization rejects `hvc1` specifically; byte preservation does not need this restriction |
 | Java/JNI, Android services, complete CLI | later work | local Google JNI target happened to compile as a reference prerequisite; no LibLivePhoto delivery claimed | not part of core coverage completion |
 | Native Gallery / Photos | blocked on external evidence | no on-device acceptance run | device/corpus/version-specific recognition, editing and export remain unverified |
