@@ -56,3 +56,15 @@ finite and in [0,1]. Actual permitted library/render acceptance is a separate ga
 For the static XCFramework use `RustCoreBridge(linkedCore: true)` with retained,
 exported C symbols. See [native SDK integration](../NATIVE_SDK.md) for packaging,
 link flags and the actual iOS Simulator Swift/Rust acceptance command.
+
+The runtime harness creates and deletes only its own simulator UUID. It records
+boot progress, owned-device state, scoped CoreSimulator logs and failed receipts.
+After two iPhone17e/iOS26.5 monitor timeouts, it prefers a compatible SE device
+from the installed SDK, or accepts `--device-type IDENTIFIER` only if compatible.
+If `bootstatus` times out but that owned device is `Booted`, the harness may try
+the unchanged actual Swift/Rust process with its 120-second deadline. All original
+native assertions and runtime identity output remain required; failed assertions
+are never retried as success. This establishes C ABI execution, not SpringBoard,
+Photos-library or physical-device UI readiness. Cleanup failures also fail the
+acceptance. `python3 scripts/test_apple_harness.py` exercises fault injection
+only; its five tests are not Simulator acceptance.

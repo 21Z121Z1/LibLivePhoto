@@ -1,5 +1,10 @@
 import Foundation
 
+#if !os(iOS) || !targetEnvironment(simulator)
+#error("This acceptance process must target iOS Simulator")
+#endif
+print("IOS_SIMULATOR_RUNTIME: " + ProcessInfo.processInfo.operatingSystemVersionString)
+
 // Compiled together with the real Swift bridge and linked Rust static archive.
 // Actual iOS Simulator execution; it never accesses a Photos library.
 let core = try RustCoreBridge(linkedCore: true)

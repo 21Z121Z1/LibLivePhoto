@@ -85,3 +85,14 @@ legal original Honor corpus/native Gallery behavior, and the unavailable Apple
 LivePhotosKit SDK fetch remain explicit acceptance gaps. The CDN request was
 blocked with proxy tunnel HTTP 403; no bypass or SDK redistribution occurred.
 The software Android emulator boots without changing `/dev/kvm` permissions.
+
+At `a10e5d2`, all four installed Android scopes passed (65 assertions). Apple
+passed 11 macOS tests, iOS SDK compilation and XCFramework packaging, but two
+fresh iPhone17e/iOS26.5 boots exhausted `simctl bootstatus`'s 300-second monitor
+deadline before executing the runtime process. The next harness retains full
+boot output, owned-device state and scoped CoreSimulator logs; prefers a
+compatible SE configuration; and permits one actual process attempt after a
+monitor timeout only when its owned device reports `Booted`. The original
+Swift/Rust assertions and 120-second process deadline remain required. Neither
+the fault-injection unit tests nor `Booted` state count as native acceptance.
+Failure and cleanup receipts persist, and only the created UUID is deleted.

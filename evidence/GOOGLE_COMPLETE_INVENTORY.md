@@ -20,6 +20,9 @@ input/output behavior. [Stability gates](STABILITY_GATES.md) and
 [cd2159d evidence](stability-cd2159d.json) record cumulative budgets and actual
 local/host verification. Installed runtime status belongs to the exact-SHA CI
 artifact, separate from compilation and the historical partial traces below.
+At `a10e5d2` the installed Android gate completed all four scopes and 65
+assertions: [runtime evidence](android-runtime-a10e5d2.json). This closes the
+bounded API35/x86_64 service gate, not physical arm64/Gallery acceptance.
 
 | ID | Public capability / shipped interface | Google authority | Current implementation and status |
 | --- | --- | --- | --- |
