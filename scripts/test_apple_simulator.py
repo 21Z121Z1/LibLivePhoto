@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Run Swift->static Rust in a newly created, owned iOS simulator."""
-import json,platform,shutil,subprocess,uuid
+import json,platform,re,shutil,subprocess,uuid
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def run(args,**kwargs):return subprocess.check_output(list(map(str,args)),cwd=ROOT,text=True,**kwargs)
@@ -18,8 +18,13 @@ def main():
     if not available:raise RuntimeError('installed Xcode has no available iOS Simulator runtime; SDK compile alone is not runtime acceptance')
     runtime=sorted(available,key=lambda r:tuple(map(int,r['version'].split('.'))))[-1]
     types=json.loads(run(['xcrun','simctl','list','devicetypes','--json']))['devicetypes']
-    phones=[t for t in types if t['name'].startswith('iPhone')]
-    device=run(['xcrun','simctl','create','LLP-'+str(uuid.uuid4()),phones[-1]['identifier'],runtime['identifier']]).strip()
+    version=[int(n) for n in runtime['version'].split('.')];version=(version+[0,0])[:3]
+    encoded_version=(version[0]<<16)|(version[1]<<8)|version[2]
+    phones=[t for t in types if t['name'].startswith('iPhone') and t.get('minRuntimeVersion',0)<=encoded_version<=t.get('maxRuntimeVersion',0xffffffff)]
+    if not phones:raise RuntimeError('no installed iPhone device type supports '+runtime['identifier'])
+    selected=max(phones,key=lambda t:(t.get('minRuntimeVersion',0),tuple(map(int,re.findall(r'\d+',t['name'])))))
+    print('Owned simulator type/runtime:',selected['identifier'],runtime['identifier'],flush=True)
+    device=run(['xcrun','simctl','create','LLP-'+str(uuid.uuid4()),selected['identifier'],runtime['identifier']]).strip()
     try:
         run(['xcrun','simctl','boot',device]);run(['xcrun','simctl','bootstatus',device,'-b'],timeout=300)
         text=run(['xcrun','simctl','spawn',device,binary,ROOT/'web/public/demo/motion-photo.jpg',ROOT/'web/public/demo/motion.mp4',ROOT/'fixtures/bindings/agtm-video.mp4',ROOT/'fixtures/bindings/agtm-raw.bin'],timeout=120)

@@ -92,6 +92,22 @@ fn agtm_binding_returns_complete_raw_metadata_and_source_classification_stays_un
 }
 #[test]
 fn raw_metadata_blocks_are_exact_source_bytes_including_complete_large_trailers() {
+    let mut large = include_bytes!("../../../web/public/demo/cover.jpg").to_vec();
+    large.extend(vec![0x55; 1024 * 1024]);
+    let complete = process(r#"{"action":"extract-metadata"}"#, &large, &[]);
+    assert!(complete.success);
+    assert_eq!(
+        complete.files.last().unwrap().bytes,
+        vec![0x55; 1024 * 1024]
+    );
+    assert_eq!(
+        complete.metadata["collection"]["blocks"]
+            .as_array()
+            .unwrap()
+            .last()
+            .unwrap()["rawComplete"],
+        false
+    );
     let image = include_bytes!("../../../fixtures/bindings/agtm-motion.jpg");
     let result = process(r#"{"action":"extract-metadata"}"#, image, &[]);
     assert!(result.success);
