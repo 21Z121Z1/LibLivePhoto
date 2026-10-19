@@ -28,6 +28,13 @@ jobs:
           for directory in ['platforms','build-tools','ndk','licenses','system-images']:
               print(directory, sorted(str(p.relative_to(sdk)) for p in (sdk/directory).glob('*')))
           print('kvm exists/read/write:',os.path.exists('/dev/kvm'),os.access('/dev/kvm',os.R_OK),os.access('/dev/kvm',os.W_OK))
+          managers=sorted((sdk/'cmdline-tools').glob('*/bin/sdkmanager'))
+          preferred=sdk/'cmdline-tools/latest/bin/sdkmanager'
+          manager=preferred if preferred.is_file() else managers[-1] if managers else None
+          if manager is None: raise SystemExit('installed SDK has no sdkmanager')
+          print('SDK command line tools:',manager.parent)
+          with open(os.environ['GITHUB_PATH'],'a') as output:
+              for path in [manager.parent,sdk/'platform-tools',sdk/'emulator']: output.write(str(path)+'\n')
           PY
       - run: python3 scripts/build_android.py
       - name: Install emulator image under the runner's existing licenses
