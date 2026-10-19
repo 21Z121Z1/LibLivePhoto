@@ -7,6 +7,36 @@ use crate::{
 use serde_json::{json, Value};
 use std::{fs::File, io::Write, path::Path};
 const MAX_METADATA: usize = 16 * 1024 * 1024;
+const MAX_JSON_TOKENS: usize = 262_144;
+
+// Bound the generic JSON tree before serde allocates it. Large raw hex strings
+// remain permitted; many tiny values, keys or duplicate members do not evade
+// this aggregate budget. serde still performs all syntax and depth validation.
+fn check_json_budget(bytes: &[u8]) -> Result<(), Error> {
+    let (mut quoted, mut escaped, mut tokens) = (false, false, 0usize);
+    for &byte in bytes {
+        if quoted {
+            if escaped {
+                escaped = false;
+            } else if byte == b'\\' {
+                escaped = true;
+            } else if byte == b'"' {
+                quoted = false;
+            }
+        } else {
+            if byte == b'"' {
+                quoted = true;
+            }
+            if matches!(byte, b'"' | b'{' | b'[' | b',' | b':') {
+                tokens += 1;
+                if tokens > MAX_JSON_TOKENS {
+                    return Err(Error::InputLimit);
+                }
+            }
+        }
+    }
+    Ok(())
+}
 fn range_json(r: ByteRange) -> Value {
     json!({"start":r.lower_bound.to_string(),"end":r.upper_bound.to_string()})
 }
@@ -75,16 +105,19 @@ impl MetadataCollection {
             return Err(Error::InvalidResource);
         }
         let block = self.blocks.get(index).ok_or(Error::InvalidResource)?;
+        // These fields are public and can be constructed without ByteRange::new.
+        // Validate the entire block before writing even its first extent.
+        if block
+            .extents
+            .iter()
+            .any(|r| r.lower_bound > r.upper_bound || r.upper_bound > source.len() as u64)
+        {
+            return Err(Error::InvalidResource);
+        }
         let size = block
             .extents
             .iter()
-            .try_fold(0u64, |n, r| {
-                if r.upper_bound <= source.len() as u64 {
-                    n.checked_add(r.length())
-                } else {
-                    None
-                }
-            })
+            .try_fold(0u64, |n, r| n.checked_add(r.length()))
             .filter(|n| *n <= max_bytes)
             .ok_or(Error::InputLimit)?;
         for range in &block.extents {
@@ -97,10 +130,13 @@ impl MetadataCollection {
     }
     /// A serialized collection is untrusted evidence. Even a persisted true flag
     /// cannot establish current file bytes; verified_motion is cleared on import.
+    /// Limited to 64 MiB of JSON, 262144 aggregate structural/string tokens,
+    /// 16 MiB of decoded raw bytes and serde's default nesting limit.
     pub fn from_json(bytes: &[u8]) -> Result<Self, Error> {
         if bytes.len() > 64 * 1024 * 1024 {
             return Err(Error::InputLimit);
         }
+        check_json_budget(bytes)?;
         let v: Value = serde_json::from_slice(bytes).map_err(|_| Error::InvalidResource)?;
         if v["schemaVersion"] != 1 {
             return Err(Error::UnsupportedLayout("metadata collection schema"));
@@ -562,7 +598,7 @@ fn subrange(
     range: ByteRange,
     length: usize,
 ) -> Result<Vec<ByteRange>, Error> {
-    if range.upper_bound > length as u64 {
+    if range.lower_bound > range.upper_bound || range.upper_bound > length as u64 {
         return Err(Error::InvalidResource);
     }
     let mut cursor = 0;

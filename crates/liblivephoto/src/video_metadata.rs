@@ -42,7 +42,11 @@ struct Descriptor<'a> {
     tag: u8,
     bytes: &'a [u8],
 }
-fn descriptor<'a>(data: &mut &'a [u8]) -> Result<Descriptor<'a>, Error> {
+fn descriptor<'a>(data: &mut &'a [u8], remaining: &mut usize) -> Result<Descriptor<'a>, Error> {
+    if *remaining == 0 {
+        return Err(Error::InputLimit);
+    }
+    *remaining -= 1;
     let tag = *data.first().ok_or(Error::InvalidResource)?;
     let mut size = 0usize;
     for i in 1..=4 {
@@ -92,12 +96,14 @@ fn unknown(out: &mut VideoMetadata, parent: &str, d: Descriptor<'_>) {
 /// All input bytes and unrecognized descriptors are retained. Known containers
 /// and field counts must be complete; absent values stay absent rather than the
 /// pinned C++ decoder's default objects. Semantic checking is separate below.
+/// Each sample is limited to 1 MiB and 16384 descriptors, including unknowns.
 pub fn decode_video_metadata(bytes: &[u8]) -> Result<VideoMetadata, Error> {
     if bytes.len() > 1024 * 1024 {
         return Err(Error::InputLimit);
     }
     let mut data = bytes;
-    let root = descriptor(&mut data)?;
+    let mut remaining = 16_384;
+    let root = descriptor(&mut data, &mut remaining)?;
     if root.tag != 0xc0 {
         return Err(Error::MetadataMismatch("Google video metadata root tag"));
     }
@@ -114,7 +120,7 @@ pub fn decode_video_metadata(bytes: &[u8]) -> Result<VideoMetadata, Error> {
     let mut children = root.bytes;
     let mut flags_seen = false;
     while !children.is_empty() {
-        let d = descriptor(&mut children)?;
+        let d = descriptor(&mut children, &mut remaining)?;
         match d.tag {
             0xc1 => {
                 if out.model_version.is_some() || d.bytes.len() < 4 {
@@ -129,7 +135,7 @@ pub fn decode_video_metadata(bytes: &[u8]) -> Result<VideoMetadata, Error> {
                 ));
                 let mut scores = &d.bytes[4..];
                 while !scores.is_empty() {
-                    let s = descriptor(&mut scores)?;
+                    let s = descriptor(&mut scores, &mut remaining)?;
                     match s.tag {
                         0xc3 => {
                             if out.primary_score.is_some() {
@@ -154,7 +160,7 @@ pub fn decode_video_metadata(bytes: &[u8]) -> Result<VideoMetadata, Error> {
                             }
                             let mut frames = Vec::new();
                             for _ in 0..count {
-                                let f = descriptor(&mut list)?;
+                                let f = descriptor(&mut list, &mut remaining)?;
                                 if f.tag == 0xc3 {
                                     frames.push(frame(&f)?);
                                 } else {
@@ -178,7 +184,7 @@ pub fn decode_video_metadata(bytes: &[u8]) -> Result<VideoMetadata, Error> {
                 let mut flags = d.bytes;
                 let mut index = 0;
                 while !flags.is_empty() {
-                    let f = descriptor(&mut flags)?;
+                    let f = descriptor(&mut flags, &mut remaining)?;
                     if f.tag == 0xc5 {
                         if f.bytes.len() != 1 || index > 1 {
                             return Err(Error::MetadataMismatch("track flag count/length"));

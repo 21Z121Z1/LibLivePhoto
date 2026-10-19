@@ -38,7 +38,11 @@ Reports are JSON on stdout. Exit 0 means the operation/check passed; 1 means a
 library/plan/check failure with details; 2 means command/I/O/publication misuse.
 Generated/extracted files require `--out NEW_DIRECTORY`. The command creates a
 new directory and every file with CREATE_NEW; originals and existing outputs are
-never overwritten. An I/O failure may leave partial new output for inspection.
+never overwritten. Ordinary write failures roll back only files created by that
+invocation and remove its directory only if empty; cleanup failures report the
+remaining paths. `report.json` is written last. This does not promise atomic
+visibility to other processes or recovery after power loss/process termination;
+callers should read the report only after successful exit.
 Sidecars are published beside the main result and are not native Gallery claims.
 
 The optimizer/importer is bounded to validated standalone layouts. It reports

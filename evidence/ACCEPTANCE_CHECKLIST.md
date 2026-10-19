@@ -10,6 +10,10 @@ remain in [GOOGLE_COMPLETE_INVENTORY.md](GOOGLE_COMPLETE_INVENTORY.md), includin
 source/header/implementation/test authority. This list adds delivery/acceptance
 gates; it does not remove or replace those rows.
 
+Stability is a hard gate for all boards. See [STABILITY_GATES.md](STABILITY_GATES.md)
+for malformed ranges, cumulative allocation/copy bounds, FFI ownership,
+cancellation, failure rollback and the limits of each runtime acceptance claim.
+
 | Board / stable gate | Actual deliverable / acceptance | Current evidence or open requirement |
 | --- | --- | --- |
 | Core C-INPUT | Per-operation path/memory/open-file and Unix fd/range, budgets, cursor ownership, output sink/publication distinction | First-stage tests and CI receipts; new metadata range/fd parity tests. CLI/JVM FileChannel and Android FD wrappers now expose per-operation limits and preserve caller ownership; installed Android runtime is a separate gate. |
@@ -37,7 +41,7 @@ gates; it does not remove or replace those rows.
 
 Known environment/source limits must be reported as concrete blockers with the
 minimal required input. Current examples: a permissioned Apple device/Photos
-library for import/edit/playback UX; an Android device/emulator/service runtime;
+library for import/edit/playback UX; a passing Android installed-service runtime;
 legally redistributable original Honor variants for corpus/device acceptance;
 full Apple document bodies unavailable through the current reader/container.
 Independent implementation/testing continues while those gates are unavailable.

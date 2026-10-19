@@ -44,19 +44,23 @@ pub struct ScoringMetadata {
     pub metadata: VideoMetadata,
     pub issues: Vec<VideoMetadataIssue>,
 }
+/// Decode only declared Google samples, bounded across all tracks to 4096
+/// samples, 16 MiB of referenced payload and 65536 semantic records. Repeated
+/// references to the same mdat bytes each consume the budget.
 pub fn extract_video_metadata(
     video: &[u8],
     expected: PhotoTimeExpectation,
 ) -> Result<Vec<ScoringMetadata>, Error> {
     let container = crate::tracks::inspect(video, ResourceId(0), false)?;
     let mut result = Vec::new();
+    let (mut payload_bytes, mut records) = (0usize, 0usize);
     for track in container.tracks.iter().filter(|t| {
         !matches!(t.kind, TrackKind::Video | TrackKind::Audio) && t.sample_entries.contains(b"mett")
     }) {
         // Test the actual sample description before interpreting the sample bytes.
-        for packet in metadata_packets(video, track.id)? {
+        for packet in crate::tracks::metadata_samples(video, track)? {
             const MIME: &[u8] = b"application/motionphoto-image-meta";
-            if packet.sample_entry != *b"mett" {
+            if packet.description != *b"mett" {
                 continue;
             }
             let description = packet
@@ -81,12 +85,29 @@ pub fn extract_video_metadata(
                     "compressed motion-photo metadata sample",
                 ));
             }
-            let metadata = crate::decode_video_metadata(packet.bytes)
-                .map_err(|_| Error::MetadataMismatch("invalid declared Google video metadata"))?;
+            payload_bytes = payload_bytes
+                .checked_add(packet.bytes.len())
+                .filter(|n| *n <= 16 * 1024 * 1024)
+                .ok_or(Error::InputLimit)?;
+            if result.len() >= 4096 {
+                return Err(Error::InputLimit);
+            }
+            let metadata = crate::decode_video_metadata(packet.bytes).map_err(|e| match e {
+                Error::InputLimit => e,
+                _ => Error::MetadataMismatch("invalid declared Google video metadata"),
+            })?;
+            records = records
+                .checked_add(
+                    metadata.unknown.len()
+                        + metadata.high_resolution_scores.as_ref().map_or(0, Vec::len)
+                        + usize::from(metadata.primary_score.is_some()),
+                )
+                .filter(|n| *n <= 65_536)
+                .ok_or(Error::InputLimit)?;
             let issues = metadata.validate(expected);
             result.push(ScoringMetadata {
                 track_id: track.id,
-                sample_index: packet.sample_index,
+                sample_index: packet.index,
                 metadata,
                 issues,
             });

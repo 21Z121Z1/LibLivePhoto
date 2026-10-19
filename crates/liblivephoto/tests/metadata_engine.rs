@@ -77,6 +77,107 @@ impl MetadataProvider for Custom {
     }
 }
 #[test]
+fn manually_constructed_invalid_extents_fail_before_any_output_is_written() {
+    let mut collection = MetadataCollection {
+        source_length: 8,
+        blocks: vec![MetadataBlock {
+            kind: "custom".into(),
+            format_identifier: "test".into(),
+            extents: vec![ByteRange::new(0, 2).unwrap()],
+            header_extents: vec![],
+            raw_bytes: vec![],
+            raw_complete: false,
+        }],
+        decoded: vec![],
+        diagnostics: vec![],
+        verified_motion: false,
+    };
+    for range in [
+        ByteRange {
+            lower_bound: 5,
+            upper_bound: 3,
+        },
+        ByteRange {
+            lower_bound: 0,
+            upper_bound: 9,
+        },
+        ByteRange {
+            lower_bound: u64::MAX,
+            upper_bound: 0,
+        },
+    ] {
+        collection.blocks[0].extents.truncate(1);
+        collection.blocks[0].extents.push(range);
+        let mut output = Vec::new();
+        assert!(matches!(
+            collection.extract_block(0, b"12345678", &mut output, 16),
+            Err(MotionPhotoReadError::InvalidResource)
+        ));
+        assert!(
+            output.is_empty(),
+            "a later invalid extent must not publish a prefix"
+        );
+    }
+}
+
+struct ReversedRange;
+impl MetadataProvider for ReversedRange {
+    fn name(&self) -> &str {
+        "test.reversed"
+    }
+    fn decode(
+        &self,
+        b: &MetadataBlock,
+        _: &[u8],
+    ) -> std::result::Result<Option<ProviderPayload>, MotionPhotoReadError> {
+        Ok(
+            (b.format_identifier == "container.trailer").then(|| ProviderPayload {
+                value: json!({}),
+                motion_declaration: true,
+                video_in_block: Some(ByteRange {
+                    lower_bound: 4,
+                    upper_bound: 1,
+                }),
+            }),
+        )
+    }
+}
+
+#[test]
+fn provider_relative_ranges_cannot_panic_the_engine() {
+    let mut engine = MetadataEngine::new();
+    engine.register(Box::new(ReversedRange)).unwrap();
+    let result = engine.parse(
+        &[255, 216, 255, 217, 1, 2, 3, 4],
+        &HandlerOptions::default(),
+    );
+    assert!(matches!(result, Err(MotionPhotoReadError::InvalidResource)));
+}
+
+#[test]
+fn collection_json_limits_tree_complexity_without_counting_string_contents() {
+    let source = include_bytes!("../../../web/public/demo/motion-photo.jpg");
+    let collection = MetadataEngine::new()
+        .parse(source, &HandlerOptions::default())
+        .unwrap();
+    let mut document = collection.json();
+    let opaque = "\"\\,:{[".repeat(100_000);
+    document["decoded"][0]["value"]["opaque"] = json!(opaque);
+    let restored = MetadataCollection::from_json(document.to_string().as_bytes()).unwrap();
+    assert_eq!(restored.decoded[0].value["opaque"], opaque);
+    let mut dense = collection.json().to_string();
+    dense.pop();
+    dense.push_str(",\"ignored\":[");
+    dense.push_str(&"0,".repeat(300_000));
+    dense.push_str("0]}");
+    assert!(dense.len() < 1024 * 1024);
+    assert!(matches!(
+        MetadataCollection::from_json(dense.as_bytes()),
+        Err(MotionPhotoReadError::InputLimit)
+    ));
+}
+
+#[test]
 fn custom_registration_and_filters_apply_to_decoding_and_core_parsing() {
     let mut engine = MetadataEngine::new();
     engine.register(Box::new(Custom)).unwrap();

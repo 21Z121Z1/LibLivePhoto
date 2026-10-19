@@ -128,7 +128,9 @@ impl fmt::Display for MotionPhotoReadError {
             Self::Still(error) => error.fmt(f),
             Self::Io(error) => error.fmt(f),
             Self::Unrecognized => f.write_str("input is not a supported motion asset"),
-            Self::InputLimit => f.write_str("motion asset exceeds the input byte budget"),
+            Self::InputLimit => {
+                f.write_str("motion asset exceeds an input or processing resource limit")
+            }
             Self::InvalidInputRange => {
                 f.write_str("input file range is empty, overflows or exceeds the file")
             }

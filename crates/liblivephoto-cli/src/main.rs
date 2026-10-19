@@ -72,14 +72,6 @@ fn read(
     }
     Ok(data)
 }
-fn write_new(path: &Path, bytes: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
-    OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(path)?
-        .write_all(bytes)?;
-    Ok(())
-}
 fn run() -> Result<i32, Box<dyn std::error::Error>> {
     let mut args = std::env::args().skip(1);
     let Some(action) = args.next() else {
@@ -223,17 +215,126 @@ fn publish(
     result: &OperationResult,
     report: &Value,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    fs::create_dir(dir)?;
+    publish_with(dir, result, report, |file, bytes| file.write_all(bytes))
+}
+fn publish_with(
+    dir: &Path,
+    result: &OperationResult,
+    report: &Value,
+    mut write: impl FnMut(&mut File, &[u8]) -> io::Result<()>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let report = serde_json::to_vec_pretty(report)?;
+    let mut names = std::collections::BTreeSet::from(["report.json"]);
     for file in &result.files {
-        if Path::new(&file.name).components().count() != 1 || file.name == "." || file.name == ".."
+        let mut components = Path::new(&file.name).components();
+        if !matches!(
+            (components.next(), components.next()),
+            (Some(std::path::Component::Normal(_)), None)
+        ) || !names.insert(&file.name)
         {
-            return Err("unsafe generated output name".into());
+            return Err("unsafe or duplicate generated output name".into());
         }
-        write_new(&dir.join(&file.name), &file.bytes)?;
     }
-    write_new(
-        &dir.join("report.json"),
-        &serde_json::to_vec_pretty(report)?,
-    )?;
+    fs::create_dir(dir)?;
+    let mut created = Vec::new();
+    let outcome = (|| -> io::Result<()> {
+        for (name, bytes) in result
+            .files
+            .iter()
+            .map(|f| (f.name.as_str(), f.bytes.as_slice()))
+            .chain(std::iter::once(("report.json", report.as_slice())))
+        {
+            let path = dir.join(name);
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&path)?;
+            created.push(path);
+            write(&mut file, bytes)?;
+            file.sync_all()?;
+        }
+        Ok(())
+    })();
+    if let Err(error) = outcome {
+        let mut cleanup_errors = Vec::new();
+        for path in created.iter().rev() {
+            if let Err(e) = fs::remove_file(path) {
+                cleanup_errors.push(format!("{}: {e}", path.display()));
+            }
+        }
+        // Never recursively delete: another writer may have added its own file.
+        if let Err(e) = fs::remove_dir(dir) {
+            cleanup_errors.push(format!("{}: {e}", dir.display()));
+        }
+        return Err(if cleanup_errors.is_empty() {
+            format!("output write failed; new outputs rolled back: {error}")
+        } else {
+            format!(
+                "output write failed: {error}; incomplete rollback: {}",
+                cleanup_errors.join("; ")
+            )
+        }
+        .into());
+    }
     Ok(())
+}
+
+#[cfg(test)]
+mod publication_tests {
+    use super::*;
+    use liblivephoto_interface::OperationFile;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    static NEXT: AtomicUsize = AtomicUsize::new(0);
+    fn path() -> PathBuf {
+        std::env::temp_dir().join(format!(
+            "llp-rollback-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ))
+    }
+    fn result() -> OperationResult {
+        OperationResult {
+            success: true,
+            metadata: json!({}),
+            files: ["first.bin", "second.bin"]
+                .into_iter()
+                .map(|name| OperationFile {
+                    name: name.into(),
+                    mime: "application/octet-stream".into(),
+                    resource_id: None,
+                    bytes: b"original encoded bytes".to_vec(),
+                })
+                .collect(),
+        }
+    }
+    #[test]
+    fn failed_second_write_removes_earlier_output_and_the_partial_file() {
+        let dir = path();
+        let mut calls = 0;
+        let error = publish_with(&dir, &result(), &json!({}), |file, bytes| {
+            calls += 1;
+            if calls == 2 {
+                file.write_all(&bytes[..3])?;
+                return Err(io::Error::other("injected storage failure"));
+            }
+            file.write_all(bytes)
+        })
+        .unwrap_err();
+        assert!(error.to_string().contains("rolled back"));
+        assert!(!dir.exists());
+    }
+    #[test]
+    fn rollback_preserves_unrelated_files_and_reports_cleanup_failure() {
+        let dir = path();
+        let error = publish_with(&dir, &result(), &json!({}), |_, _| {
+            fs::write(dir.join("unrelated.txt"), b"keep")?;
+            Err(io::Error::other("injected storage failure"))
+        })
+        .unwrap_err();
+        assert!(error.to_string().contains("incomplete rollback"));
+        assert_eq!(fs::read(dir.join("unrelated.txt")).unwrap(), b"keep");
+        assert!(!dir.join("first.bin").exists());
+        fs::remove_file(dir.join("unrelated.txt")).unwrap();
+        fs::remove_dir(dir).unwrap();
+    }
 }

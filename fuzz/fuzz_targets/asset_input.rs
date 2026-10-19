@@ -6,6 +6,7 @@ libfuzzer_sys::fuzz_target!(|data:&[u8]| {
     let _=decode_agtm_header(data);
     let _=decode_agtm(data);
     let _=decode_video_metadata(data);
+    let _=extract_video_metadata(data,PhotoTimeExpectation::Unchecked);
     let _=XmpDocument::parse(data);
     let _=MetadataCollection::from_json(data);
     let _=MetadataEngine::new().parse(data,&HandlerOptions::default());

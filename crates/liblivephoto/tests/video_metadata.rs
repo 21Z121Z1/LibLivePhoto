@@ -1,8 +1,15 @@
 mod common;
 use liblivephoto::*;
 fn descr(tag: u8, p: &[u8]) -> Vec<u8> {
-    assert!(p.len() < 128);
-    [vec![tag, p.len() as u8], p.to_vec()].concat()
+    let mut length = p.len();
+    let mut encoded = vec![(length & 127) as u8];
+    length >>= 7;
+    while length != 0 {
+        encoded.push((length & 127) as u8 | 128);
+        length >>= 7;
+    }
+    encoded.reverse();
+    [vec![tag], encoded, p.to_vec()].concat()
 }
 fn score(value: f32, time: i64) -> Vec<u8> {
     descr(
@@ -80,6 +87,47 @@ fn absent_fields_remain_unknown_and_unknown_extensions_stay_raw() {
     assert_eq!(m.trailing_bytes, b"future");
     assert_eq!(m.raw_bytes, raw);
     assert!(decode_video_metadata(&[0xc0, 0x80, 0x80, 0x80, 0x80]).is_err());
+}
+#[test]
+fn tiny_unknown_descriptors_have_a_count_budget_as_well_as_a_byte_budget() {
+    let maximum = descr(0xc0, &[0xd0, 0].repeat(16_383));
+    assert_eq!(
+        decode_video_metadata(&maximum).unwrap().unknown.len(),
+        16_383
+    );
+    let dense = descr(0xc0, &[0xd0, 0].repeat(16_384));
+    assert!(dense.len() < 40_000);
+    assert!(matches!(
+        decode_video_metadata(&dense),
+        Err(MotionPhotoReadError::InputLimit)
+    ));
+}
+
+#[test]
+fn scoring_extraction_bounds_total_samples_records_and_copied_payload() {
+    let config = b"\0application/motionphoto-image-meta\0";
+    let empty = [0xc0, 0];
+    let samples = vec![(empty.as_slice(), 1); 4097];
+    let many_samples = common::metadata_movie(b"mett", config, &samples, 0);
+    assert!(matches!(
+        extract_video_metadata(&many_samples, PhotoTimeExpectation::Unchecked),
+        Err(MotionPhotoReadError::InputLimit)
+    ));
+    let dense = descr(0xc0, &[0xd0, 0].repeat(10_000));
+    let samples = vec![(dense.as_slice(), 1); 7];
+    let many_records = common::metadata_movie(b"mett", config, &samples, 0);
+    assert!(matches!(
+        extract_video_metadata(&many_records, PhotoTimeExpectation::Unchecked),
+        Err(MotionPhotoReadError::InputLimit)
+    ));
+    let mut large = empty.to_vec();
+    large.resize(1024 * 1024, 0xaa); // Opaque trailing bytes are preserved too.
+    let samples = vec![(large.as_slice(), 1); 17];
+    let many_bytes = common::metadata_movie(b"mett", config, &samples, 0);
+    assert!(matches!(
+        extract_video_metadata(&many_bytes, PhotoTimeExpectation::Unchecked),
+        Err(MotionPhotoReadError::InputLimit)
+    ));
 }
 #[test]
 fn semantic_validation_reports_unsorted_scores_nans_and_unknown_photo_time() {

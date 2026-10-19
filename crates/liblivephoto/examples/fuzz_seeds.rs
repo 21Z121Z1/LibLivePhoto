@@ -12,6 +12,29 @@ fn main() -> std::io::Result<()> {
             ("secondary-track", common::input(1_234_567, 2)),
             ("ambiguous-tracks", common::input(123, 3)),
             ("movie", common::movie(1000, 2)),
+            ("score-empty", vec![0xc0, 0]),
+            ("score-unknown", vec![0xc0, 4, 0xd0, 0, 0xd1, 0]),
+            (
+                "score-movie",
+                common::metadata_movie(
+                    b"mett",
+                    b"\0application/motionphoto-image-meta\0",
+                    &[(&[0xc0, 4, 0xd0, 0, 0xd1, 0], 1000)],
+                    0,
+                ),
+            ),
+            (
+                "metadata-collection",
+                liblivephoto::MetadataEngine::new()
+                    .parse(
+                        &common::input(123, 1),
+                        &liblivephoto::HandlerOptions::default(),
+                    )
+                    .unwrap()
+                    .json()
+                    .to_string()
+                    .into_bytes(),
+            ),
             ("overflow-box", vec![255; 32]),
             ("truncated-xml", common::jpeg("<x:xmpmeta><rdf:RDF>")),
             ("empty", vec![]),
