@@ -124,7 +124,7 @@ class RuntimeGates(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 harness.verify_scope('core', 'ANDROID_SERVICE_ACCEPTANCE passed; scope=core; assertions=20\n' + suffix)
 
-    def scenario(self, readiness_failure=False, cleanup_failure=False, bad_scope=None, install_uncertain=False):
+    def scenario(self, readiness_failure=False, cleanup_failure=False, bad_scope=None, install_uncertain=False, crash_scope=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             old = root / 'android/build/acceptance-old'
@@ -140,6 +140,8 @@ class RuntimeGates(unittest.TestCase):
                     return result(code=1) if cleanup_failure else result('Success\n')
                 if tail[1:3] == ['am', 'instrument']:
                     scope = tail[7]
+                    if scope == crash_scope:
+                        return result('INSTRUMENTATION_RESULT: shortMsg=Process crashed.\nINSTRUMENTATION_CODE: 0\n')
                     count = harness.SCOPES[scope] - int(scope == bad_scope)
                     return result('ANDROID_SERVICE_ACCEPTANCE passed; scope=' + scope +
                                   '; assertions=' + str(count) + '\nINSTRUMENTATION_CODE: -1\n')
@@ -183,6 +185,21 @@ class RuntimeGates(unittest.TestCase):
         self.assertIsInstance(error, RuntimeError)
         self.assertEqual(receipt['completed_scopes'], ['core'])
         self.assertEqual(receipt['result'], 'failed')
+
+    def test_scope_process_death_keeps_service_and_exit_evidence_before_cleanup(self):
+        receipt, calls, error = self.scenario(crash_scope='metadata')
+        self.assertIsInstance(error, RuntimeError)
+        self.assertEqual(receipt['completed_scopes'], ['core'])
+        self.assertEqual(receipt['assertions'], 20)
+        self.assertEqual(receipt['active_scope'], 'metadata')
+        self.assertEqual(receipt['bind_deadline_seconds'], 20)
+        self.assertEqual(receipt['result'], 'failed')
+        uninstall = next(i for i, call in enumerate(calls) if call[0] == 'uninstall')
+        exits = [i for i, call in enumerate(calls) if 'exit-info' in call]
+        services = [i for i, call in enumerate(calls) if 'services' in call]
+        self.assertGreaterEqual(len(exits), 3)
+        self.assertEqual(len(services), 2)
+        self.assertTrue(all(i < uninstall for i in exits + services))
 
     def test_cleanup_failure_does_not_leave_a_passed_receipt(self):
         receipt, _, error = self.scenario(cleanup_failure=True)

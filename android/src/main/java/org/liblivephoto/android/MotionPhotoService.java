@@ -21,6 +21,15 @@ public abstract class MotionPhotoService extends Service {
             new ArrayBlockingQueue<Runnable>(2));
     protected abstract boolean allows(String action);
 
+    private void trace(String event, long operation) {
+        if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) == 0) return;
+        android.util.Log.i("LibLivePhotoServiceLifecycle", "service=" + getClass().getSimpleName() +
+                " elapsedMs=" + SystemClock.elapsedRealtime() + " pid=" + android.os.Process.myPid() +
+                " uid=" + android.os.Process.myUid() + " tid=" + android.os.Process.myTid() +
+                " callerPid=" + Binder.getCallingPid() + " callerUid=" + Binder.getCallingUid() +
+                " event=" + event + " operation=" + operation);
+    }
+
     private void requireOwner() {
         // An isolated service has its own UID. Compare the Binder caller with
         // the installed application's UID, not Process.myUid().
@@ -40,8 +49,8 @@ public abstract class MotionPhotoService extends Service {
     }
 
     private final IMotionPhotoService.Stub binder = new IMotionPhotoService.Stub() {
-        public int apiVersion() { requireOwner(); return 1; }
-        public int processId() { requireOwner(); return android.os.Process.myPid(); }
+        public int apiVersion() { trace("apiVersion.begin", 0); requireOwner(); trace("apiVersion.return", 0); return 1; }
+        public int processId() { trace("processId", 0); requireOwner(); return android.os.Process.myPid(); }
         public long submit(String request, ParcelFileDescriptor primary, long po, long pl,
                            ParcelFileDescriptor movie, long mo, long ml, ParcelFileDescriptor output,
                            IOperationCallback callback) {
@@ -93,6 +102,7 @@ public abstract class MotionPhotoService extends Service {
         }
         void cancel(String reason) {
             if (!terminal.compareAndSet(false, true)) return;
+            trace("work.cancel", id);
             executor.remove(this);
             try { output.closeWithError(reason); } catch (IOException ignored) {}
             cleanup();
@@ -100,6 +110,7 @@ public abstract class MotionPhotoService extends Service {
         }
         public void run() {
             if (terminal.get()) return;
+            trace("work.begin", id);
             try {
                 NativeEngine.Progress progress = (phase, n, total) -> {
                     if (terminal.get()) throw new CancellationException("cancelled");
@@ -111,9 +122,11 @@ public abstract class MotionPhotoService extends Service {
                      FileInputStream m = movie == null ? null : new ParcelFileDescriptor.AutoCloseInputStream(movie)) {
                     NativeResult result;
                     try {
+                        trace("native.begin", id);
                         result = new NativeEngine().executeJson(request,
                                 p == null ? null : Input.range(p.getChannel(), po, pl),
                                 m == null ? null : Input.range(m.getChannel(), mo, ml), progress);
+                        trace("native.return", id);
                     } catch (Exception | LinkageError e) {
                         if (terminal.get()) return;
                         result = NativeResult.failure(e.getClass().getSimpleName() + ": " + e.getMessage());
@@ -128,12 +141,15 @@ public abstract class MotionPhotoService extends Service {
                 }
             } catch (Throwable e) {
                 cancel(e.getClass().getSimpleName() + ": " + e.getMessage());
-            } finally { if (terminal.get()) cleanup(); }
+            } finally { trace("work.end", id); if (terminal.get()) cleanup(); }
         }
     }
-    @Override public IBinder onBind(Intent intent) { return binder; }
+    @Override public void onCreate() { super.onCreate(); trace("create", 0); }
+    @Override public IBinder onBind(Intent intent) { trace("bind", 0); return binder; }
+    @Override public boolean onUnbind(Intent intent) { trace("unbind", 0); return super.onUnbind(intent); }
     @Override public void onDestroy() {
+        trace("destroy.begin", 0);
         for (Work work : active.values()) work.cancel("service destroyed");
-        executor.shutdownNow(); super.onDestroy();
+        executor.shutdownNow(); super.onDestroy(); trace("destroy.return", 0);
     }
 }

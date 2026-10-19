@@ -118,13 +118,29 @@ def diagnostic_snapshot(adb, filename, label, command, timeout):
     print(label + '\n' + text, flush=True)
 
 
-def diagnostics(adb):
+def system_state(adb, label):
     states = []
     for tail in [['shell', 'getprop', 'sys.boot_completed'],
                  ['shell', 'service', 'check', 'package'],
                  ['shell', 'service', 'check', 'activity']]:
         states.append(adb.command(tail, timeout=10))
-    print('ANDROID_HARNESS_SERVICE_DIAGNOSTIC ' + json.dumps(states)[-24000:], flush=True)
+    print('ANDROID_HARNESS_SERVICE_DIAGNOSTIC ' + json.dumps({'phase': label, 'states': states})[-24000:], flush=True)
+
+
+def scope_diagnostics(adb, scope):
+    system_state(adb, 'after-' + scope)
+    diagnostic_snapshot(adb, scope + '-service-lifecycle.log', 'ANDROID_HARNESS_SCOPE_LIFECYCLE ' + scope,
+                        ['logcat', '-d', '-b', 'main', '-b', 'system', '-b', 'crash', '-t', '2000', '-s',
+                         'LibLivePhotoBinding:I', 'LibLivePhotoServiceLifecycle:I', 'LibLivePhotoAcceptance:I',
+                         'ActivityManager:I', 'AndroidRuntime:E', 'libc:F', '*:S'], 20)
+    diagnostic_snapshot(adb, scope + '-bound-services.log', 'ANDROID_HARNESS_BOUND_SERVICES ' + scope,
+                        ['shell', 'dumpsys', '-t', '8', 'activity', 'services', PACKAGE], 10)
+    diagnostic_snapshot(adb, scope + '-process-exit-info.log', 'ANDROID_HARNESS_SCOPE_EXIT_INFO ' + scope,
+                        ['shell', 'dumpsys', '-t', '8', 'activity', 'exit-info', PACKAGE], 10)
+
+
+def diagnostics(adb):
+    system_state(adb, 'final')
     diagnostic_snapshot(adb, 'logcat.log', 'ANDROID_HARNESS_GUEST_LOGCAT',
                         ['logcat', '-d', '-t', '200', '-s', 'LibLivePhotoAcceptance:*',
                          'AndroidRuntime:E', 'libc:F'], 20)
@@ -151,6 +167,7 @@ def main(argv=None):
                'gallery_acceptance': False, 'readiness_deadline_seconds': 120,
                'readiness_max_attempts': 40, 'per_scope_deadline_seconds': 240,
                'per_operation_deadline_seconds': 40, 'installation_confirmed': False,
+               'bind_deadline_seconds': 20,
                'installation_outcome_uncertain': False, 'owned_package_removed': False}
     path = out / 'runtime-receipt.json'
     path.write_text(json.dumps(receipt, indent=2) + '\n')
@@ -170,6 +187,8 @@ def main(argv=None):
         receipt['installation_confirmed'] = True
         transcripts = []
         for scope, count in SCOPES.items():
+            receipt['active_scope'] = scope
+            system_state(adb, 'before-' + scope)
             print('Actual installed service acceptance scope: ' + scope, flush=True)
             result = adb.command(['shell', 'am', 'instrument', '-w', '-r', '-e', 'scope', scope,
                                   PACKAGE + '/org.liblivephoto.android.ServiceAcceptance'], timeout=240)
@@ -179,6 +198,7 @@ def main(argv=None):
             transcripts.append(text)
             (out / 'instrumentation.log').write_text('\n'.join(transcripts))
             print(text, flush=True)
+            scope_diagnostics(adb, scope)
             if result['returncode'] != 0 or result['timed_out']:
                 raise RuntimeError('ADB instrumentation failed or exceeded its deadline in ' + scope)
             verify_scope(scope, text)

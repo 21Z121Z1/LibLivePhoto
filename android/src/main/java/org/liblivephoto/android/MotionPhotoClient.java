@@ -12,6 +12,13 @@ import java.util.concurrent.atomic.*;
  * Results own their bytes. Keep supplied inputs open until execute() returns;
  * the client and service use independent descriptor copies thereafter. */
 public final class MotionPhotoClient implements AutoCloseable {
+    /** Package-scoped observer for acceptance diagnostics; never receives media. */
+    interface BindingObserver { void event(String value); }
+    private static final AtomicLong NEXT_CONNECTION = new AtomicLong();
+    private final long connectionId = NEXT_CONNECTION.incrementAndGet();
+    private final long bindingStarted = SystemClock.elapsedRealtime();
+    private final BindingObserver bindingObserver;
+    private final String serviceName;
     private final Context context;
     private final CompletableFuture<MotionPhotoClient> ready = new CompletableFuture<>();
     private final Set<Operation> active = ConcurrentHashMap.newKeySet();
@@ -21,25 +28,48 @@ public final class MotionPhotoClient implements AutoCloseable {
     private volatile IMotionPhotoService service;
     private volatile boolean bound;
 
+    private void trace(String event, String detail) {
+        if (bindingObserver == null) return;
+        String value = "connection=" + connectionId + " service=" + serviceName +
+                " elapsedMs=" + (SystemClock.elapsedRealtime() - bindingStarted) +
+                " pid=" + android.os.Process.myPid() + " uid=" + android.os.Process.myUid() +
+                " tid=" + android.os.Process.myTid() +
+                " main=" + (Looper.myLooper() == Looper.getMainLooper()) +
+                " event=" + event + " " + detail;
+        try { bindingObserver.event(value); } catch (Throwable ignored) {}
+    }
+
     private final ServiceConnection connection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder binder) {
+            trace("callback.connected", "closed=" + closed.get() + " binderAlive=" + binder.isBinderAlive());
             if (closed.get()) return;
             service = IMotionPhotoService.Stub.asInterface(binder);
             try {
-                if (service.apiVersion() != 1) throw new IOException("service API mismatch");
-                ready.complete(MotionPhotoClient.this);
-            } catch (Throwable e) { fail(e); }
+                trace("handshake.begin", "");
+                int version = service.apiVersion();
+                trace("handshake.return", "version=" + version);
+                if (version != 1) throw new IOException("service API mismatch");
+                boolean completed = ready.complete(MotionPhotoClient.this);
+                trace("ready.complete", "won=" + completed);
+            } catch (Throwable e) { trace("handshake.error", e.getClass().getName()); fail(e); }
         }
-        public void onServiceDisconnected(ComponentName name) { fail(new IOException("service process disconnected")); }
-        @Override public void onBindingDied(ComponentName name) { fail(new IOException("service binding died")); }
-        @Override public void onNullBinding(ComponentName name) { fail(new IOException("service returned no binder")); }
+        public void onServiceDisconnected(ComponentName name) { trace("callback.disconnected", ""); fail(new IOException("service process disconnected")); }
+        @Override public void onBindingDied(ComponentName name) { trace("callback.bindingDied", ""); fail(new IOException("service binding died")); }
+        @Override public void onNullBinding(ComponentName name) { trace("callback.nullBinding", ""); fail(new IOException("service returned no binder")); }
     };
     public MotionPhotoClient(Context context, Class<? extends MotionPhotoService> serviceClass) {
+        this(context, serviceClass, null);
+    }
+    MotionPhotoClient(Context context, Class<? extends MotionPhotoService> serviceClass, BindingObserver observer) {
+        bindingObserver = observer;
+        serviceName = serviceClass.getSimpleName();
         this.context = context.getApplicationContext();
         try {
+            trace("bind.begin", "");
             bound = this.context.bindService(new Intent(this.context, serviceClass), connection, Context.BIND_AUTO_CREATE);
+            trace("bind.return", "accepted=" + bound);
             if (!bound) fail(new IOException("bindService returned false"));
-        } catch (RuntimeException e) { fail(e); }
+        } catch (RuntimeException e) { trace("bind.error", e.getClass().getName()); fail(e); }
     }
     public CompletableFuture<MotionPhotoClient> ready() { return ready; }
     public int remoteProcessId() throws RemoteException {
@@ -129,8 +159,10 @@ public final class MotionPhotoClient implements AutoCloseable {
     }
     @Override public void close() {
         if (!closed.compareAndSet(false, true)) return;
+        trace("close.begin", "bound=" + bound);
         fail(new CancellationException("client closed"));
-        if (bound) { context.unbindService(connection); bound = false; }
+        if (bound) { trace("unbind.begin", ""); context.unbindService(connection); bound = false; trace("unbind.return", ""); }
         readers.shutdownNow();
+        trace("close.return", "");
     }
 }

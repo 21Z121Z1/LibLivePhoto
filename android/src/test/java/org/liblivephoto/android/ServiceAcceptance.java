@@ -55,15 +55,37 @@ public final class ServiceAcceptance extends Instrumentation {
         return client.execute(request,p,m,null).result().get(40,TimeUnit.SECONDS);
     }
     private boolean scenario(String name) { return "all".equals(scope)||name.equals(scope); }
+    private final class BindingTrace implements MotionPhotoClient.BindingObserver {
+        private final ArrayDeque<String> events = new ArrayDeque<>();
+        private int omitted;
+        public synchronized void event(String value) {
+            if (events.size() == 64) { events.removeFirst(); omitted++; }
+            events.addLast(value);
+            android.util.Log.i("LibLivePhotoBinding", value);
+        }
+        synchronized void report(String outcome) {
+            Bundle status = new Bundle();
+            status.putString("bindingOutcome", outcome);
+            status.putString("bindingTrace", "omitted=" + omitted + "\n" + String.join("\n", events));
+            sendStatus(1, status);
+        }
+    }
     private MotionPhotoClient connect(Class<? extends MotionPhotoService> type) throws Exception {
         markPhase("connect "+type.getSimpleName());
-        MotionPhotoClient client=new MotionPhotoClient(getTargetContext(),type);
+        BindingTrace trace = new BindingTrace();
+        MotionPhotoClient client=new MotionPhotoClient(getTargetContext(),type,trace);
         try {
             client.ready().get(20,TimeUnit.SECONDS);
+            trace.report("ready");
             check(client.remoteProcessId()!=android.os.Process.myPid(),"service must actually use another process");
             check(invoke(client,new Request("version"),null,null).success,"remote Rust native library loads");
             return client;
-        } catch(Exception | Error error) {client.close();throw error;}
+        } catch(Exception | Error error) {
+            trace.report("failed-before-close " + error.getClass().getName());
+            client.close();
+            trace.report("failed-after-close " + error.getClass().getName());
+            throw error;
+        }
     }
     private void runChecks() throws Exception {
         markPhase("instrumentation running");
