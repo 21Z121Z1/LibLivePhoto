@@ -1,0 +1,167 @@
+{
+  "implementation_sha": "9988a1daf533119d2b57cb686b26303dfb68b57b",
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "source_objects": {
+    "Cargo.toml": "31afd8e6a5e611174fc826613c4d91cb63bd8752",
+    "Cargo.lock": "05e5a92e2722074d64a35460b38ea706fcaa239e",
+    "crates": "231bf58c754a5e1b4e3d60536e3c72260a11ceac",
+    "fuzz": "4e3751d24a89b3a635a43f18ccf893d96a8a9e28",
+    "scripts": "223b3089a8ecbf32fe31ea2ddb1a3a31c980ee5a",
+    "java": "3eb4ff7a9a383fc08a586d144ebcf563c2757a18",
+    "android": "9f44bed8ec16b4e0a20eb5de55990cba31d37f9b",
+    "apple": "dfce4d6cfdda9bbc2ac7a6e15629931df3e749b4",
+    "web": "f195d780eba5305b4cef5817c8004b11b49e9ed6",
+    "native": "eec2f68cd192c1afdc76d67dcebbca800d9f08c9",
+    "fixtures": "5beec413d1c97759e043a71f2a430698dca3778a",
+    ".github/workflows": "472a032127d00194ae08945344c308b5992f2e7e"
+  },
+  "source_identity": "Default/all-feature, actual C/JNI, public originals, provider comparison, XDRemux replay and ASan ran at clean9988a1d. The subsequent clippy check saw only unrelated Android acceptance/harness/docs changes; crates/fuzz/java/fixtures were unchanged. Final platform acceptance must name its own source SHA.",
+  "rust": {
+    "default": {
+      "passed": 211,
+      "failed": 0,
+      "ignored": 3
+    },
+    "all_features": {
+      "passed": 211,
+      "failed": 0,
+      "ignored": 3
+    }
+  },
+  "fmt_clippy": {
+    "commands": [
+      "cargo fmt --all -- --check",
+      "cargo clippy --locked --workspace --all-targets --all-features -- -D warnings"
+    ],
+    "result": "passed"
+  },
+  "public_original_fixtures": {
+    "passed": 2,
+    "sha_locked_files": 14,
+    "command": "cargo test --locked -p liblivephoto --test fixtures -- --ignored --nocapture",
+    "new_checks": "Two original vivo movies each contain31 independently observed stream records, exact bounded offsets/raw JSON, payload hashes and full MetadataCollection payload extraction; lossless output retains original movie/footer bytes.",
+    "private_original_analysis_executed": false
+  },
+  "same_input_differential": {
+    "cases": 38,
+    "command": "python3 scripts/metadata_differential.py --reference-source /workspace/libmotionphoto-reference --reference-build /workspace/reference-build-make --protobuf-include /workspace/toolchains/debian/sysroot/usr/include",
+    "receipt": "vendor-provider-differential-9988a1d.json",
+    "reference_is_absolute_oracle": false,
+    "known_differences": "Namespaces, declaration versus verified media, ordinary HEIF and malformed Honor behavior remain explicitly described in the full receipt.",
+    "historical": "85-case/99-reference-test91fc380 evidence remains at its original SHA, not relabelled as newly executed."
+  },
+  "asan": {
+    "target": "asset_input",
+    "sanitizer": "address",
+    "command": "cargo +nightly fuzz run asset_input --sanitizer address -- -max_total_time=60 -max_len=1048576 -rss_limit_mb=2048 -timeout=5 -print_final_stats=1",
+    "requested_seconds": 60,
+    "actual_seconds": 61,
+    "executions": 95736,
+    "peak_rss_mb": 514,
+    "crashes": 0,
+    "scope": "Includes new UUID/stream parser and metadata provider. Other targets retain their7affb28 measured receipt."
+  },
+  "actual_native_bindings": {
+    "C_ABI": "passed, including optional provider controls and byte-exact opaque vivo payload",
+    "JVM_JNI": "passed Java8 client on JDK21, including ordered duplicate-key stream and raw payload extraction",
+    "commands": [
+      "python3 scripts/test_c_abi.py",
+      "python3 scripts/test_java.py --compiler-java-home /workspace/toolchains/jdk21-overlay"
+    ]
+  },
+  "consumer": {
+    "command": "python3 scripts/consumer_replay.py --xdremux-repository /workspace/xdremux-consumer-reference",
+    "unchanged_test_passed": 1,
+    "revision": "0688ea7d6270df52cc5968e2c36dd016f13bd31b",
+    "test_source_sha256": "aa3a154f0da02aa1bf79566f7439b2129b56f36dfc0a73c2a58ef225fb1b437b",
+    "repository_modified": false,
+    "full_product_build_claimed": false
+  },
+  "binding_fixture_reproduction": {
+    "new_output": "/tmp/llp-vivo-bindings-vkobtgis/new-only",
+    "existing_five_unchanged": true,
+    "files": [
+      {
+        "file": "agtm-motion.jpg",
+        "bytes": 53630,
+        "sha256": "7bd22b5ca2d8762415e7aef988997e0398b62b6c44698fded34010afba563666"
+      },
+      {
+        "file": "agtm-raw.bin",
+        "bytes": 53,
+        "sha256": "a4e29174ff45c73ef3c5d4b3abdc3ffa0d4dd358e0d4ed47d3fb673bdd486a55"
+      },
+      {
+        "file": "agtm-video.mp4",
+        "bytes": 20074,
+        "sha256": "57b5dbe62e9eb2fcb6e9d7d09548b0b3a2d6635740dd243a5635643224f6bc13"
+      },
+      {
+        "file": "camera-album.jpg",
+        "bytes": 32909,
+        "sha256": "78c67e88f5cc0fbe35ca8ffa0892a41467951aa6ec4cd5f5e663638c3b8367d3"
+      },
+      {
+        "file": "collection.json",
+        "bytes": 42775,
+        "sha256": "225b1aa04bebd0fee6bb46f936ae7c1a5c580c2299210fae63b477453b3c01df"
+      },
+      {
+        "file": "vivo-stream-motion.jpg",
+        "bytes": 53599,
+        "sha256": "78c40253278409fa8818c3f6f56a81a356aa52d3c711101cca2f08d9cb8cce36"
+      }
+    ],
+    "scope": "Owned neutral coded scene and authored framing; existing five vectors unchanged; synthetic transport tests do not prove native Gallery interoperability."
+  },
+  "vendor_sources": "vendor-round2-acquisition.json",
+  "independent_original_facts": "vendor-vivo-stream-observations.json",
+  "vendor_matrix": "VENDOR_RESEARCH_ROUND2.md",
+  "new_dependencies": 0,
+  "new_apk_native_firmware_bodies_acquired": 0,
+  "new_public_static_text_bytes": 245065,
+  "limits": [
+    "No stream-role/depth/portrait inference, implicit time unit, unique capture pairing, native vivo writer or Gallery acceptance.",
+    "Unknown encoding tags and duplicate keys remain ordered opaque data. Top-level UUID, total sizes and per-record boundaries must validate before extraction.",
+    "No original Honor corpus; pinned static source is not an authenticated original APK/SDK package or a license grant."
+  ],
+  "logs": {
+    "vivo9988-default.log": {
+      "sha256": "16130b39525f1181210e91040c73700009526c5cfc55520be84c3c0e322602cf",
+      "bytes": 25987
+    },
+    "vivo9988-allfeatures.log": {
+      "sha256": "62f4e43bbcb6b835fad5901cde4edcf8364d56a01392114735578805b939d818",
+      "bytes": 25987
+    },
+    "vivo9988-c-abi.log": {
+      "sha256": "edf58cc8edcb968fe23c302454b354dac7e7c850139f6382c4c6530a32d30c28",
+      "bytes": 512
+    },
+    "vivo9988-java.log": {
+      "sha256": "789e1a72de50f1938b0dd38381af2068f008acf4c217541112eae116554afab4",
+      "bytes": 652
+    },
+    "vivo9988-originals.log": {
+      "sha256": "143c1b1f2f2568131ed868a35b2a364f28b9c5a94d590238dff04149628a5b64",
+      "bytes": 1333
+    },
+    "vivo9988-provider.log": {
+      "sha256": "5851fe91f207ed123089fdc0ea254e8d5c59dc9ea91ec0c35a96e5e0b7fafed2",
+      "bytes": 75
+    },
+    "vivo9988-xdremux.log": {
+      "sha256": "af97f0d99e5646b3216cb3d67520fabe7a76d23625815d5b91d4eed7becf818c",
+      "bytes": 1108
+    },
+    "vivo9988-asset-asan.log": {
+      "sha256": "1bbbe59a5e0d58f3e582f0b60786930a5a401f72e4f703f8aaa3458279f1014b",
+      "bytes": 102884
+    },
+    "vivo9988-final-clippy.log": {
+      "sha256": "ee1d3fffa2022e962e63e0dbe4d35c9c198450a20c29fc09030f635dbb38bfcd",
+      "bytes": 72
+    }
+  },
+  "platform_status": "7affb28 previously passed every exact-SHA workflow. This new Rust code still requires its own final platform run."
+}

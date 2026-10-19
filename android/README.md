@@ -63,7 +63,7 @@ physical-device HDR rendering. No device access or permission bypass is used.
 
 Runtime acceptance runs four independent instrumentations (`core`, `metadata`,
 `lifecycle`, `concurrency`). All four must pass. Each retains a 240-second whole
-case deadline, 40-second operation deadline and 20-second bind deadline; service
+case deadline, 40-second operation deadline and 20-second ready-future wait; service
 connections are established sequentially. This avoids one aggregate deadline
 expiring across eight complete parse/lifetime iterations on a software emulator.
 The lifecycle case still performs all eight parses; concurrency additionally
@@ -100,3 +100,7 @@ client event traces and debuggable-host lifecycle/native-work traces, plus
 per-scope bound-service/system/exit snapshots. These locate accepted binds,
 missing callbacks and handshake delays separately; they do not change the
 existing readiness or operation deadlines or establish a root-cause fix.
+The legacy `bind_deadline_seconds:20` receipt field describes `ready().get(20)`
+after synchronous `bindService` returns. The240-second scope timer includes
+the synchronous call. Successful connection status also retains the service PID
+from the existing PID assertion and the measured future-wait duration.

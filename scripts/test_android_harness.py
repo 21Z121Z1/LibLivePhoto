@@ -193,6 +193,9 @@ class RuntimeGates(unittest.TestCase):
         self.assertEqual(receipt['assertions'], 20)
         self.assertEqual(receipt['active_scope'], 'metadata')
         self.assertEqual(receipt['bind_deadline_seconds'], 20)
+        self.assertEqual(receipt['ready_future_wait_deadline_seconds'], 20)
+        self.assertTrue(receipt['ready_future_wait_starts_after_bind_returns'])
+        self.assertTrue(receipt['synchronous_bind_bounded_by_scope_deadline'])
         self.assertEqual(receipt['result'], 'failed')
         uninstall = next(i for i, call in enumerate(calls) if call[0] == 'uninstall')
         exits = [i for i, call in enumerate(calls) if 'exit-info' in call]

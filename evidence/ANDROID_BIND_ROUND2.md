@@ -29,8 +29,11 @@ states that callbacks normally use the main thread and that an accepted bind
 can still fail to deliver a connected callback. The trace distinguishes those
 possibilities from a blocked protocol handshake; neither is assumed in advance.
 
-The original20-second bind,40-second operation,240-second scope and120-second
-readiness deadlines remain unchanged. Installed acceptance still requires
+The original20-second ready-future wait,40-second operation,240-second scope
+and120-second system-readiness deadlines remain unchanged. The legacy receipt
+key `bind_deadline_seconds` means `ready().get(20)` after synchronous
+`bindService` returns; the complete bind call is bounded by the scope deadline,
+not a separate20-second end-to-end timer. Installed acceptance still requires
 core20 + metadata11 + lifecycle16 + concurrency18 =65 assertions and confirmed
 owned-APK cleanup. Fourteen host fault tests passed, including retention of
 per-scope evidence before cleanup after simulated metadata process death;

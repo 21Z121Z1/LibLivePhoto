@@ -5,6 +5,18 @@ This inventory extends the earlier core-only assessment. It is an open work list
 not a completion claim. The first implementation and receipts remain available
 at `88e0fdd92fb9ff7bb963b64e6676e4ec1d73b0d4`.
 
+Current verified platform baseline is **7affb283d61e070f505c27e18c202cec85e80841**:
+[three terminal workflows](platform-7affb28.json), Linux/macOS205 and Windows204
+default/all-feature tests, public originals2, actual SDK consumers, Android65
+with confirmed cleanup, macOS11, actual iOS26.2 and Node4/Chrome7. Bind/callback/
+handshake traces distinguish phases; the old ready-future wait remains20 seconds
+after synchronous bind returns. The two historical Android failures remain
+unexplained. New vivo UUID extraction at9988a1d passed local211/default and
+all-feature tests, original2, provider38, actual C/JNI and ASan95736;
+[exact local receipt](vendor-streams-9988a1d.json). Its changed-code platform gate
+is separate. [Round2 vendor facts](VENDOR_RESEARCH_ROUND2.md) bind source hashes,
+independent originals and unsupported semantics without a native-writer claim.
+
 Scope update: the user explicitly excluded **Moments construction** on
 2026-10-19. Creation/import of Moments video plus its generated scoring metadata
 is excluded from completion criteria. Existing metadata reading/preservation is
@@ -64,7 +76,7 @@ keeps that failed overall gate. The follow-up [crash-diagnostic receipt](android
 records13 host fault tests and unchanged65 native assertions/deadlines. Its
 actual platform run at71b778f completed: portable/corpus/ASan and Apple/web
 passed, Android built/installed but failed the first20-second isolated-service
-readiness wait with zero assertions. [Latest terminal evidence](platform-71b778f.json)
+readiness wait with zero assertions. [Historical terminal evidence](platform-71b778f.json)
 includes the real failure/phase/exit/crash/cleanup records; full Android
 acceptance and the earlier metadata-process cause remain open.
 
@@ -86,6 +98,7 @@ acceptance and the earlier metadata-process cause remain open.
 | P04 | Oplus OpCamera XMP attributes/elements, plain BMFF trailer, JXRS short/checksum/JSON-directory variants | plugins/oplus_olive provider/proto/tests | JPEG OpCamera/JXRS plain/short/checksum/JSON-directory reads implemented; container-independent OpCamera XMP covers HEIC metadata declarations; same-input canonical/alias and HEIF mpvd/no-mpvd cases; this does not promise all vendor Gallery behavior or native writers |
 | P05 | Honor/Huawei 20/40-byte LIVE footer, HiHonor_/LivePhoto_ TLV, sceneMode, metadata-only trailers | plugins/honor_live_photo provider/proto/tests | 20/40-byte LIVE and HiHonor_/LivePhoto_ TLV, sceneMode, metadata-only distinction and unknown raw records implemented; synthetic same-input decode/raw fields verified; legally redistributable original Honor device corpus and native acceptance remain absent |
 | P06 | Additional CameraAlbum raw trailer inspection (outside pinned Google providers) | Not a pinned Google capability; independent original-byte and static evidence in VENDOR_RESEARCH_20261019.md | Bounded43-byte terminal layout verified on two existing vivo originals;55-byte layout static/synthetic only. Raw JSON/block/declared integer and ID agreement are exposed. No inferred time unit, unique capture pairing, depth, native writer or Gallery compatibility claim. |
+| P07 | Additional vivo UUID extension-stream inspection (outside pinned Google providers) | Not a pinned Google capability; independently measured original bytes and pinned static-source facts in VENDOR_RESEARCH_ROUND2.md | Implemented/local verified: top-level EStream/ExtInfo UUIDs, ordered opaque records, checked framing/extents and full raw extraction through optional vivo_media provider. Six authored regressions, both originals with31 records each and actual C/JNI vectors. Unknown keys/tags and duplicate keys are preserved; native writer, stream roles, imageTime unit, pairing proof and Gallery acceptance remain unsupported. |
 | R01 | Inspect and preserve all movie tracks, sample descriptions, timing, metadata samples | MP4 reader/box reader, TrackIsAgtmMetadata, sample APIs | Raw packet CTS, exact frames and AGTM unit-rate empty/trim/repeat mapping implemented. Raw scoring fields retain declared-global-time validation; optional explicitly associated video-media-CTS projection reports repeats/trims/unspecified without rewriting payloads. Optional G08/G09 profile checks declarations/order/exact recommended correspondence. Non-unit/fragmented mapping and fractional destination conversions remain explicit unsupported/error cases. |
 | R02 | Copy/import selected tracks across files with reports | MotionPhotoMp4FileBuilder track-copy helpers | bounded general explicit import with unique IDs, exact movie-time mapping, byte verification and movie-metadata sidecars; pinned MP4CopyTrack comparison exposes a 1/8-second B-frame shift in reference copy while Rust retains source time; reference-bearing layouts rejected |
 | R03 | Delete metadata/selected tracks with reports | StripMetadataTrack and builder internals | explicit selected-track deletion with disposition reports and byte/time checks; pinned StripMetadataTrack and primary-builder deletion audited on existing metadata; referenced/unknown layouts rejected |

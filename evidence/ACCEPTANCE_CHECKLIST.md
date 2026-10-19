@@ -10,6 +10,14 @@ remain in [GOOGLE_COMPLETE_INVENTORY.md](GOOGLE_COMPLETE_INVENTORY.md), includin
 source/header/implementation/test authority. This list adds delivery/acceptance
 gates; it does not remove or replace those rows.
 
+Current all-platform baseline **7affb283d61e070f505c27e18c202cec85e80841**
+passed all three workflows, including actual installed core20/metadata11/
+lifecycle16/concurrency18 and confirmed cleanup. [Exact receipt](platform-7affb28.json)
+retains16 connection traces and the unchanged20-second ready-future wait after
+synchronous bind returns. This pass does not explain the two earlier failures.
+The new vivo UUID stream source9988a1d has [211-test local evidence](vendor-streams-9988a1d.json)
+and independently checked original bytes; its final platform gate is separate.
+
 Verified baseline: **4848e5fb80b650fdefcedbe9aebedef9de7e627f**, preserved as
 local `baseline/verified-4848e5f` and an [immutable receipt](stable-baseline-4848e5f.json).
 All three exact-SHA workflows completed successfully: [hosts/corpus/ASan](https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39262250914),
@@ -47,7 +55,7 @@ returned Process crashed/code0; lifecycle/concurrency did not execute. The
 the empty filtered crash evidence. The next diagnostic change does not remove
 assertions, extend operation/scope deadlines or claim a root-cause fix.
 
-Latest executed `71b778f` also completed all workflows: Linux/macOS205 and
+Historical executed `71b778f` also completed all workflows: Linux/macOS205 and
 Windows204 default/all-feature tests, public-fixture2, actual three-host SDK
 consumers,2917258 ASan cases,4 Node/7 Chrome,11 macOS tests and actual SE3/iOS26.2
 passed. Android built/installed and passed13 host harness tests, then the first

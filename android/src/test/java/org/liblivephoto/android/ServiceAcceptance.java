@@ -75,9 +75,16 @@ public final class ServiceAcceptance extends Instrumentation {
         BindingTrace trace = new BindingTrace();
         MotionPhotoClient client=new MotionPhotoClient(getTargetContext(),type,trace);
         try {
+            // The unchanged20-second future wait starts after synchronous bindService returns.
+            long readyWaitStart = SystemClock.elapsedRealtime();
             client.ready().get(20,TimeUnit.SECONDS);
-            trace.report("ready");
-            check(client.remoteProcessId()!=android.os.Process.myPid(),"service must actually use another process");
+            long readyWaitElapsed = SystemClock.elapsedRealtime() - readyWaitStart;
+            int remotePid = client.remoteProcessId();
+            // Reuse the existing PID query; retain its result even if lifecycle logcat is clipped.
+            trace.report("ready service=" + type.getSimpleName()
+                    + " clientPid=" + android.os.Process.myPid() + " remotePid=" + remotePid
+                    + " readyWaitElapsedMs=" + readyWaitElapsed);
+            check(remotePid!=android.os.Process.myPid(),"service must actually use another process");
             check(invoke(client,new Request("version"),null,null).success,"remote Rust native library loads");
             return client;
         } catch(Exception | Error error) {

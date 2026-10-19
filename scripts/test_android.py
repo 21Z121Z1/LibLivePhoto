@@ -168,6 +168,9 @@ def main(argv=None):
                'readiness_max_attempts': 40, 'per_scope_deadline_seconds': 240,
                'per_operation_deadline_seconds': 40, 'installation_confirmed': False,
                'bind_deadline_seconds': 20,
+               'ready_future_wait_deadline_seconds': 20,
+               'ready_future_wait_starts_after_bind_returns': True,
+               'synchronous_bind_bounded_by_scope_deadline': True,
                'installation_outcome_uncertain': False, 'owned_package_removed': False}
     path = out / 'runtime-receipt.json'
     path.write_text(json.dumps(receipt, indent=2) + '\n')
