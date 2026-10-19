@@ -217,6 +217,7 @@ fn execute(
             action,
             "version"
                 | "metadata"
+                | "extract-metadata"
                 | "classify-metadata"
                 | "xmp"
                 | "track-summary"
@@ -248,6 +249,55 @@ fn execute(
             Ok(c) => ok(c.json(), Vec::new()),
             Err(e) => OperationResult::failure(code(&e), e),
         });
+    }
+    if action == "extract-metadata" {
+        let collection = match MetadataEngine::new().parse(primary, &options) {
+            Ok(c) => c,
+            Err(e) => return Ok(OperationResult::failure(code(&e), e)),
+        };
+        let selected = match v.get("blockIds") {
+            None => (0..collection.blocks.len()).collect::<Vec<_>>(),
+            Some(ids) => {
+                let mut seen = std::collections::BTreeSet::new();
+                ids.as_array()
+                    .filter(|a| a.len() <= 4096)
+                    .ok_or("invalid blockIds")?
+                    .iter()
+                    .map(|id| {
+                        id.as_u64()
+                            .and_then(|n| usize::try_from(n).ok())
+                            .filter(|n| *n < collection.blocks.len() && seen.insert(*n))
+                            .ok_or("missing/duplicate metadata block ID")
+                    })
+                    .collect::<std::result::Result<Vec<_>, _>>()?
+            }
+        };
+        let mut total = 0u64;
+        let mut files = Vec::new();
+        for &index in &selected {
+            let block = &collection.blocks[index];
+            let mut bytes = Vec::new();
+            match collection.extract_block(index, primary, &mut bytes, MAX_INPUT as u64 - total) {
+                Ok(size) => total += size,
+                Err(e) => return Ok(OperationResult::failure(code(&e), e)),
+            }
+            let mime = match block.kind.as_str() {
+                "XMP" => "application/rdf+xml",
+                "EXIF" => "application/x-exif",
+                "ICC" => "application/vnd.iccprofile",
+                _ => "application/octet-stream",
+            };
+            files.push(OperationFile {
+                name: format!("metadata-block-{index}.{}", ext(mime)),
+                mime: mime.into(),
+                resource_id: None,
+                bytes,
+            });
+        }
+        return Ok(ok(
+            json!({"collection":collection.json(),"selectedBlockIds":selected,"totalBytes":total.to_string(),"rawBlocksMayContainCodedItemsOrVendorVideo":true}),
+            files,
+        ));
     }
     if action == "xmp" {
         return Ok(match XmpDocument::parse(primary) {

@@ -90,3 +90,31 @@ fn agtm_binding_returns_complete_raw_metadata_and_source_classification_stays_un
     assert_eq!(classification.metadata["declaresMotion"], true);
     assert_eq!(classification.metadata["verifiedMotion"], false);
 }
+#[test]
+fn raw_metadata_blocks_are_exact_source_bytes_including_complete_large_trailers() {
+    let image = include_bytes!("../../../fixtures/bindings/agtm-motion.jpg");
+    let result = process(r#"{"action":"extract-metadata"}"#, image, &[]);
+    assert!(result.success);
+    let collection = liblivephoto::MetadataEngine::new()
+        .parse(image, &liblivephoto::HandlerOptions::default())
+        .unwrap();
+    assert_eq!(result.files.len(), collection.blocks.len());
+    for (file, block) in result.files.iter().zip(&collection.blocks) {
+        let expected = block
+            .extents
+            .iter()
+            .flat_map(|e| &image[e.lower_bound as usize..e.upper_bound as usize])
+            .copied()
+            .collect::<Vec<_>>();
+        assert_eq!(file.bytes, expected);
+        assert_eq!(file.resource_id, None);
+    }
+    assert!(
+        !process(
+            r#"{"action":"extract-metadata","blockIds":[0,0]}"#,
+            image,
+            &[]
+        )
+        .success
+    );
+}

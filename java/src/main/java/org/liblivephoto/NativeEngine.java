@@ -20,6 +20,10 @@ public final class NativeEngine {
   public NativeResult parse(Input input)throws IOException{return execute(new Request("parse"),input,null);}
   public NativeResult check(Input input)throws IOException{return execute(new Request("check"),input,null);}
   public NativeResult metadata(Input input)throws IOException{return execute(new Request("metadata"),input,null);}
+  /** Complete original metadata block payloads, with collection/extents and a
+   * cumulative budget. Proprietary blocks may include coded media, explicitly
+   * identified in the result. Publication remains caller-owned. */
+  public NativeResult extractMetadata(Input input)throws IOException{return execute(new Request("extract-metadata"),input,null);}
   public NativeResult classifyMetadata(Input serialized)throws IOException{return execute(new Request("classify-metadata"),serialized,null);}
   public NativeResult extract(Input input,boolean still,boolean video,boolean xmp)throws IOException{return execute(new Request("extract").option("still",still).option("video",video).option("xmp",xmp),input,null);}
   public NativeResult build(Input still,Input movie,ExactTime time,String target)throws IOException {Request r=new Request("build").inputKind("parts").target(target);if(time!=null)r.time(time);return execute(r,still,movie);}

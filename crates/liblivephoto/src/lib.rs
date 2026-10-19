@@ -27,7 +27,7 @@ mod motion_video;
 mod olive;
 #[path = "vendor/oplus/parser.rs"]
 mod oppo;
-pub use olive::{inspect_oplus_metadata, OplusMetadata, OplusRecord};
+pub use olive::{inspect_oplus_metadata, inspect_oplus_xmp_metadata, OplusMetadata, OplusRecord};
 mod metadata_engine;
 mod metadata_samples;
 pub use metadata_engine::*;

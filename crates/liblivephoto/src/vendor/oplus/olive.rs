@@ -140,29 +140,10 @@ fn numeric(xml: &[u8]) -> Result<Option<BTreeMap<String, i64>>, Error> {
     }
     Ok(marker.then_some(fields))
 }
-/// Inspect the complete JPEG asset. Returned extents are absolute source offsets.
-/// This identifies metadata-only OpCamera declarations separately from a movie.
-pub fn inspect_oplus_metadata(data: &[u8]) -> Result<Option<OplusMetadata>, Error> {
-    if !data.starts_with(&[255, 216]) {
-        return Ok(None);
-    }
-    let end = liblivephoto_format::jpeg_image_end(data, 0).map_err(|_| Error::InvalidStill)?;
-    let xml = crate::jpeg_write::read_xmp(data).map_err(|_| Error::InvalidStill)?;
-    let fields = xml.map(numeric).transpose()?.flatten();
-    let tail = &data[end..];
-    let footer = if tail.len() >= 8 && &tail[tail.len() - 8..tail.len() - 4] == b"jxrs" {
-        Some(u32::from_le_bytes(
-            tail[tail.len() - 4..]
-                .try_into()
-                .map_err(|_| Error::InvalidResource)?,
-        ))
-    } else {
-        None
-    };
-    if fields.is_none() && footer.is_none() {
-        return Ok(None);
-    }
-    let fields = fields.unwrap_or_default();
+fn metadata_from_fields(
+    fields: BTreeMap<String, i64>,
+    footer: Option<u32>,
+) -> Result<OplusMetadata, Error> {
     let mut result = OplusMetadata {
         version: fields.get("OLivePhotoVersion").copied(),
         declared_video_length: fields
@@ -201,6 +182,39 @@ pub fn inspect_oplus_metadata(data: &[u8]) -> Result<Option<OplusMetadata>, Erro
             }
         }
     }
+    Ok(result)
+}
+/// Decode namespace-validated OpCamera XMP independently of its JPEG/HEIF
+/// container. This is a declaration; it does not validate an associated movie.
+pub fn inspect_oplus_xmp_metadata(xml: &[u8]) -> Result<Option<OplusMetadata>, Error> {
+    crate::XmpDocument::parse(xml)?;
+    numeric(xml)?
+        .map(|fields| metadata_from_fields(fields, None))
+        .transpose()
+}
+/// Inspect the complete JPEG asset. Returned extents are absolute source offsets.
+/// This identifies metadata-only OpCamera declarations separately from a movie.
+pub fn inspect_oplus_metadata(data: &[u8]) -> Result<Option<OplusMetadata>, Error> {
+    if !data.starts_with(&[255, 216]) {
+        return Ok(None);
+    }
+    let end = liblivephoto_format::jpeg_image_end(data, 0).map_err(|_| Error::InvalidStill)?;
+    let xml = crate::jpeg_write::read_xmp(data).map_err(|_| Error::InvalidStill)?;
+    let fields = xml.map(numeric).transpose()?.flatten();
+    let tail = &data[end..];
+    let footer = if tail.len() >= 8 && &tail[tail.len() - 8..tail.len() - 4] == b"jxrs" {
+        Some(u32::from_le_bytes(
+            tail[tail.len() - 4..]
+                .try_into()
+                .map_err(|_| Error::InvalidResource)?,
+        ))
+    } else {
+        None
+    };
+    if fields.is_none() && footer.is_none() {
+        return Ok(None);
+    }
+    let mut result = metadata_from_fields(fields.unwrap_or_default(), footer)?;
     if tail.is_empty() {
         return Ok(Some(result));
     }

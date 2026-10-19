@@ -429,6 +429,18 @@ impl MetadataEngine {
         let mut decoded = Vec::new();
         for (index, b) in blocks.iter().enumerate() {
             if b.kind == "XMP" {
+                if options.allows("oplus_olive") {
+                    match crate::inspect_oplus_xmp_metadata(&b.raw_bytes) {
+                        Ok(Some(m)) => decoded.push(DecodedMetadata {
+                            provider: "oplus_olive".into(), block_index: Some(index),
+                            motion_declaration: m.version.is_some_and(|v| v > 0) || m.declared_video_length.is_some(),
+                            value: json!({"version":m.version,"declaredVideoLength":m.declared_video_length.map(|n|n.to_string()),"photoTime":m.photo_time.map(|t|json!({"value":t.value.to_string(),"timescale":t.timescale})),"source":"xmp-declaration"}),
+                            video_extents: Vec::new(),
+                        }),
+                        Ok(None) => {},
+                        Err(e) => diagnostics.push(format!("OpCamera XMP block {index}: {e}")),
+                    }
+                }
                 match XmpDocument::parse(&b.raw_bytes) {
                     Ok(document) => {
                         let fields = document.fields();
@@ -581,4 +593,36 @@ fn encode_hex(data: &[u8]) -> String {
         out.push(HEX[usize::from(b & 15)] as char);
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn opcamera_xmp_in_real_heic_is_a_declaration_without_a_fabricated_movie() {
+        let still = include_bytes!("../../../web/public/acceptance/still.heic");
+        let declaration = r#"<rdf:Description xmlns:o="http://ns.oplus.com/photo/1.0/camera/" o:OLivePhotoVersion="2" o:VideoLength="19000" o:PrimaryPresentationTimestampUs="812500"/>"#;
+        let image = crate::heif_io::replace_xmp(still, declaration).unwrap();
+        let collection = MetadataEngine::new()
+            .parse(&image, &HandlerOptions::default())
+            .unwrap();
+        let decoded = collection
+            .decoded
+            .iter()
+            .find(|p| p.provider == "oplus_olive")
+            .unwrap();
+        assert!(decoded.motion_declaration);
+        assert!(decoded.block_index.is_some());
+        assert_eq!(decoded.value["photoTime"]["value"], "812500");
+        assert!(decoded.video_extents.is_empty());
+        assert!(!collection.verified_motion);
+        let disabled = HandlerOptions {
+            disable_third_party: true,
+            ..HandlerOptions::default()
+        };
+        assert!(!MetadataEngine::new()
+            .parse(&image, &disabled)
+            .unwrap()
+            .declares_motion(&disabled));
+    }
 }

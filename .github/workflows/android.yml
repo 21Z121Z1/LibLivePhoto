@@ -41,7 +41,14 @@ jobs:
         run: sdkmanager 'system-images;android-35;default;x86_64' </dev/null
       - name: Run an independent emulator without changing device permissions
         run: |
+          export ANDROID_USER_HOME="$RUNNER_TEMP/llp-android-user"
+          export ANDROID_EMULATOR_HOME="$ANDROID_USER_HOME"
+          export ANDROID_AVD_HOME="$RUNNER_TEMP/llp-android-avd"
+          mkdir -p "$ANDROID_USER_HOME" "$ANDROID_AVD_HOME"
           echo no | avdmanager create avd -n llp_acceptance -k 'system-images;android-35;default;x86_64' --force
+          avdmanager list avd
+          "$ANDROID_HOME/emulator/emulator" -list-avds
+          test -f "$ANDROID_AVD_HOME/llp_acceptance.ini"
           accel=off
           if test -r /dev/kvm && test -w /dev/kvm; then accel=on; fi
           "$ANDROID_HOME/emulator/emulator" -avd llp_acceptance -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel "$accel" > android/build/emulator.log 2>&1 &
