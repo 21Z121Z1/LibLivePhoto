@@ -9,6 +9,7 @@ use std::collections::{BTreeMap, BTreeSet};
 pub enum FormatIssueKind {
     Violation,
     Unsupported,
+    Recommendation,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -22,6 +23,7 @@ pub struct FormatIssue {
 
 /// Evidence for only the listed rules, not a complete container/codec or native
 /// player certification. Unsupported declarations never produce a pass.
+/// Recommendations are reported separately from required-condition failures.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FormatConformanceReport {
     pub profile: &'static str,
@@ -30,7 +32,9 @@ pub struct FormatConformanceReport {
 }
 impl FormatConformanceReport {
     pub fn checked_rules_satisfied(&self) -> bool {
-        self.issues.is_empty()
+        self.issues
+            .iter()
+            .all(|i| i.kind == FormatIssueKind::Recommendation)
     }
     pub(crate) fn issue(&mut self, issue: FormatIssue) -> Result<(), Error> {
         if self.issues.len() >= 4096 {

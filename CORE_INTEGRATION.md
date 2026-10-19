@@ -48,7 +48,9 @@ writer gains no AVIF target. Android time still requires exact integer
 microseconds; 1/3 second remains blocked even under sidecar/drop policies.
 
 `sample_descriptions()` exposes track IDs, every sample-entry FourCC, raw codec
-and HDR properties, exact tkhd matrices, and supported audio declarations.
+and HDR properties, exact tkhd matrices, coded sample-entry dimensions, and
+audio version/sample-size declarations. `inspect_video_sample_descriptions`
+provides these facts for standalone MP4/MOV inputs under cumulative budgets.
 AAC AudioSpecificConfig supplies object type, sample rate and channel count.
 Channel configuration zero remains unknown because PCE parsing is absent.
 QuickTime v2/wave audio, codec-level VUI/SEI interpretation and full decoder
@@ -64,6 +66,34 @@ audio parameters produce `TranscodeRequired` and block execution. Unknown AAC
 facts produce an unmapped/blocking reason rather than an unsupported transcode
 claim. The default `plan` still promises container/resource preservation only.
 The library does not select an encoder or transcode media.
+
+Optional `validate_google_video_container` / `google_video_conformance` checks
+the explicitly listed Google1.0 declaration/count/order rules. The caller names
+primary/secondary track IDs; unknown role assignments never become a pass.
+`Violation`, `Unsupported` and `Recommendation` are distinct. Exact secondary
+frame correspondence is a recommendation; it uses rational CTS after supported
+edits and never selects a closest frame. Sample dimensions are observed facts:
+the source gives no fixed resolution requirement. AAC48/96kHz and the literal
+44000Hz are checked exactly;44100Hz is Unsupported because the public page says
+44kHz, with no silent reinterpretation. A caller capability contract can still
+explicitly permit44100. PCE, QuickTime v2/wave and unfamiliar codec declarations
+remain unsupported by this optional profile. No bitstream/pixel certification
+or native-device compatibility is inferred from its report.
+
+CLI/C/JNI expose the read-only `conformance` operation for one immutable input:
+
+```sh
+llp conformance STILL.avif --options-json '{"profile":"heif-color-2025"}'
+llp conformance VIDEO.mp4 --tracks 1,2 --options-json '{"profile":"google-video-container-1.0"}'
+```
+
+The video profile treats the first ID as primary and optional second as
+secondary. It accepts a standalone movie; a Motion Photo's caller can first
+extract its original movie or use the Rust method. Required-rule failure or
+Unsupported returns `success=false` with rule diagnostics; recommendations
+remain visible. Default `check`, parse/build and byte preservation are separate.
+Android remote services retain their existing role allowlists; this new action
+is not claimed as an installed-service feature.
 
 ## Display and color facts
 

@@ -36,6 +36,35 @@ fn demo(name: &str) -> PathBuf {
         .join(name)
 }
 #[test]
+fn conformance_cli_is_opt_in_and_uses_explicit_profile_and_track_associations() {
+    let scratch = Scratch::new();
+    let source = scratch.0.join("source.mp4");
+    let original = std::fs::read(demo("motion.mp4")).unwrap();
+    std::fs::write(&source, &original).unwrap();
+    let result = run(&[
+        "conformance",
+        s(&source),
+        "--tracks",
+        "1",
+        "--options-json",
+        r#"{"profile":"google-video-container-1.0"}"#,
+    ]);
+    let value: serde_json::Value = serde_json::from_slice(&result.stdout).unwrap();
+    assert!(value["metadata"]["checkedRules"].is_array(), "{value}");
+    assert!(value["metadata"]["scope"]
+        .as_str()
+        .unwrap()
+        .contains("no codec decoding"));
+    assert_eq!(std::fs::read(&source).unwrap(), original);
+    let result = run(&[
+        "conformance",
+        s(&source),
+        "--options-json",
+        r#"{"profile":"unknown"}"#,
+    ]);
+    assert_eq!(result.status.code(), Some(1));
+}
+#[test]
 fn real_cli_build_check_extract_round_trip_and_refuse_overwrite() {
     let scratch = Scratch::new();
     let out = scratch.0.join("built");

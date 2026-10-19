@@ -77,6 +77,20 @@ fn ok(metadata: Value, files: Vec<OperationFile>) -> OperationResult {
         files,
     }
 }
+fn conformance_result(
+    result: std::result::Result<FormatConformanceReport, MotionPhotoReadError>,
+) -> OperationResult {
+    match result {
+        Ok(report) => OperationResult {
+            success: report.checked_rules_satisfied(),
+            metadata: json!({"profile":report.profile,"checkedRequiredRulesSatisfied":report.checked_rules_satisfied(),
+                "checkedRules":report.checked_rules,"issues":report.issues.iter().map(|i|json!({"rule":i.rule,"kind":format!("{:?}",i.kind),"itemId":i.item_id,"trackId":i.track_id,"message":i.message})).collect::<Vec<_>>(),
+                "scope":"listed declarations and supported timelines only; no codec decoding, full format certification or native Gallery/Photos acceptance"}),
+            files: Vec::new(),
+        },
+        Err(error) => OperationResult::failure(code(&error), error),
+    }
+}
 fn code(error: &MotionPhotoReadError) -> &'static str {
     match error {
         MotionPhotoReadError::InputLimit => "inputLimit",
@@ -192,7 +206,14 @@ fn execute(
     primary: &[u8],
     movie: &[u8],
 ) -> std::result::Result<OperationResult, String> {
-    for key in ["action", "inputKind", "target", "unmapped", "pairId"] {
+    for key in [
+        "action",
+        "inputKind",
+        "target",
+        "unmapped",
+        "pairId",
+        "profile",
+    ] {
         if v.get(key).is_some_and(|value| !value.is_string()) {
             return Err(format!("{key} must be a string"));
         }
@@ -223,6 +244,7 @@ fn execute(
                 | "track-summary"
                 | "optimize"
                 | "remove-tracks"
+                | "conformance"
         )
     {
         return Err("this operation accepts one input".into());
@@ -234,6 +256,32 @@ fn execute(
             json!({"version":version(),"protocol":"LLP1"}),
             Vec::new(),
         ));
+    }
+    if action == "conformance" {
+        return Ok(
+            match v["profile"]
+                .as_str()
+                .ok_or("conformance profile required")?
+            {
+                "heif-color-2025" => conformance_result(validate_heif_color_information(primary)),
+                "google-video-container-1.0" => {
+                    let tracks = ids(v)?;
+                    if !(1..=2).contains(&tracks.len())
+                        || tracks.len() == 2 && tracks[0] == tracks[1]
+                    {
+                        return Err("conformance requires one primary track ID and at most one distinct secondary ID".into());
+                    }
+                    conformance_result(validate_google_video_container(
+                        primary,
+                        GoogleVideoTracks {
+                            primary: tracks[0],
+                            secondary: tracks.get(1).copied(),
+                        },
+                    ))
+                }
+                _ => return Err("unknown conformance profile".into()),
+            },
+        );
     }
     if action == "classify-metadata" {
         return Ok(match MetadataCollection::from_json(primary) {

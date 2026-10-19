@@ -5,6 +5,16 @@ services. JSON requests use `liblivephoto-interface`; LLP1 responses own exact
 JSON and original output bytes. No wrapper silently publishes files, uploads,
 transcodes or creates Moments metadata. Integer times remain authoritative.
 
+Optional `conformance` requests inspect a single immutable HEIF image or movie.
+Use `profile:"heif-color-2025"`, or `profile:"google-video-container-1.0"` with
+ordered `trackIds:[primary,secondary]` (secondary optional). CLI `--tracks` and
+Java `new Request("conformance").option("profile",...).tracks(...)` use the same
+schema. Reports list checked rules and Violation/Unsupported/Recommendation;
+success covers required listed rules only. See [exact scope and examples](CORE_INTEGRATION.md).
+Host C/JNI calls are tested; the Android service allowlists do not expose this
+additional action. Full bitstream, rendering and native-album acceptance remain
+separate from either conformance profile.
+
 ## Host archives
 
 ```sh

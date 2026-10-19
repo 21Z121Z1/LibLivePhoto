@@ -11,5 +11,7 @@ def main():
   try:
    data=ctypes.string_at(library.llp_response_data(response),library.llp_response_len(response));assert data[:4]==b'LLP1';length=struct.unpack('>I',data[4:8])[0];return json.loads(data[8:8+length])
   finally:library.llp_response_free(response)
- assert execute({'action':'version'},b'')['success'];result=execute({'action':'parse'},(ROOT/'web/public/demo/motion-photo.jpg').read_bytes());assert result['success'];assert result['metadata']['photoTime']=={'value':'812500','timescale':1000000};assert not execute({'action':'parse'},b'invalid')['success'];print('C_ABI_SMOKE passed: actual version, motion parse, exact time, error and response ownership')
+ assert execute({'action':'version'},b'')['success'];result=execute({'action':'parse'},(ROOT/'web/public/demo/motion-photo.jpg').read_bytes());assert result['success'];assert result['metadata']['photoTime']=={'value':'812500','timescale':1000000};assert not execute({'action':'parse'},b'invalid')['success']
+ source=(ROOT/'web/public/demo/motion.mp4').read_bytes();report=execute({'action':'conformance','profile':'google-video-container-1.0','trackIds':[1]},source);assert report['metadata']['profile']=='google-video-container-1.0-declarations';assert report['metadata']['checkedRules'];assert 'no codec decoding' in report['metadata']['scope'];assert not execute({'action':'conformance','profile':'google-video-container-1.0','trackIds':[1,1]},source)['success']
+ print('C_ABI_SMOKE passed: actual version, motion parse, exact time, error, response ownership and opt-in conformance diagnostics (no decoder/device certification)')
 if __name__=='__main__':main()

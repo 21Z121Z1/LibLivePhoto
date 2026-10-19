@@ -239,10 +239,19 @@ pub struct AacConfiguration {
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AudioParameters {
+    /// AudioSampleEntry version; QuickTime v2 layouts are retained, not decoded.
+    pub sample_entry_version: u16,
     pub sample_entry_channels: u16,
+    pub sample_entry_sample_size: u16,
     /// Exact 16.16 fixed-point field. It is not rounded to an integer rate.
     pub sample_entry_rate_16_16: u32,
     pub aac: Option<AacConfiguration>,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct VideoDimensions {
+    /// Coded sample-entry dimensions, before tkhd matrix, crop or pixel aspect.
+    pub width: u16,
+    pub height: u16,
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SampleDescription {
@@ -250,6 +259,7 @@ pub struct SampleDescription {
     pub index: usize,
     pub kind: TrackKind,
     pub format: [u8; 4],
+    pub dimensions: Option<VideoDimensions>,
     pub audio: Option<AudioParameters>,
     pub color: Vec<ColorDescription>,
     /// Video codec configuration, color, HDR and unknown child boxes, in order.
@@ -279,7 +289,10 @@ fn descriptor(p: &[u8]) -> Result<(u8, &[u8], &[u8])> {
     Err(Error::InvalidResource)
 }
 fn decoder_config(esds: &[u8]) -> Result<Option<&[u8]>> {
-    let (tag, es, _) = descriptor(esds.get(4..).ok_or(Error::InvalidResource)?)?;
+    let (tag, es, trailing) = descriptor(esds.get(4..).ok_or(Error::InvalidResource)?)?;
+    if !trailing.is_empty() {
+        return Err(Error::UnsupportedLayout("multiple esds root descriptors"));
+    }
     if tag != 3 || es.len() < 3 {
         return Err(Error::InvalidResource);
     }
@@ -302,14 +315,17 @@ fn decoder_config(esds: &[u8]) -> Result<Option<&[u8]>> {
         return Ok(None);
     }
     let mut rest = &config[13..];
+    let mut specific = None;
     while !rest.is_empty() {
         let (tag, value, next) = descriptor(rest)?;
-        if tag == 5 {
-            return Ok(Some(value));
+        if tag == 5 && specific.replace(value).is_some() {
+            return Err(Error::UnsupportedLayout(
+                "duplicate AAC DecoderSpecificInfo",
+            ));
         }
         rest = next;
     }
-    Ok(None)
+    Ok(specific)
 }
 struct Bits<'a> {
     data: &'a [u8],
@@ -385,102 +401,135 @@ impl MotionPhoto<'_> {
     /// AAC PCE parsing, QuickTime v2 audio descriptions and codec-level VUI are
     /// outside this contract. Missing configuration does not imply compatibility.
     pub fn sample_descriptions(&self) -> Result<Vec<SampleDescription>> {
-        let data = self.motion_video_bytes()?;
-        let container = self
-            .asset()
-            .containers
+        inspect_video_sample_descriptions(self.motion_video_bytes()?)
+    }
+}
+
+/// Declared sample-entry facts for a standalone MP4/MOV. No frame/audio decoding
+/// or generic bitstream conformance is implied. Bounded to256MiB input,4096
+/// descriptions,65536 properties and16MiB aggregate referenced property bytes.
+pub fn inspect_video_sample_descriptions(data: &[u8]) -> Result<Vec<SampleDescription>> {
+    if data.len() > 256 * 1024 * 1024 {
+        return Err(Error::InputLimit);
+    }
+    let container = crate::tracks::inspect(data, crate::ResourceId(0), false)?;
+    let top = fmt(parse_boxes(data, 0..data.len()))?;
+    let moov = top
+        .iter()
+        .find(|b| b.kind.as_bytes() == b"moov")
+        .ok_or(Error::InvalidResource)?;
+    let children = fmt(parse_boxes(data, moov.payload_range()))?;
+    let mut out = Vec::new();
+    let mut property_bytes = 0usize;
+    let mut property_count = 0usize;
+    for (track, trak) in container
+        .tracks
+        .iter()
+        .zip(children.iter().filter(|b| b.kind.as_bytes() == b"trak"))
+    {
+        let tc = fmt(parse_boxes(data, trak.payload_range()))?;
+        let tkhd = tc
             .iter()
-            .find(|c| c.resource == self.motion_video().id)
+            .find(|b| b.kind.as_bytes() == b"tkhd")
             .ok_or(Error::InvalidResource)?;
-        let top = fmt(parse_boxes(data, 0..data.len()))?;
-        let moov = top
-            .iter()
-            .find(|b| b.kind.as_bytes() == b"moov")
-            .ok_or(Error::InvalidResource)?;
-        let children = fmt(parse_boxes(data, moov.payload_range()))?;
-        let mut out = Vec::new();
-        for (track, trak) in container
-            .tracks
-            .iter()
-            .zip(children.iter().filter(|b| b.kind.as_bytes() == b"trak"))
-        {
-            let tc = fmt(parse_boxes(data, trak.payload_range()))?;
-            let tkhd = tc
-                .iter()
-                .find(|b| b.kind.as_bytes() == b"tkhd")
+        let p = &data[tkhd.payload_range()];
+        let matrix_start = match p.first() {
+            Some(0) => 40,
+            Some(1) => 52,
+            _ => return Err(Error::InvalidResource),
+        };
+        let mut matrix = [0; 9];
+        for (i, v) in matrix.iter_mut().enumerate() {
+            *v = u32_at(p, matrix_start + i * 4)? as i32;
+        }
+        let mut parent = trak.clone();
+        for kind in [b"mdia", b"minf", b"stbl", b"stsd"] {
+            parent = fmt(parse_boxes(data, parent.payload_range()))?
+                .into_iter()
+                .find(|b| b.kind.as_bytes() == kind)
                 .ok_or(Error::InvalidResource)?;
-            let p = &data[tkhd.payload_range()];
-            let matrix_start = match p.first() {
-                Some(0) => 40,
-                Some(1) => 52,
-                _ => return Err(Error::InvalidResource),
+        }
+        for (index, entry) in fmt(parse_boxes(data, parent.data_start + 8..parent.data_end))?
+            .iter()
+            .enumerate()
+        {
+            if out.len() >= 4096 {
+                return Err(Error::InputLimit);
+            }
+            let p = &data[entry.payload_range()];
+            let mut desc = SampleDescription {
+                track_id: track.id,
+                index,
+                kind: track.kind,
+                format: *entry.kind.as_bytes(),
+                dimensions: None,
+                audio: None,
+                color: Vec::new(),
+                properties: Vec::new(),
+                track_matrix: matrix,
             };
-            let mut matrix = [0; 9];
-            for (i, v) in matrix.iter_mut().enumerate() {
-                *v = u32_at(p, matrix_start + i * 4)? as i32;
-            }
-            let mut parent = trak.clone();
-            for kind in [b"mdia", b"minf", b"stbl", b"stsd"] {
-                parent = fmt(parse_boxes(data, parent.payload_range()))?
-                    .into_iter()
-                    .find(|b| b.kind.as_bytes() == kind)
-                    .ok_or(Error::InvalidResource)?;
-            }
-            for (index, entry) in fmt(parse_boxes(data, parent.data_start + 8..parent.data_end))?
-                .iter()
-                .enumerate()
-            {
-                let p = &data[entry.payload_range()];
-                let mut desc = SampleDescription {
-                    track_id: track.id,
-                    index,
-                    kind: track.kind,
-                    format: *entry.kind.as_bytes(),
-                    audio: None,
-                    color: Vec::new(),
-                    properties: Vec::new(),
-                    track_matrix: matrix,
-                };
-                let child_start = match track.kind {
-                    TrackKind::Video => Some(78),
-                    TrackKind::Audio if p.len() >= 28 => {
-                        desc.audio = Some(AudioParameters {
-                            sample_entry_channels: u16_at(p, 16)?,
-                            sample_entry_rate_16_16: u32_at(p, 24)?,
-                            aac: None,
-                        });
-                        match u16_at(p, 8)? {
-                            0 => Some(28),
-                            1 => Some(44),
-                            _ => None,
-                        }
+            let child_start = match track.kind {
+                TrackKind::Video => {
+                    desc.dimensions = Some(VideoDimensions {
+                        width: u16_at(p, 24)?,
+                        height: u16_at(p, 26)?,
+                    });
+                    Some(78)
+                }
+                TrackKind::Audio if p.len() >= 28 => {
+                    desc.audio = Some(AudioParameters {
+                        sample_entry_version: u16_at(p, 8)?,
+                        sample_entry_channels: u16_at(p, 16)?,
+                        sample_entry_sample_size: u16_at(p, 18)?,
+                        sample_entry_rate_16_16: u32_at(p, 24)?,
+                        aac: None,
+                    });
+                    match u16_at(p, 8)? {
+                        0 => Some(28),
+                        1 => Some(44),
+                        _ => None,
                     }
-                    _ => None,
-                };
-                if let Some(start) = child_start {
-                    for b in fmt(parse_boxes(data, entry.data_start + start..entry.data_end))? {
-                        let p = &data[b.payload_range()];
-                        desc.properties.push(RawProperty {
-                            kind: *b.kind.as_bytes(),
-                            bytes: p.to_vec(),
-                        });
-                        if b.kind == FourCC::new(*b"colr") {
-                            desc.color.push(color(p)?);
+                }
+                _ => None,
+            };
+            if let Some(start) = child_start {
+                let mut esds_seen = false;
+                for b in fmt(parse_boxes(data, entry.data_start + start..entry.data_end))? {
+                    let p = &data[b.payload_range()];
+                    property_bytes = property_bytes
+                        .checked_add(p.len())
+                        .filter(|n| *n <= 16 * 1024 * 1024)
+                        .ok_or(Error::InputLimit)?;
+                    property_count += 1;
+                    if property_count > 65536 {
+                        return Err(Error::InputLimit);
+                    }
+                    desc.properties.push(RawProperty {
+                        kind: *b.kind.as_bytes(),
+                        bytes: p.to_vec(),
+                    });
+                    if b.kind == FourCC::new(*b"colr") {
+                        desc.color.push(color(p)?);
+                    }
+                    if b.kind == FourCC::new(*b"esds") && desc.format == *b"mp4a" {
+                        if esds_seen {
+                            return Err(Error::UnsupportedLayout(
+                                "duplicate audio esds declarations",
+                            ));
                         }
-                        if b.kind == FourCC::new(*b"esds") && desc.format == *b"mp4a" {
-                            if let Some(raw) = decoder_config(p)? {
-                                if let Some(audio) = &mut desc.audio {
-                                    audio.aac = Some(aac(raw)?);
-                                }
+                        esds_seen = true;
+                        if let Some(raw) = decoder_config(p)? {
+                            if let Some(audio) = &mut desc.audio {
+                                audio.aac = Some(aac(raw)?);
                             }
                         }
                     }
                 }
-                out.push(desc);
             }
+            out.push(desc);
         }
-        Ok(out)
     }
+    Ok(out)
 }
 
 /// A caller-supplied target contract. These values are not inferred from a vendor

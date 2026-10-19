@@ -1,5 +1,66 @@
 use liblivephoto_interface::*;
 use serde_json::json;
+#[path = "../../liblivephoto/tests/common/mod.rs"]
+mod common;
+
+#[test]
+fn conformance_profiles_report_rule_kinds_and_reject_ambiguous_associations() {
+    let image = common::heif_with_properties(&[
+        common::boxed(b"colr", b"profraw-icc"),
+        common::boxed(b"colr", b"nclx\0\x02\0\x02\0\x09\x80"),
+    ]);
+    let result = process(
+        r#"{"action":"conformance","profile":"heif-color-2025"}"#,
+        &image,
+        &[],
+    );
+    assert!(result.success);
+    assert_eq!(result.metadata["checkedRequiredRulesSatisfied"], true);
+    assert!(result.files.is_empty());
+    let bad = common::heif_with_properties(&[
+        common::boxed(b"colr", b"profraw-icc"),
+        common::boxed(b"colr", b"nclx\0\x09\0\x12\0\x09\x80"),
+    ]);
+    let result = process(
+        r#"{"action":"conformance","profile":"heif-color-2025"}"#,
+        &bad,
+        &[],
+    );
+    assert!(!result.success);
+    assert_eq!(result.metadata["issues"][0]["kind"], "Violation");
+    let movie = common::many_frame_movie(3, 2);
+    let result = process(
+        r#"{"action":"conformance","profile":"google-video-container-1.0","trackIds":[1,2]}"#,
+        &movie,
+        &[],
+    );
+    assert!(result.success, "{:?}", result.metadata);
+    let result = process(
+        r#"{"action":"conformance","profile":"google-video-container-1.0","trackIds":[1]}"#,
+        &movie,
+        &[],
+    );
+    assert!(!result.success);
+    assert_eq!(result.metadata["issues"][0]["kind"], "Unsupported");
+    for request in [
+        r#"{"action":"conformance","profile":[]}"#,
+        r#"{"action":"conformance","profile":"invented"}"#,
+        r#"{"action":"conformance","profile":"google-video-container-1.0","trackIds":[1,1]}"#,
+        r#"{"action":"conformance","profile":"google-video-container-1.0","trackIds":[1,2,3]}"#,
+    ] {
+        let result = process(request, &movie, &[]);
+        assert!(!result.success);
+        assert_eq!(result.metadata["error"]["code"], "invalidRequest");
+    }
+    assert!(
+        !process(
+            r#"{"action":"conformance","profile":"heif-color-2025"}"#,
+            &image,
+            b"unused"
+        )
+        .success
+    );
+}
 #[test]
 fn protocol_returns_exact_bytes_and_explicit_plan_failures() {
     let still = include_bytes!("../../../web/public/demo/cover.jpg");

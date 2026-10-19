@@ -11,3 +11,6 @@ liblivephoto-bridge = { path = "../liblivephoto-bridge", version = "0.1.0" }
 serde_json = "1.0"
 [lints]
 workspace = true
+
+[dev-dependencies]
+liblivephoto-format = { path = "../liblivephoto-format", version = "0.1.0" }

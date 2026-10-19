@@ -152,6 +152,10 @@ impl<'a> MotionPhoto<'a> {
                 reasons.push("video sample entry is outside the caller's target contract");
             }
             if d.kind == crate::TrackKind::Audio {
+                if d.properties.iter().any(|p| p.kind == *b"wave") {
+                    unknown = true;
+                    reasons.push("QuickTime wave audio semantics are not established");
+                }
                 if !capabilities.audio_sample_entries.contains(&d.format) {
                     reasons.push("audio sample entry is outside the caller's target contract");
                 }
@@ -180,6 +184,10 @@ impl<'a> MotionPhoto<'a> {
                         reasons.push("AAC AudioSpecificConfig is absent or unsupported");
                     }
                 } else if let Some(audio) = &d.audio {
+                    if audio.sample_entry_version > 1 {
+                        unknown = true;
+                        reasons.push("QuickTime v2 audio semantics are not established");
+                    }
                     if audio.sample_entry_channels > capabilities.max_audio_channels {
                         reasons.push("audio channel count exceeds the caller's target contract");
                     }

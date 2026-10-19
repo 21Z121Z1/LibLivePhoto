@@ -7,6 +7,8 @@ libfuzzer_sys::fuzz_target!(|data:&[u8]| {
     let _=decode_agtm(data);
     let _=decode_video_metadata(data);
     let _=validate_heif_color_information(data);
+    let _=inspect_video_sample_descriptions(data);
+    let _=validate_google_video_container(data,GoogleVideoTracks{primary:1,secondary:Some(2)});
     if let Ok(scores)=extract_video_metadata(data,PhotoTimeExpectation::Unchecked) {
         for sample in scores.iter().take(8) {
             let _=project_scoring_media_times(data,&sample.metadata,ScoringMediaTracks{primary:1,high_resolution:Some(1)},4096);

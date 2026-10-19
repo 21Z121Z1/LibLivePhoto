@@ -62,6 +62,16 @@ single declarations, both pair orders, normative violations versus unsupported
 facts, preservation and cumulative budgets. Whole ICC/BMFF conformance and
 rendering are separate; the original standard is not redistributed.
 
+G08/G09 use the public Google1.0 [Video container contents](https://developer.android.com/media/platform/motion-photo-format#video-container-contents)
+section, actually reread with page last-updated2024-07-10. The opt-in
+`validate_google_video_container` / shared `conformance` operation separates
+required declaration/order rules from recommended temporal correspondence.
+[Ten core cases](../crates/liblivephoto/tests/google_video_conformance.rs) bind
+positive/negative/unsupported/preservation and aggregate allocation checks;
+[protocol](../crates/liblivephoto-interface/tests/protocol.rs), CLI and actual
+C/JNI smoke calls bind the maintained request. PCE/QT-v2/wave, complete codec
+syntax and the page's44kHz/44100Hz ambiguity remain explicit limits.
+
 See [STABILITY_GATES.md](STABILITY_GATES.md) for public-range preflight, JSON and
 metadata amplification, cross-track frame budgets, FFI ownership, cancellation
 and failure rollback. Exact frame times, media packet hashes, original auxiliary
