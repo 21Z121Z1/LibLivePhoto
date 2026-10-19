@@ -248,8 +248,14 @@ fn aac_rate_channels_and_sample_size_have_separate_declared_contracts() {
 
 #[test]
 fn pce_quicktime_v2_wave_and_duplicate_declarations_never_become_false_passes() {
+    // This declares PCE without carrying one: now a known truncation error,
+    // rather than the old parser's unknown-channel result. It must never pass.
+    let truncated = audio_movie(audio_entry(&[0x11, 0x80], 0, 16, false, false));
+    assert!(matches!(
+        validate_google_video_container(&truncated, selected()),
+        Err(MotionPhotoReadError::InvalidResource)
+    ));
     for entry in [
-        audio_entry(&[0x11, 0x80], 0, 16, false, false),
         audio_entry(&[0x11, 0x90], 2, 16, false, false),
         audio_entry(&[0x11, 0x90], 0, 16, true, false),
         audio_entry(&[0x11, 0x90], 0, 16, false, true),
