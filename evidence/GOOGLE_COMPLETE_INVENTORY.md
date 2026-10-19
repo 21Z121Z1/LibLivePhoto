@@ -50,7 +50,7 @@ declarations are checked against implementations, tests and CMake/Gradle targets
 | A03 | Checker service | IMotionPhotoCheckerService.aidl, MotionPhotoCheckerService | pending |
 | A04 | Extractor service with optional output paths | IMotionPhotoExtractorService.aidl, MotionPhotoExtractorService | pending |
 | V01 | Java/native and Android service integration tests/build packaging | lib/java/build.gradle, lib/android/build.gradle, javatests, core CMake JNI target | reference host JNI compiled; LibLivePhoto packaging/tests pending |
-| V02 | Linux/macOS/Windows existing consumers and fixture/fuzz gates | user repository verify.yml; Google build_and_test.yml | Linux first-stage tests passed; existing push CI must be read back, not presumed successful |
+| V02 | Linux/macOS/Windows existing consumers and fixture/fuzz gates | user repository verify.yml; Google build_and_test.yml | first-stage Linux/macOS/Windows, fixtures and sanitizer CI passed at 88e0fdd (receipt ci-88e0fdd.json); newer changes require their own checks |
 
 The `samples/android` activity/fragments are integration demonstrations. Their
 library-backed parse/check/build/extract actions are represented above. Camera2,
@@ -60,3 +60,9 @@ library capture/playback APIs. No unrelated capture, player or editing SDK is ad
 The old core-only run is a historical receipt. It does not satisfy newly added
 interface requirements. Every subsequent stage must list the exact commit tested,
 the executed command/results, platform limits, and the still-open IDs above.
+
+## AGTM checkpoint and next priority (2026-10-19)
+
+Code commit `1ea8c484dbb6fcf6189763aeb9cf1396851a9ed7` passed 107 workspace/all-feature Rust tests, clippy with warnings denied, 12 pinned-Google same-input AGTM cases, and 49,312 ASan fuzz runs. Commands: `cargo test --locked --workspace --all-targets --all-features`; `cargo clippy --locked --workspace --all-targets --all-features -- -D warnings`; `python3 scripts/agtm_differential.py --reference-source /workspace/libmotionphoto-reference`; `cargo +nightly fuzz run asset_input -- -max_total_time=30 -print_final_stats=1`. Exact receipt: [agtm-stage.json](agtm-stage.json). Three external-data tests are ignored in this default run; prior fixture results remain historical. No new native-gallery acceptance is claimed.
+
+The user next prioritized Apple public-API architecture and a real local browser demo. Remaining Google IDs above stay open, including wrappers, Android services, generic remux/optimization, provider variants and metadata engine gaps. Moments construction remains excluded. Apple/frontend work does not imply these Google items are complete.
