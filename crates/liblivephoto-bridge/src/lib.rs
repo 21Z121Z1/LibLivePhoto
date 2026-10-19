@@ -129,7 +129,14 @@ pub fn inspect_with_handlers(
         }
     };
     let descriptions=match photo.sample_descriptions() {
-        Ok(list)=>list.iter().map(|s|json!({"trackId":s.track_id,"index":s.index,"codec":String::from_utf8_lossy(&s.format),"matrix":s.track_matrix,"color":s.color.iter().map(color).collect::<Vec<_>>(),"audio":s.audio.as_ref().map(|a|json!({"channels":a.sample_entry_channels,"rate16_16":a.sample_entry_rate_16_16,"aac":a.aac.as_ref().map(|c|json!({"objectType":c.object_type,"sampleRate":c.sample_rate,"channels":c.channels}))}))})).collect::<Vec<_>>(),
+        Ok(list)=>list.iter().map(|s|json!({"trackId":s.track_id,"index":s.index,"codec":String::from_utf8_lossy(&s.format),"matrix":s.track_matrix,"color":s.color.iter().map(color).collect::<Vec<_>>(),"audio":s.audio.as_ref().map(|a|json!({"channels":a.sample_entry_channels,"sampleEntryVersion":a.sample_entry_version,"sampleEntrySampleSize":a.sample_entry_sample_size,"rate16_16":a.sample_entry_rate_16_16,"aac":a.aac.as_ref().map(|c|json!({"objectType":c.object_type,"sampleRate":c.sample_rate,"channels":c.channels,"channelConfiguration":c.channel_configuration,
+                    "programConfig":c.program_config.as_ref().map(|p|json!({"instanceTag":p.instance_tag,"profile":p.profile,
+                        "samplingFrequencyIndex":p.sampling_frequency_index,"front":p.front.iter().map(|e|json!({"isPair":e.is_pair,"tag":e.tag})).collect::<Vec<_>>(),
+                        "side":p.side.iter().map(|e|json!({"isPair":e.is_pair,"tag":e.tag})).collect::<Vec<_>>(),
+                        "back":p.back.iter().map(|e|json!({"isPair":e.is_pair,"tag":e.tag})).collect::<Vec<_>>(),"lfeTags":p.lfe_tags,
+                        "associatedDataTags":p.associated_data_tags,"couplingElements":p.coupling_elements,"commentBytes":p.comment,
+                        "frameLengthFlag":p.frame_length_flag,"monoMixdownTag":p.mono_mixdown_tag,"stereoMixdownTag":p.stereo_mixdown_tag,"matrixMixdown":p.matrix_mixdown,
+                        "speakerPositionsInferred":false,"renderingVerified":false}))}))}))})).collect::<Vec<_>>(),
         Err(e)=>{diagnostics.push(format!("sample descriptions unavailable: {e}"));Vec::new()}
     };
     let mut remaining_frames = 100_000;

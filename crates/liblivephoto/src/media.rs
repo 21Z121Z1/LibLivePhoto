@@ -233,9 +233,35 @@ pub(crate) fn inspect_still(data: &[u8], mime: &str) -> Result<StillMetadata> {
 pub struct AacConfiguration {
     pub object_type: u8,
     pub sample_rate: u32,
-    /// Channel configuration 0 requires a program-config element. It is unknown.
+    pub channel_configuration: u8,
+    /// Output-channel count from a supported declaration, never speaker layout.
     pub channels: Option<u16>,
+    pub program_config: Option<AacProgramConfig>,
     pub raw: Vec<u8>,
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AacChannelElement {
+    pub is_pair: bool,
+    pub tag: u8,
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AacProgramConfig {
+    pub instance_tag: u8,
+    pub profile: u8,
+    pub sampling_frequency_index: u8,
+    pub frame_length_flag: bool,
+    pub front: Vec<AacChannelElement>,
+    pub side: Vec<AacChannelElement>,
+    pub back: Vec<AacChannelElement>,
+    pub lfe_tags: Vec<u8>,
+    pub associated_data_tags: Vec<u8>,
+    /// Raw independently-switched flag and tag. Coupling is not an output channel.
+    pub coupling_elements: Vec<(bool, u8)>,
+    pub mono_mixdown_tag: Option<u8>,
+    pub stereo_mixdown_tag: Option<u8>,
+    pub matrix_mixdown: Option<(u8, bool)>,
+    /// Opaque comment/extension bytes, never interpreted as speaker positions.
+    pub comment: Vec<u8>,
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AudioParameters {
@@ -289,6 +315,9 @@ fn descriptor(p: &[u8]) -> Result<(u8, &[u8], &[u8])> {
     Err(Error::InvalidResource)
 }
 fn decoder_config(esds: &[u8]) -> Result<Option<&[u8]>> {
+    if esds.get(..4).ok_or(Error::InvalidResource)? != [0, 0, 0, 0] {
+        return Err(Error::UnsupportedLayout("esds version/flags"));
+    }
     let (tag, es, trailing) = descriptor(esds.get(4..).ok_or(Error::InvalidResource)?)?;
     if !trailing.is_empty() {
         return Err(Error::UnsupportedLayout("multiple esds root descriptors"));
@@ -307,9 +336,28 @@ fn decoder_config(esds: &[u8]) -> Result<Option<&[u8]>> {
     if flags & 32 != 0 {
         pos += 2;
     }
-    let (tag, config, _) = descriptor(es.get(pos..).ok_or(Error::InvalidResource)?)?;
+    let (tag, config, mut es_tail) = descriptor(es.get(pos..).ok_or(Error::InvalidResource)?)?;
     if tag != 4 || config.len() < 13 {
         return Err(Error::InvalidResource);
+    }
+    let mut descriptor_count = 0usize;
+    while !es_tail.is_empty() {
+        descriptor_count += 1;
+        if descriptor_count > 4096 {
+            return Err(Error::InputLimit);
+        }
+        let (tag, _, next) = descriptor(es_tail)?;
+        if tag == 4 {
+            return Err(Error::MetadataMismatch(
+                "duplicate ES DecoderConfigDescriptor",
+            ));
+        }
+        if tag != 6 {
+            return Err(Error::UnsupportedLayout(
+                "unsupported ES descriptor extension",
+            ));
+        }
+        es_tail = next;
     }
     if config[0] != 0x40 {
         return Ok(None);
@@ -317,6 +365,10 @@ fn decoder_config(esds: &[u8]) -> Result<Option<&[u8]>> {
     let mut rest = &config[13..];
     let mut specific = None;
     while !rest.is_empty() {
+        descriptor_count += 1;
+        if descriptor_count > 4096 {
+            return Err(Error::InputLimit);
+        }
         let (tag, value, next) = descriptor(rest)?;
         if tag == 5 && specific.replace(value).is_some() {
             return Err(Error::UnsupportedLayout(
@@ -326,6 +378,49 @@ fn decoder_config(esds: &[u8]) -> Result<Option<&[u8]>> {
         rest = next;
     }
     Ok(specific)
+}
+
+fn wave_esds<'a>(data: &'a [u8], b: &BoxHeader, count: &mut usize) -> Result<&'a [u8]> {
+    let children = fmt(parse_boxes(data, b.payload_range()))?;
+    *count = count
+        .checked_add(children.len())
+        .filter(|n| *n <= 65536)
+        .ok_or(Error::InputLimit)?;
+    let mut descriptor = None;
+    let mut format = false;
+    let mut marker = false;
+    for (index, child) in children.iter().enumerate() {
+        let payload = &data[child.payload_range()];
+        match child.kind.as_bytes() {
+            b"esds" => {
+                if descriptor.replace(payload).is_some() {
+                    return Err(Error::MetadataMismatch("duplicate wave esds"));
+                }
+            }
+            b"frma" => {
+                if format || payload != b"mp4a" {
+                    return Err(Error::MetadataMismatch(
+                        "wave original format conflicts with mp4a",
+                    ));
+                }
+                format = true;
+            }
+            b"mp4a" => {
+                if marker || payload != [0, 0, 0, 0] {
+                    return Err(Error::UnsupportedLayout("wave mp4a marker"));
+                }
+                marker = true;
+            }
+            [0, 0, 0, 0] if payload.is_empty() && index + 1 == children.len() => {}
+            _ => return Err(Error::UnsupportedLayout("unknown or misplaced wave child")),
+        }
+    }
+    if !format || children.last().map(|b| b.kind.as_bytes()) != Some(&[0, 0, 0, 0]) {
+        return Err(Error::UnsupportedLayout(
+            "wave requires matching frma and final terminator",
+        ));
+    }
+    descriptor.ok_or(Error::MetadataMismatch("wave has no esds"))
 }
 struct Bits<'a> {
     data: &'a [u8],
@@ -364,7 +459,116 @@ impl Bits<'_> {
         .ok_or(Error::InvalidResource)
     }
 }
+fn pce(
+    bits: &mut Bits<'_>,
+    sample_rate: u32,
+    frame_length_flag: bool,
+) -> Result<(AacProgramConfig, u16)> {
+    let instance_tag = bits.take(4)? as u8;
+    let profile = bits.take(2)? as u8;
+    let sampling_frequency_index = bits.take(4)? as u8;
+    let rates = [
+        96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350,
+    ];
+    let rate = rates
+        .get(sampling_frequency_index as usize)
+        .ok_or(Error::InvalidResource)?;
+    if profile != 1 || *rate != sample_rate {
+        return Err(Error::MetadataMismatch(
+            "AAC PCE profile/rate conflicts with AudioSpecificConfig",
+        ));
+    }
+    let front_count = bits.take(4)?;
+    let side_count = bits.take(4)?;
+    let back_count = bits.take(4)?;
+    let lfe_count = bits.take(2)?;
+    let data_count = bits.take(3)?;
+    let coupling_count = bits.take(4)?;
+    let mono_mixdown_tag = if bits.take(1)? != 0 {
+        Some(bits.take(4)? as u8)
+    } else {
+        None
+    };
+    let stereo_mixdown_tag = if bits.take(1)? != 0 {
+        Some(bits.take(4)? as u8)
+    } else {
+        None
+    };
+    let matrix_mixdown = if bits.take(1)? != 0 {
+        Some((bits.take(2)? as u8, bits.take(1)? != 0))
+    } else {
+        None
+    };
+    let mut seen = std::collections::BTreeSet::new();
+    let mut channels = 0u16;
+    let mut elements = |count: u32, bits: &mut Bits<'_>| -> Result<Vec<AacChannelElement>> {
+        let mut out = Vec::new();
+        for _ in 0..count {
+            let is_pair = bits.take(1)? != 0;
+            let tag = bits.take(4)? as u8;
+            if !seen.insert((u8::from(is_pair), tag)) {
+                return Err(Error::MetadataMismatch("duplicate AAC PCE channel element"));
+            }
+            channels += if is_pair { 2 } else { 1 };
+            out.push(AacChannelElement { is_pair, tag });
+        }
+        Ok(out)
+    };
+    let front = elements(front_count, bits)?;
+    let side = elements(side_count, bits)?;
+    let back = elements(back_count, bits)?;
+    let mut lfe_tags = Vec::new();
+    for _ in 0..lfe_count {
+        let tag = bits.take(4)? as u8;
+        if !seen.insert((2, tag)) {
+            return Err(Error::MetadataMismatch("duplicate AAC PCE LFE element"));
+        }
+        channels += 1;
+        lfe_tags.push(tag);
+    }
+    let mut associated_data_tags = Vec::new();
+    for _ in 0..data_count {
+        associated_data_tags.push(bits.take(4)? as u8);
+    }
+    let mut coupling_elements = Vec::new();
+    for _ in 0..coupling_count {
+        coupling_elements.push((bits.take(1)? != 0, bits.take(4)? as u8));
+    }
+    let padding = (8 - bits.bit % 8) % 8;
+    bits.take(padding)?;
+    let comment_len = bits.take(8)? as usize;
+    let mut comment = Vec::with_capacity(comment_len);
+    for _ in 0..comment_len {
+        comment.push(bits.take(8)? as u8);
+    }
+    if channels == 0 {
+        return Err(Error::UnsupportedLayout("AAC PCE has no output channels"));
+    }
+    Ok((
+        AacProgramConfig {
+            instance_tag,
+            profile,
+            sampling_frequency_index,
+            frame_length_flag,
+            front,
+            side,
+            back,
+            lfe_tags,
+            associated_data_tags,
+            coupling_elements,
+            mono_mixdown_tag,
+            stereo_mixdown_tag,
+            matrix_mixdown,
+            comment,
+        },
+        channels,
+    ))
+}
+
 fn aac(raw: &[u8]) -> Result<AacConfiguration> {
+    if raw.len() > 64 * 1024 {
+        return Err(Error::InputLimit);
+    }
     let mut bits = Bits { data: raw, bit: 0 };
     let object = bits.take(5)?;
     let object = if object == 31 {
@@ -374,7 +578,7 @@ fn aac(raw: &[u8]) -> Result<AacConfiguration> {
     };
     let mut sample_rate = bits.rate()?;
     let channel = bits.take(4)?;
-    let channels = match channel {
+    let mut channels = match channel {
         0 => None,
         1..=6 => Some(channel as u16),
         7 => Some(8),
@@ -388,17 +592,59 @@ fn aac(raw: &[u8]) -> Result<AacConfiguration> {
         sample_rate = bits.rate()?;
         let _base_object_type = bits.take(5)?;
     }
+    let program_config = if channel == 0 {
+        if object != 2 {
+            return Err(Error::UnsupportedLayout(
+                "PCE requires supported AAC-LC GASpecificConfig",
+            ));
+        }
+        let frame_length_flag = bits.take(1)? != 0;
+        if bits.take(1)? != 0 {
+            return Err(Error::UnsupportedLayout(
+                "AAC core-coder dependency with PCE",
+            ));
+        }
+        if bits.take(1)? != 0 {
+            return Err(Error::UnsupportedLayout("AAC GA extension with PCE"));
+        }
+        let (config, n) = pce(&mut bits, sample_rate, frame_length_flag)?;
+        // A bounded LC-only subset: recognize the explicit no-SBR sync suffix
+        // emitted by the owned FFmpeg fixture; refuse other extensions.
+        if raw.len() * 8 - bits.bit >= 16
+            && (bits.take(11)? != 0x2b7 || bits.take(5)? != 5 || bits.take(1)? != 0)
+        {
+            return Err(Error::UnsupportedLayout(
+                "AAC PCE sync extension outside LC/no-SBR subset",
+            ));
+        }
+        if raw.len() * 8 - bits.bit > 7 {
+            return Err(Error::UnsupportedLayout(
+                "uninterpreted AAC PCE trailing syntax",
+            ));
+        }
+        while bits.bit < raw.len() * 8 {
+            if bits.take(1)? != 0 {
+                return Err(Error::UnsupportedLayout("nonzero AAC PCE trailing syntax"));
+            }
+        }
+        channels = Some(n);
+        Some(config)
+    } else {
+        None
+    };
     Ok(AacConfiguration {
         object_type: object as u8,
         sample_rate,
+        channel_configuration: channel as u8,
         channels,
+        program_config,
         raw: raw.to_vec(),
     })
 }
 
 impl MotionPhoto<'_> {
     /// Read sample descriptions and declared display/color facts. Codec decoding,
-    /// AAC PCE parsing, QuickTime v2 audio descriptions and codec-level VUI are
+    /// QuickTime v2 audio descriptions and codec-level VUI are
     /// outside this contract. Missing configuration does not imply compatibility.
     pub fn sample_descriptions(&self) -> Result<Vec<SampleDescription>> {
         inspect_video_sample_descriptions(self.motion_video_bytes()?)
@@ -511,14 +757,19 @@ pub fn inspect_video_sample_descriptions(data: &[u8]) -> Result<Vec<SampleDescri
                     if b.kind == FourCC::new(*b"colr") {
                         desc.color.push(color(p)?);
                     }
-                    if b.kind == FourCC::new(*b"esds") && desc.format == *b"mp4a" {
+                    if matches!(b.kind.as_bytes(), b"esds" | b"wave") && desc.format == *b"mp4a" {
                         if esds_seen {
                             return Err(Error::UnsupportedLayout(
                                 "duplicate audio esds declarations",
                             ));
                         }
                         esds_seen = true;
-                        if let Some(raw) = decoder_config(p)? {
+                        let esds = if b.kind.as_bytes() == b"wave" {
+                            wave_esds(data, &b, &mut property_count)?
+                        } else {
+                            p
+                        };
+                        if let Some(raw) = decoder_config(esds)? {
                             if let Some(audio) = &mut desc.audio {
                                 audio.aac = Some(aac(raw)?);
                             }

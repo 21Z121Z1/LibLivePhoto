@@ -223,6 +223,7 @@ fn check_track(d: &[u8], b: &BoxHeader) -> Result<(), Error> {
                                                     | b"ctts"
                                                     | b"stsc"
                                                     | b"stsz"
+                                                    | b"stz2"
                                                     | b"stco"
                                                     | b"co64"
                                                     | b"stss"

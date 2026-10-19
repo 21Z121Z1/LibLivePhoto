@@ -45,7 +45,7 @@ fn rational(time: MediaTime) -> (i64, u32) {
 /// every video track must be accounted for. Dimensions remain observed facts:
 /// the source defines no fixed primary/secondary pixel dimensions. No nearest
 /// timestamp fallback is selected. All sample descriptions are checked.
-/// AAC PCE, QuickTime-v2/wave, unknown codec entries and the page's ambiguous
+/// Non-LC/extended PCE, QuickTime-v2, unknown codec entries and the page's ambiguous
 ///44kHz versus44.1kHz wording stay explicit Unsupported.48000/96000 are exact;
 ///44000 is the literal printed value, not an inferred44100 alias.
 /// Bounds:256MiB input,4096 descriptions/issues,16MiB properties,100000 aggregate
@@ -229,16 +229,6 @@ pub fn validate_google_video_container(
             )?;
             continue;
         };
-        if desc.properties.iter().any(|p| p.kind == *b"wave") {
-            issue(
-                &mut report,
-                "G08.audio-declarations",
-                Kind::Unsupported,
-                id,
-                "QuickTime wave signaling is not interpreted, including mixed direct esds/wave",
-            )?;
-            continue;
-        }
         if audio.sample_entry_version > 1 {
             issue(
                 &mut report,
@@ -285,7 +275,7 @@ pub fn validate_google_video_container(
                 "G08.audio-channels",
                 Kind::Unsupported,
                 id,
-                "AAC PCE channel configuration is not interpreted",
+                "AAC channel declaration is unavailable",
             )?,
         }
         match aac.sample_rate {

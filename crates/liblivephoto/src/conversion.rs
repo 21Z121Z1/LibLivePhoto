@@ -137,6 +137,11 @@ impl<'a> MotionPhoto<'a> {
         let descriptions = match self.sample_descriptions() {
             Ok(v) => v,
             Err(e) => {
+                plan.report.resources.push(ResourceConversion {
+                    resource: Some(self.motion_video().id),
+                    disposition: Disposition::Unmapped,
+                    reason: format!("cannot establish media capabilities: {e}"),
+                });
                 plan.compatibility
                     .blockers
                     .push(format!("cannot establish media capabilities: {e}"));

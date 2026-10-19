@@ -264,6 +264,7 @@ fn execute(
                 .ok_or("conformance profile required")?
             {
                 "heif-color-2025" => conformance_result(validate_heif_color_information(primary)),
+                "icc-structure-v4.4" => conformance_result(validate_icc_structure(primary)),
                 "google-video-container-1.0" => {
                     let tracks = ids(v)?;
                     if !(1..=2).contains(&tracks.len())

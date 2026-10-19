@@ -44,6 +44,24 @@ public final class NativeSmoke {
     NativeResult vivo=engine.metadata(Input.bytes(Files.readAllBytes(bindings.resolve("vivo-stream-motion.jpg"))));check(vivo.success&&Boolean.TRUE.equals(vivo.metadata.get("verifiedMotion")),"vivo vector actual movie verification");boolean foundVivo=false;
     for(Object item:(List<?>)vivo.metadata.get("decoded")){Map<?,?> decoded=(Map<?,?>)item;if("vivo_media".equals(decoded.get("provider"))){Map<?,?> value=(Map<?,?>)decoded.get("value");List<?> streams=(List<?>)value.get("streams");check(streams.size()==3&&Boolean.TRUE.equals(value.get("duplicateKeys"))&&Boolean.FALSE.equals(value.get("streamSemanticsInterpreted"))&&Boolean.FALSE.equals(value.get("pairingVerified")),"ordered opaque streams without semantic or pair inference");Map<?,?> first=(Map<?,?>)streams.get(0);int index=((Number)first.get("blockIndex")).intValue();Map<?,?> block=(Map<?,?>)((List<?>)vivo.metadata.get("blocks")).get(index);check("00ff6f7061717565".equals(block.get("rawBytesHex")),"vivo stream byte identity through JNI");foundVivo=true;}}
     check(foundVivo,"vivo provider available through maintained JNI metadata");
-    System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded envelope, AGTM, collection/provider controls and opaque vivo streams");
+    Path syntax=bindings.getParent().resolve("syntax");
+    NativeResult icc=engine.execute(new Request("conformance").option("profile","icc-structure-v4.4"),Input.bytes(Files.readAllBytes(syntax.resolve("icc-structure-v4.4.icc"))),null);
+    check(icc.success&&"icc.1-2022-v4.4-structure".equals(icc.metadata.get("profile")),"scoped ICC structure across JNI");
+    NativeResult unknownIcc=engine.execute(new Request("conformance").option("profile","icc-structure-v4.4"),Input.path(syntax.resolve("icc-unsupported-v4.3.icc")),null);
+    check(!unknownIcc.success&&unknownIcc.headerJson.contains("Unsupported"),"unsupported ICC version is not a structure pass");
+    byte[] iccRaw=Files.readAllBytes(syntax.resolve("icc-structure-v4.4.icc"));
+    check(!engine.execute(new Request("conformance").option("profile","icc-structure-v4.4"),Input.bytes(Arrays.copyOf(iccRaw,iccRaw.length-1)),null).success,"truncated ICC fails explicitly");
+    byte[] pceMovie=Files.readAllBytes(syntax.resolve("aac-pce-wave.mov"));
+    NativeResult pce=engine.execute(new Request("parse").inputKind("parts"),Input.bytes(still),Input.bytes(pceMovie));
+    check(pce.success,"actual PCE/wave owned movie parse");boolean foundPce=false;
+    for(Object row:(List<?>)pce.metadata.get("sampleDescriptions")){Map<?,?> desc=(Map<?,?>)row;Object value=desc.get("audio");if(value instanceof Map){Map<?,?> config=(Map<?,?>)((Map<?,?>)value).get("aac");check(((Number)config.get("channels")).intValue()==2&&((Number)config.get("sampleRate")).intValue()==48000&&((Number)config.get("channelConfiguration")).intValue()==0,"PCE channel/rate facts across JNI");Map<?,?> program=(Map<?,?>)config.get("programConfig");check(Boolean.FALSE.equals(program.get("speakerPositionsInferred"))&&Boolean.FALSE.equals(program.get("renderingVerified")),"PCE facts are not rendered speaker placement");foundPce=true;}}
+    check(foundPce,"actual AAC PCE projection present");
+    byte[] badPce=pceMovie.clone();int esdsMarkers=0;for(int i=0;i+4<badPce.length;i++){if(badPce[i]=='e'&&badPce[i+1]=='s'&&badPce[i+2]=='d'&&badPce[i+3]=='s'){badPce[i+4]=1;esdsMarkers++;}}
+    check(esdsMarkers==1,"owned fixture has one framed esds");
+    NativeResult rejectedEsds=engine.execute(new Request("conformance").option("profile","google-video-container-1.0").tracks(1),Input.bytes(badPce),null);
+    check(!rejectedEsds.success&&rejectedEsds.headerJson.contains("esds version/flags"),"unknown esds version rejected across JNI");
+    NativeResult pceBuilt=engine.build(Input.bytes(still),Input.bytes(pceMovie),new ExactTime(1,10),"google-jpeg");check(pceBuilt.success,"PCE container lossless build");
+    check(Arrays.equals(pceMovie,engine.extract(Input.bytes(pceBuilt.files.get(0).copyBytes()),false,true,false).files.get(0).copyBytes()),"PCE movie bytes retained across JNI build/extract");
+    System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded envelope, AGTM, collection/provider controls opaque vivo streams, bounded ICC and actual AAC-LC PCE/wave");
   }
 }

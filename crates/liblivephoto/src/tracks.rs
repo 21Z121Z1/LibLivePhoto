@@ -41,6 +41,78 @@ fn timeline(p: &[u8]) -> Result<(u32, u64)> {
     })
 }
 
+/// Nonfragmented sample-size index: ISO14496-12:2022 stsz/stz2 only.
+struct SampleSizes<'a> {
+    payload: &'a [u8],
+    count: usize,
+    width: u8,
+    constant: u32,
+}
+impl SampleSizes<'_> {
+    fn size(&self, index: usize) -> Result<u64> {
+        if index >= self.count {
+            return Err(Error::InvalidResource);
+        }
+        Ok(match self.width {
+            4 => u64::from(
+                (self.payload[12 + index / 2] >> if index.is_multiple_of(2) { 4 } else { 0 }) & 15,
+            ),
+            8 => u64::from(self.payload[12 + index]),
+            16 => u64::from(u16::from_be_bytes(field(self.payload, 12 + index * 2)?)),
+            32 if self.constant != 0 => u64::from(self.constant),
+            32 => u64::from(u32_at(self.payload, 12 + index * 4)?),
+            _ => return Err(Error::InvalidResource),
+        })
+    }
+}
+fn sample_sizes<'a>(data: &'a [u8], tables: &[BoxHeader]) -> Result<Option<SampleSizes<'a>>> {
+    let mut all = tables
+        .iter()
+        .filter(|b| matches!(b.kind.as_bytes(), b"stsz" | b"stz2"));
+    let Some(b) = all.next() else { return Ok(None) };
+    if all.next().is_some() {
+        return Err(Error::MetadataMismatch("ambiguous sample-size tables"));
+    }
+    let p = payload(data, b);
+    if p.get(..4) != Some(&[0, 0, 0, 0]) {
+        return Err(Error::UnsupportedLayout("sample-size table version/flags"));
+    }
+    let count = u32_at(p, 8)? as usize;
+    if count > 1_000_000 {
+        return Err(Error::InputLimit);
+    }
+    let compact = b.kind.as_bytes() == b"stz2";
+    let (width, constant) = if compact {
+        if p.get(4..7) != Some(&[0, 0, 0]) {
+            return Err(Error::InvalidResource);
+        }
+        let width = *p.get(7).ok_or(Error::InvalidResource)?;
+        if !matches!(width, 4 | 8 | 16) {
+            return Err(Error::UnsupportedLayout("stz2 field width"));
+        }
+        (width, 0)
+    } else {
+        (32, u32_at(p, 4)?)
+    };
+    let entries = if constant == 0 {
+        count
+            .checked_mul(width as usize)
+            .ok_or(Error::InputLimit)?
+            .div_ceil(8)
+    } else {
+        0
+    };
+    if p.len() != 12 + entries {
+        return Err(Error::InvalidResource);
+    }
+    Ok(Some(SampleSizes {
+        payload: p,
+        count,
+        width,
+        constant,
+    }))
+}
+
 fn validate_samples(
     data: &[u8],
     tables: &[BoxHeader],
@@ -48,19 +120,14 @@ fn validate_samples(
     budget: &mut usize,
     mut visit: impl FnMut(usize, u32, crate::ByteRange) -> Result<()>,
 ) -> Result<()> {
-    let Some(stsz) = find(tables, b"stsz") else {
+    let Some(sizes) = sample_sizes(data, tables)? else {
         return Ok(());
     };
-    let p = payload(data, stsz);
-    let constant = u32_at(p, 4)? as u64;
-    let count = u32_at(p, 8)? as usize;
+    let count = sizes.count;
     *budget = budget
         .checked_add(count)
         .filter(|n| *n <= 1_000_000)
         .ok_or(Error::InvalidResource)?;
-    if p.len() != 12 + if constant == 0 { count * 4 } else { 0 } {
-        return Err(Error::InvalidResource);
-    }
     let stts = find(tables, b"stts").ok_or(Error::InvalidResource)?;
     let t = payload(data, stts);
     let entries = u32_at(t, 4)? as usize;
@@ -124,11 +191,7 @@ fn validate_samples(
             if sample >= count {
                 return Err(Error::InvalidResource);
             }
-            let len = if constant == 0 {
-                u64::from(u32_at(p, 12 + sample * 4)?)
-            } else {
-                constant
-            };
+            let len = sizes.size(sample)?;
             let end = offset.checked_add(len).ok_or(Error::InvalidResource)?;
             if !mdats
                 .iter()
@@ -327,10 +390,10 @@ pub(crate) fn metadata_samples<'a>(
     let mi = self::children(data, minf)?;
     let stbl = find(&mi, b"stbl").ok_or(Error::InvalidResource)?;
     let tables = self::children(data, stbl)?;
-    let Some(stsz) = find(&tables, b"stsz") else {
+    let Some(sizes) = sample_sizes(data, &tables)? else {
         return Ok(Vec::new());
     };
-    let count = u32_at(payload(data, stsz), 8)? as usize;
+    let count = sizes.count;
     if count > 1_000_000 {
         return Err(Error::InvalidResource);
     }
@@ -562,10 +625,9 @@ fn video_frames_with_edits(
     let mi = children(data, minf)?;
     let stbl = find(&mi, b"stbl").ok_or(Error::InvalidResource)?;
     let tables = children(data, stbl)?;
-    let count = u32_at(
-        payload(data, find(&tables, b"stsz").ok_or(Error::InvalidResource)?),
-        8,
-    )? as usize;
+    let count = sample_sizes(data, &tables)?
+        .ok_or(Error::InvalidResource)?
+        .count;
     if count > max_frames.min(1_000_000) {
         return Err(Error::InputLimit);
     }

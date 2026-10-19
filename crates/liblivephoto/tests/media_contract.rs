@@ -214,15 +214,21 @@ fn explicit_codec_contract_uses_aac_config_and_reports_unknown_or_transcode_requ
             ParseOptions::strict(),
         )
         .unwrap();
-        let descriptions = source.sample_descriptions().unwrap();
-        let audio = descriptions
-            .iter()
-            .find(|d| d.kind == TrackKind::Audio)
-            .unwrap()
-            .audio
-            .as_ref()
-            .unwrap();
-        assert_eq!(audio.aac.as_ref().unwrap().raw, asc);
+        let descriptions = source.sample_descriptions();
+        if asc == [0x11, 0x80] {
+            assert!(descriptions.is_err());
+            assert_eq!(source.motion_video_bytes().unwrap(), movie);
+        } else {
+            let descriptions = descriptions.unwrap();
+            let audio = descriptions
+                .iter()
+                .find(|d| d.kind == TrackKind::Audio)
+                .unwrap()
+                .audio
+                .as_ref()
+                .unwrap();
+            assert_eq!(audio.aac.as_ref().unwrap().raw, asc);
+        }
         let plan = source.plan_with_capabilities(
             TargetProfile::AndroidJpeg,
             WritePolicy::default(),

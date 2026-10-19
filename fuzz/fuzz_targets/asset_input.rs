@@ -1,6 +1,7 @@
 #![no_main]
 use liblivephoto::*;
 libfuzzer_sys::fuzz_target!(|data:&[u8]| {
+    let _=inspect_icc_structure(data);
     let _=inspect_honor_metadata(data);
     let _=inspect_camera_album_footer(data);
     let _=inspect_vivo_media_extensions(data);
