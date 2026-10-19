@@ -34,6 +34,32 @@ def heic_xmp(xml):
   return box(b'meta',bytes(4)+data[slice(*children[b'hdlr'])]+data[slice(*children[b'pitm'])]+iloc+iinf+iref+data[slice(*children[b'iprp'])])
  offset=len(ftyp)+len(meta(0))+8
  return ftyp+meta(offset)+box(b'mdat',coded+x)
+def semantic_checks(reference,actual,malformed_offline=False):
+ checked=[]
+ for block in reference['blocks']:
+  semantic=block['semantic']
+  if semantic is None:continue
+  name=semantic['provider'];matches=[p for p in actual['decoded'] if p['provider']==name]
+  if name in ['legacy_micro_video','oplus_olive'] and not block['declaresMotion']:continue
+  if not matches and malformed_offline and name=='honor_live_photo':
+   assert any('honor_live_photo' in diagnostic for diagnostic in actual['diagnostics'])
+   continue
+  assert matches,(name,'reference provider absent from Rust projection')
+  if name=='legacy_micro_video':
+   camera=matches[0]['value']['camera'];assert int(camera['MicroVideo'])==semantic['flag'];assert int(camera['MicroVideoVersion'])==semantic['version'];assert camera['MicroVideoOffset']==semantic['offset'];assert camera['MicroVideoPresentationTimestampUs']==semantic['timeUs']
+  elif name=='oplus_olive':
+   values=[p['value'] for p in matches if p['value'].get('source')=='xmp-declaration']
+   if values:
+    value=values[0];assert value['version']==semantic['version'];assert value['declaredVideoLength']==semantic['videoLength'];assert value['photoTime']['value']==semantic['timeUs']
+  elif name=='samsung_sef':
+   value=matches[0]['value'];assert value['version']==semantic['version'];assert len(value['records'])==semantic['entries'];assert sorted(r['name'] for r in value['records'])==sorted(semantic['keys']);assert (value['motionPhotoDataMagic'] or '')==semantic['magic']
+  elif name=='honor_live_photo':
+   value=matches[0]['value'];assert (value['sceneMode'] or 0)==semantic['sceneMode'];assert sorted(r['tag'] for r in value['records'])==sorted(semantic['tags'])
+   if value['photoTime'] is not None:assert value['photoTime']['value']==semantic['timeUs']
+  if name in ['samsung_sef','honor_live_photo'] and int(semantic['videoLength']):
+   assert any(sum(int(e['end'])-int(e['start']) for e in p['videoExtents'])==int(semantic['videoLength']) for p in matches)
+  checked.append(name)
+ return checked
 def main():
  p=argparse.ArgumentParser();p.add_argument('--reference-source',type=Path,required=True);p.add_argument('--reference-build',type=Path,required=True);p.add_argument('--protobuf-include',type=Path);a=p.parse_args();source=a.reference_source.resolve();assert run(['git','-C',source,'rev-parse','HEAD']).strip()==SHA
  out=Path(tempfile.mkdtemp(prefix='metadata-diff-',dir=ROOT/'evidence/local'));build=a.reference_build.resolve()/'lib/core';link=shlex.split((build/'CMakeFiles/motion_photo_tests.dir/link.txt').read_text());ref=out/'reference'
@@ -47,20 +73,26 @@ def main():
  cases.append(('oplus-mpvd.heic',op_heic+struct.pack('>I',len(movie)+8)+b'mpvd'+movie,True))
  for magic in [b'mpv2',b'mpv3']:cases.append(('samsung-'+magic.decode()+'.jpg',still+sef(magic+struct.pack('>II',100,len(movie))+movie),True))
  for suffix in ['LIVE_'+str(len(movie)),'450'.ljust(20,'\0')+'LIVE_'+str(len(movie))]:cases.append(('honor-'+str(len(suffix))+'.jpg',still+movie+suffix.encode().ljust(20 if len(suffix)<20 else 40,b'\0'),True))
- cases.extend([('honor-tlv.jpg',still+tlv(movie,'HiHonor_1000000')+tlv(b'0001','HiHonor_CIID'),True),('honor-metadata-only.jpg',still+tlv(b'{"common":{"sceneMode":73}}','HiHonor_OfflineData')+tlv(b'0001','HiHonor_CIID'),False)])
+ offline=b'{"common":{"sceneMode":73}}'
+ cases.extend([('honor-tlv.jpg',still+tlv(movie,'HiHonor_1000000')+tlv(b'0001','HiHonor_CIID'),True),('honor-metadata-only.jpg',still+tlv(struct.pack('<I',len(offline))+offline,'HiHonor_OfflineData')+tlv(b'0001','HiHonor_CIID'),False),('honor-invalid-offline-length.jpg',still+tlv(offline,'HiHonor_OfflineData')+tlv(b'0001','HiHonor_CIID'),False)])
  rows=[]
  for name,content,expected in cases:
   path=out/name;path.write_bytes(content)
   for mode in ['all','none']:
    folder=out/(name+'-'+mode);folder.mkdir();raw=folder/'reference.raw';reference=json.JSONDecoder().raw_decode(run([ref,path,raw,mode]).split('METADATA_REFERENCE_JSON\t')[1])[0]
    args=[cli,'metadata',path]+(['--disable-3p'] if mode=='none' else []);actual=json.loads(run(args))['metadata'];declarations=any(p['motionDeclaration'] for p in actual['decoded']);google=reference['declaresMotion'];want=expected and (mode=='all' or name=='google.jpg')
+   (folder/'reference.json').write_text(json.dumps(reference,indent=2)+'\n');(folder/'implementation.json').write_text(json.dumps(actual,indent=2)+'\n')
    assert declarations==want,(name,mode,actual)
    if name not in ['legacy.jpg','legacy-metadata-only.jpg','oplus.jpg','oplus-metadata-only.jpg','oplus-metadata-only.heic']:assert google==want,(name,mode,reference)
    # Classifications may differ for malformed/metadata-only vendor signatures;
    # retain both facts and never equate either to validated media.
    blocks=json.loads(run([cli,'extract-metadata',path,'--out',folder/'rust',*(['--disable-3p'] if mode=='none' else [])]));raw_files=[(folder/'rust'/f['name']).read_bytes() for f in blocks['files']]
+   assert len(raw_files)==len(actual['blocks'])
+   for raw_file,block in zip(raw_files,actual['blocks']):assert raw_file==b''.join(content[int(e['start']):int(e['end'])] for e in block['extents'])
    raw_match=raw.read_bytes() in raw_files if reference['extracted'] else None
    if reference['extracted']:assert raw_match,(name,mode,'reference raw metadata not present among complete source blocks')
-   rows.append({'case':name,'mode':mode,'sha256':hashlib.sha256(content).hexdigest(),'reference':reference,'implementation':{'declaresMotion':declarations,'verifiedMotion':actual['verifiedMotion'],'blocks':len(actual['blocks'])},'declaration_equal':google==declarations,'reference_raw_block_preserved':raw_match})
- receipt={'reference_sha':SHA,'implementation_sha':run(['git','rev-parse','HEAD'],cwd=ROOT).strip(),'cases':rows,'limits':['Synthetic provider contracts plus real own coded scene; not an original-device corpus or native Gallery acceptance.','Raw metadata extraction emits explicit complete source blocks; proprietary blocks can include coded media.','Declarations are not validated motion assets; Rust reports these independently.','Pinned Google does not classify namespace-equivalent c:/o: aliases in these legacy/OpCamera attribute cases; canonical GCamera:/OpCamera: cases are checked independently.','Pinned HeifContainerSplitter::Split emits XMP only when mpvd exists; Rust also exposes ordinary-image metadata and explicitly distinguishes declarations from verified motion.']};(out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print(out/'receipt.json')
+   try:checked=semantic_checks(reference,actual,name=='honor-invalid-offline-length.jpg')
+   except AssertionError as error:raise AssertionError((name,mode,str(folder),str(error))) from error
+   rows.append({'case':name,'mode':mode,'sha256':hashlib.sha256(content).hexdigest(),'reference':reference,'implementation':{'declaresMotion':declarations,'verifiedMotion':actual['verifiedMotion'],'blocks':len(actual['blocks']),'diagnostics':actual['diagnostics']},'declaration_equal':google==declarations,'reference_raw_block_preserved':raw_match,'provider_semantic_fields_checked':checked,'malformedOfflineLengthRejectedWithoutDroppingRawBlock':name=='honor-invalid-offline-length.jpg' and mode=='all'})
+ receipt={'reference_sha':SHA,'implementation_sha':run(['git','rev-parse','HEAD'],cwd=ROOT).strip(),'cases':rows,'limits':['Synthetic provider contracts plus real own coded scene; not an original-device corpus or native Gallery acceptance.','Raw metadata extraction emits explicit complete source blocks; proprietary blocks can include coded media.','Declarations are not validated motion assets; Rust reports these independently.','Pinned Google does not classify namespace-equivalent c:/o: aliases in these legacy/OpCamera attribute cases; canonical GCamera:/OpCamera: cases are checked independently.','Pinned HeifContainerSplitter::Split emits XMP only when mpvd exists; Rust also exposes ordinary-image metadata and explicitly distinguishes declarations from verified motion.','For malformed Honor OfflineData with a missing length prefix, Google skips four bytes and scans for sceneMode; Rust reports malformed-trailer diagnostics and retains the full raw source block. A separate correctly length-prefixed metadata-only case verifies sceneMode and tag semantics.']};(out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print(out/'receipt.json')
 if __name__=='__main__':main()

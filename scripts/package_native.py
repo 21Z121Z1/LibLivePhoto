@@ -33,6 +33,17 @@ def dependency_notices():
         notices.append({'name':package['name'],'version':package['version'],'license':package['license'],
                         'repository':package['repository'],'files':[prefix+path.name for path in sorted(candidates)],
                         'scope':'locked dependency inventory; includes build/target-specific crates, not a claim every crate is linked on this host'})
+    sysroot=Path(subprocess.check_output(['rustc','--print','sysroot'],cwd=ROOT,text=True).strip())
+    rust_docs=sysroot/'share/doc/rust'
+    copyright_file=rust_docs/'COPYRIGHT-library.html'
+    if not copyright_file.is_file():raise RuntimeError('Rust standard-library notice is missing: '+str(copyright_file))
+    files['notices/rust-standard-library/COPYRIGHT-library.html']=copyright_file
+    for path in sorted((rust_docs/'licenses').glob('*')):
+        if path.is_file():files['notices/rust-standard-library/licenses/'+path.name]=path
+    notices.append({'name':'Rust standard library and compiler-builtins','version':subprocess.check_output(['rustc','--version'],text=True).strip(),
+                    'license':'per-component terms in COPYRIGHT-library.html and referenced license texts',
+                    'files':[name for name in files if name.startswith('notices/rust-standard-library/')],
+                    'scope':'Rust target runtime notices, separately from Cargo dependency inventory; not a blanket license for platform system libraries'})
     return files,notices
 def main():
     p=argparse.ArgumentParser();p.add_argument('--compiler-java-home');a=p.parse_args()

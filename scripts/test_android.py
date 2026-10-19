@@ -11,8 +11,8 @@ def main():
     run(['get-state'])
     # Refuse a pre-existing installation: never replace a user's application.
     package='org.liblivephoto.android.acceptance'
-    existing=run(['shell','pm','path',package]).strip()
-    if existing:raise RuntimeError('test package already installed; refusing to overwrite: '+existing)
+    existing=run(['shell','pm','list','packages',package]).splitlines()
+    if 'package:'+package in [line.strip() for line in existing]:raise RuntimeError('test package already installed; refusing to overwrite: '+package)
     apk=ROOT/'android/build/liblivephoto-acceptance.apk';out=ROOT/'android/build'
     installed=False
     try:

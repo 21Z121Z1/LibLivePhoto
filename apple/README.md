@@ -17,9 +17,9 @@ The caller obtains the appropriate Photo Library permission. No API is invoked
 automatically by package import. Compilation/invalid-input tests do not exercise
 user libraries or prove valid-pair import acceptance.
 
-NativePlayback wraps the iOS system view, state, mute and system playback gesture.
+NativePlayback wraps iOS and macOS system views, state, mute and system playback gesture. Its native object test does not establish physical playback/HDR acceptance.
 NativeEditingSession forwards the system frame processor/audio volume and owns
-preview/output cancellation. Serialize operations on each editing context; retain
+preview/output cancellation. Operations on each editing context are serialized by the adapter; retain
 sessions/wrappers for their operation lifetime. NativeOperation callbacks may run
 on native queues: hop to the UI actor as needed. Cancellation is terminal before
 a commit, and returns false for non-cancellable commits. Export is byte-budgeted
@@ -45,3 +45,14 @@ resource export byte comparison, independent of Photo Library import permission.
 Only exact CI/test receipts establish whether these gates passed. Import/editing
 and physical playback/HDR acceptance still require an appropriate permitted asset
 and Apple device; these tests do not bypass privacy permission.
+
+`PhotoKitAdapter.editingInput` requests an already authorized asset, with explicit
+network/progress/cancellation policy and adjustment-data handling. Create output
+with real host adjustment data, render via `NativeEditingSession.save`, then call
+`PhotoKitAdapter.commitEdit` for the same asset. Import/commit require prior host
+permission and do not request permission automatically. Audio volume must be
+finite and in [0,1]. Actual permitted library/render acceptance is a separate gate.
+
+For the static XCFramework use `RustCoreBridge(linkedCore: true)` with retained,
+exported C symbols. See [native SDK integration](../NATIVE_SDK.md) for packaging,
+link flags and the actual iOS Simulator Swift/Rust acceptance command.
