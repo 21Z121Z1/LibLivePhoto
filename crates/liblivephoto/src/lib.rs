@@ -92,3 +92,9 @@ pub mod compat {
 pub const fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }
+
+/// Identify the physical MP4/QuickTime major brand. This does not validate
+/// tracks, codecs, pairing or native-player acceptance.
+pub fn movie_container_mime(data: &[u8]) -> Result<&'static str> {
+    motion_video::container_mime(data)
+}

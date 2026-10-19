@@ -1,0 +1,31 @@
+{
+  "license": "CC0-1.0",
+  "creator": "LibLivePhoto project; existing own geometric scene plus generated 440 Hz sine",
+  "sourceScene": "../demo/provenance.json",
+  "generator": "scripts/generate_acceptance_media.py",
+  "privateMedia": false,
+  "pixelAndAudioReencoding": "explicit generation of additional fixtures only; no user input is transcoded",
+  "buildTools": "FFmpeg with x264/x265/AAC and ImageMagick/libheif decoder; not linked into library or runtime",
+  "files": {
+    "audio.mp4": {
+      "bytes": 69662,
+      "sha256": "162276b6caac4a0118638b3729a80cac3eddf51b7de2a3d91435fe0ab5e6dbfe"
+    },
+    "hevc.mp4": {
+      "bytes": 13573,
+      "sha256": "6555fc0d62242cff6c94d01c70d8b04eb70fdc88855a48eb2bca9e94d089cf12"
+    },
+    "still-source.mp4": {
+      "bytes": 5101,
+      "sha256": "3e998b81228718a9211b25b9ea9408d09a79a3221e238e7adc0ee2b7cf993446"
+    },
+    "still.heic": {
+      "bytes": 4576,
+      "sha256": "36a36de981d036ce17a2d2583208449b9b9a03d97f806bc205be93f74933f4a5"
+    },
+    "unsupported.mov": {
+      "bytes": 87190,
+      "sha256": "0f4c8f556dee3b6cdbebf253f9db07fc9b9d42dacbbe8be4c9ac7af7fb0fc40e"
+    }
+  }
+}

@@ -4,7 +4,9 @@ use std::{fs::File, io::Write, path::PathBuf};
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     if args.len() < 3 {
-        return Err("remux_probe optimize|compact|import INPUT NEW_OUTPUT [SOURCE ID...]".into());
+        return Err(
+            "remux_probe optimize|compact|remove|import INPUT NEW_OUTPUT [SOURCE ID...]".into(),
+        );
     }
     let input = std::fs::read(&args[1])?;
     let output = PathBuf::from(&args[2]);
@@ -16,6 +18,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 compact_unreferenced_media: true,
             },
         )?,
+        "remove" => {
+            let ids = args[3..]
+                .iter()
+                .map(|s| s.parse())
+                .collect::<Result<Vec<_>, _>>()?;
+            remove_tracks(&input, &ids, OptimizeOptions::default())?
+        }
         "import" => {
             let source = std::fs::read(args.get(3).ok_or("source required")?)?;
             let ids = args[4..]

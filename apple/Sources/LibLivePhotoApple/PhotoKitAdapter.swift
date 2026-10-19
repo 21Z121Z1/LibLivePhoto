@@ -74,6 +74,8 @@ public enum PhotoKitAdapter {
     @discardableResult public static func importPair(still: URL, pairedVideo: URL, progress: @escaping (OperationProgress) -> Void = { _ in }, completion: @escaping (Result<String, Error>) -> Void) -> NativeOperation<String> {
         let op = NativeOperation(progress: progress, completion: completion)
         guard still.isFileURL, pairedVideo.isFileURL else { op.finish(.failure(LivePhotoAdapterError.invalidResources("local file URLs required"))); return op }
+        let permission = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+        guard permission == .authorized || permission == .limited else { op.finish(.failure(LivePhotoAdapterError.unavailable("host must obtain Photo Library add permission before importing"))); return op }
         guard op.beginCommit() else { return op }
         var identifier: String?
         PHPhotoLibrary.shared().performChanges({
@@ -86,6 +88,44 @@ public enum PhotoKitAdapter {
         }) { success, error in
             if success, let identifier = identifier { op.finish(.success(identifier)) }
             else { op.finish(.failure(error ?? LivePhotoAdapterError.nativeFailure("PhotoKit import failed"))) }
+        }
+        return op
+    }
+    /// No permission dialog or implicit iCloud download. The host supplies an
+    /// authorized asset and decides which existing adjustment data it supports.
+    @discardableResult public static func editingInput(for asset: PHAsset, networkAccessAllowed: Bool = false, canHandleAdjustmentData: @escaping (PHAdjustmentData) -> Bool = { _ in false }, progress: @escaping (OperationProgress) -> Void = { _ in }, completion: @escaping (Result<PHContentEditingInput, Error>) -> Void) -> NativeOperation<PHContentEditingInput> {
+        let op = NativeOperation(progress: progress, completion: completion)
+        let permission = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        guard permission == .authorized || permission == .limited else { op.finish(.failure(LivePhotoAdapterError.unavailable("host must obtain Photo Library read/write permission"))); return op }
+        guard asset.mediaSubtypes.contains(.photoLive) else { op.finish(.failure(LivePhotoAdapterError.invalidResources("asset is not a Live Photo"))); return op }
+        let options = PHContentEditingInputRequestOptions()
+        options.isNetworkAccessAllowed = networkAccessAllowed
+        options.canHandleAdjustmentData = canHandleAdjustmentData
+        options.progressHandler = { fraction, _, stop, _ in
+            if op.state == .cancelled { stop.pointee = true }
+            else { op.report(.init(.loading, fraction: fraction)) }
+        }
+        op.report(.init(.loading))
+        let request = asset.requestContentEditingInput(with: options) { input, info in
+            if info[PHContentEditingInputCancelledKey] as? Bool == true { op.finish(.failure(LivePhotoAdapterError.cancelled)) }
+            else if let error = info[PHContentEditingInputErrorKey] as? Error { op.finish(.failure(error)) }
+            else if let input = input { op.finish(.success(input)) }
+            else { op.finish(.failure(LivePhotoAdapterError.nativeFailure("PhotoKit did not provide editing input; asset may require network access"))) }
+        }
+        op.installCancellation { asset.cancelContentEditingInputRequest(request) }
+        return op
+    }
+    /// Caller retains the same-asset input/output association and supplies real
+    /// adjustment data. PhotoKit owns the non-cancellable atomic transaction.
+    @discardableResult public static func commitEdit(_ output: PHContentEditingOutput, for asset: PHAsset, progress: @escaping (OperationProgress) -> Void = { _ in }, completion: @escaping (Result<String, Error>) -> Void) -> NativeOperation<String> {
+        let op = NativeOperation(progress: progress, completion: completion)
+        let permission = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        guard permission == .authorized || permission == .limited else { op.finish(.failure(LivePhotoAdapterError.unavailable("host must obtain Photo Library read/write permission"))); return op }
+        guard asset.mediaSubtypes.contains(.photoLive), asset.canPerform(.content), output.adjustmentData != nil else { op.finish(.failure(LivePhotoAdapterError.invalidResources("editable Live Photo and explicit adjustment data required"))); return op }
+        guard op.beginCommit() else { return op }
+        PHPhotoLibrary.shared().performChanges({ PHAssetChangeRequest(for: asset).contentEditingOutput = output }) { success, error in
+            if success { op.finish(.success(asset.localIdentifier)) }
+            else { op.finish(.failure(error ?? LivePhotoAdapterError.nativeFailure("PhotoKit edit commit failed"))) }
         }
         return op
     }

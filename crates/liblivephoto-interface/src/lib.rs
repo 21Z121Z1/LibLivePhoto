@@ -284,9 +284,10 @@ fn execute(
         };
         return Ok(match result {
             Ok(result) => {
+                let mime = movie_container_mime(&result.bytes).map_err(|e| e.to_string())?;
                 let mut files = vec![OperationFile {
-                    name: "movie.mp4".into(),
-                    mime: "video/mp4".into(),
+                    name: format!("movie.{}", ext(mime)),
+                    mime: mime.into(),
                     resource_id: None,
                     bytes: result.bytes,
                 }];
@@ -366,13 +367,15 @@ fn execute(
                     .collect::<Vec<_>>()
             });
             let valid = issues.as_ref().is_ok_and(|v| v.is_empty());
-            Ok(ok(
-                json!({"valid":valid,"structuralChecks":format!("{:?}",report.checks),"diagnostics":photo.diagnostics().iter().map(|d|format!("{d:?}")).collect::<Vec<_>>(),"metadataIssues":issues.as_ref().ok(),"metadataError":metadata.err().map(|e|e.to_string())}),
-                Vec::new(),
-            ))
+            Ok(OperationResult {
+                success: valid,
+                metadata: json!({"valid":valid,"structuralChecks":format!("{:?}",report.checks),"diagnostics":photo.diagnostics().iter().map(|d|format!("{d:?}")).collect::<Vec<_>>(),"metadataIssues":issues.as_ref().ok(),"metadataError":metadata.err().map(|e|e.to_string())}),
+                files: Vec::new(),
+            })
         }
         "extract" => {
             let mut files = Vec::new();
+            let mut unavailable = Vec::new();
             if let Some(selected) = v.get("resourceIds") {
                 let selected = selected
                     .as_array()
@@ -408,11 +411,13 @@ fn execute(
                             resource_id: None,
                             bytes: bytes.into_owned(),
                         });
+                    } else {
+                        unavailable.push("xmp");
                     }
                 }
             }
             Ok(ok(
-                json!({"files":files.iter().map(|f|json!({"name":f.name,"mime":f.mime,"resourceId":f.resource_id,"bytes":f.bytes.len().to_string()})).collect::<Vec<_>>()}),
+                json!({"files":files.iter().map(|f|json!({"name":f.name,"mime":f.mime,"resourceId":f.resource_id,"bytes":f.bytes.len().to_string()})).collect::<Vec<_>>(),"unavailable":unavailable}),
                 files,
             ))
         }

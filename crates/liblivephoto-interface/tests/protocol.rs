@@ -41,3 +41,20 @@ fn request_type_errors_and_metadata_only_inputs_are_clear() {
     assert_eq!(metadata.metadata["verifiedMotion"], false);
     assert!(!process(r#"{"action":"metadata"}"#, still, b"unused movie").success);
 }
+#[test]
+fn physical_movie_brand_and_absent_optional_xmp_are_reported() {
+    let movie = include_bytes!("../../../web/public/demo/apple-paired.mov");
+    let still = include_bytes!("../../../web/public/demo/cover.jpg");
+    let optimized = process(r#"{"action":"optimize"}"#, movie, &[]);
+    assert!(optimized.success);
+    assert_eq!(optimized.files[0].mime, "video/quicktime");
+    assert_eq!(optimized.files[0].name, "movie.mov");
+    let extracted = process(
+        r#"{"action":"extract","inputKind":"parts","still":false,"video":false,"xmp":true}"#,
+        still,
+        movie,
+    );
+    assert!(extracted.success);
+    assert!(extracted.files.is_empty());
+    assert_eq!(extracted.metadata["unavailable"], json!(["xmp"]));
+}

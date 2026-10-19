@@ -16,7 +16,8 @@ npm --prefix web run dev
 
 Open `http://127.0.0.1:4173`. Choose your file(s) or the included synthetic sample.
 Ordinary still/video composition requires the explicit association checkbox.
-A failed operation leaves the prior preview visible; status describes the failure.
+Starting/replacing/cancelling an input clears previous media and object URLs.
+Late reads, fetches and seeks cannot replace the current result.
 
 Tests:
 
@@ -45,5 +46,13 @@ does not turn metadata preservation into HDR rendering or native Photos support.
 The optional LivePhotosKit binding in `src/timing.js` requires a caller-provided
 Player; it passes photoTime/frameTimes explicitly for HTMLVideoElement and accepts
 original MOV metadataVideoSrc. Apple Player runtime is not bundled or verified.
+
+`public/acceptance` contains additional original CC0 test media: stereo 440 Hz
+AAC over the same encoded H.264 scene, actual x265 HEVC/HEIC, and a JPEG2000 MOV
+whose codec the test browser cannot decode. Its generator refuses to overwrite
+existing paths. Seven browser tests include compositor `requestVideoFrameCallback`
+mediaTime at the exact photo frame, real AAC decode, real still/video codec
+errors, original-byte downloads, URL disposal and cancellation/replacement races.
+Headless audio decode does not prove audible output on a physical speaker.
 
 See [architecture and capability boundaries](../APPLE_API_ARCHITECTURE.md).
