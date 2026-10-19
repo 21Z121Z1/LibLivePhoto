@@ -126,16 +126,23 @@ public final class ServiceAcceptance extends Instrumentation {
             try (ParcelFileDescriptor fd=ParcelFileDescriptor.open(large,ParcelFileDescriptor.MODE_READ_ONLY)) {
                 MotionPhotoClient.Operation pending=parser.execute(new Request("parse"),MotionPhotoClient.Source.whole(fd),null,null);
                 phase="cancel actual service read";
+                check(pending.cancel(),"cancel an actual service read immediately");
+                try { pending.result().get(5,TimeUnit.SECONDS); throw new AssertionError("cancel returned success"); }
+                catch (CancellationException expected) { assertions++; }
+                check(Os.fstat(fd.getFileDescriptor()).st_size==32L*1024*1024,"cancel keeps caller-owned FD open");
+                phase="concurrent cancellation versus completion";
+                MotionPhotoClient.Operation race=parser.execute(new Request("version"),null,null,null);
                 AtomicInteger winners=new AtomicInteger();
                 CountDownLatch startCancel=new CountDownLatch(1);
-                Runnable cancel=()->{try{startCancel.await();if(pending.cancel())winners.incrementAndGet();}catch(InterruptedException error){Thread.currentThread().interrupt();}};
+                Runnable cancel=()->{try{startCancel.await();if(race.cancel())winners.incrementAndGet();}catch(InterruptedException error){Thread.currentThread().interrupt();}};
                 Thread firstCancel=new Thread(cancel),secondCancel=new Thread(cancel);
                 firstCancel.start();secondCancel.start();startCancel.countDown();firstCancel.join(5000);secondCancel.join(5000);
                 check(!firstCancel.isAlive()&&!secondCancel.isAlive(),"concurrent cancellation returns without blocking");
-                check(winners.get()==1,"exactly one caller wins terminal cancellation");
-                try { pending.result().get(5,TimeUnit.SECONDS); throw new AssertionError("cancel returned success"); }
-                catch (CancellationException | ExecutionException expected) { assertions++; }
-                check(Os.fstat(fd.getFileDescriptor()).st_size==32L*1024*1024,"cancel keeps caller-owned FD open");
+                check(winners.get()<=1,"at most one caller wins terminal cancellation");
+                if(winners.get()==1) {
+                    try { race.result().get(5,TimeUnit.SECONDS); throw new AssertionError("winning cancellation returned success"); }
+                    catch (CancellationException expected) { assertions++; }
+                } else check(race.result().get(40,TimeUnit.SECONDS).success,"completion may legitimately win before cancellation");
             } finally { large.delete(); }
             }
         } finally { stillFile.delete();movieFile.delete();motionFile.delete(); }

@@ -13,6 +13,12 @@ gates; it does not remove or replace those rows.
 Stability is a hard gate for all boards. See [STABILITY_GATES.md](STABILITY_GATES.md)
 for malformed ranges, cumulative allocation/copy bounds, FFI ownership,
 cancellation, failure rollback and the limits of each runtime acceptance claim.
+The [pinned source/test map](SOURCE_TEST_MAP.md) distinguishes public facade,
+internal builder use and operation-specific input/output differences. For the
+current branch SHA, Android is verified only if its CI artifact contains
+`runtime-receipt.json` with all four completed scopes; a partial trace below is
+historical evidence, not a substituted pass. Emulator success covers that x86_64
+API35 runtime, not an arm64 device, every API26+ runtime, or vendor Gallery.
 
 | Board / stable gate | Actual deliverable / acceptance | Current evidence or open requirement |
 | --- | --- | --- |

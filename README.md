@@ -47,6 +47,9 @@ The [complete interface inventory](evidence/GOOGLE_COMPLETE_INVENTORY.md) and
 and remaining native/device gates. See [native SDK](NATIVE_SDK.md), [CLI](CLI.md),
 [Java/JNI](java/README.md), [Android](android/README.md), [Apple](apple/README.md)
 and the [local browser demo](web/README.md).
+The [pinned source/test map](evidence/SOURCE_TEST_MAP.md) and
+[stability gates](evidence/STABILITY_GATES.md) make operation-specific coverage,
+cumulative resource limits and native acceptance boundaries explicit.
 See [core integration](CORE_INTEGRATION.md) for file ranges, AVIF, timed AGTM,
 display/color facts, explicit codec contracts and metadata-track removal.
 

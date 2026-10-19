@@ -14,6 +14,12 @@ own data structures; missing user capabilities cannot be hidden by that choice.
 
 Source locations below are relative to the pinned Google repository. Header
 declarations are checked against implementations, tests and CMake/Gradle targets.
+The [source/test map](SOURCE_TEST_MAP.md) links pinned declarations and
+implementations to concrete regressions, including each operation's different
+input/output behavior. [Stability gates](STABILITY_GATES.md) and
+[cd2159d evidence](stability-cd2159d.json) record cumulative budgets and actual
+local/host verification. Installed runtime status belongs to the exact-SHA CI
+artifact, separate from compilation and the historical partial traces below.
 
 | ID | Public capability / shipped interface | Google authority | Current implementation and status |
 | --- | --- | --- | --- |
@@ -45,10 +51,10 @@ declarations are checked against implementations, tests and CMake/Gradle targets
 | J02 | Java checker and extractor with diagnostics | MotionPhotoChecker, MotionPhotoExtractor, MotionPhotoJni | check/extract/raw metadata and selected operation schema implemented; exact original-byte/invalid-time/bounded stream tests run; Android service runtime separate |
 | J03 | Java metadata path/fd/range, collection classification and plugin controls | MetadataEngine, MetadataEngineJni | FileChannel descriptor/range ownership/cursor and metadata declaration classification/provider controls verified; complete raw source-block extraction available; no protobuf or C++ ABI compatibility promised |
 | J04 | Java AGTM path/bytes/fd/range/explicit timestamp; raw metadata extraction | MetadataEngine and JNI exports | complete AGTM JSON/raw payload via image photo time and standalone-video exact timestamp; actual JVM memory/path/channel-range equivalence, unknown/unrepresentable-time failures tested; extraction is not pixel rendering |
-| A01 | Isolated metadata parser service using ParcelFileDescriptor; bounded collection validation and ownership | IMetadataParserService.aidl, MetadataParserService, manifest | isolated metadata parser with FD/ranges, raw collection/classification/XMP/AGTM, bounded queue/client/cancel/pipe implemented; AAR/APK built with SDK36/NDK27.3 for arm64+x86_64; installed service runtime pending emulator gate |
-| A02 | Builder service path/memory | IMotionPhotoBuilderService.aidl, MotionPhotoBuilderService | builder service and FD client implemented; memory/path can use owned host FDs or direct Java engine; exact plan/error pipe results; SDK build passed, installed-APK execution pending; Moments excluded |
-| A03 | Checker service | IMotionPhotoCheckerService.aidl, MotionPhotoCheckerService | role-limited checker service implemented, owner UID/FD/callback ownership and bounds checks; SDK build passed, actual Binder execution pending |
-| A04 | Extractor service with optional output paths | IMotionPhotoExtractorService.aidl, MotionPhotoExtractorService | extractor service handles selected outputs and full raw metadata over pipe; host publishes new files; SDK build passed, actual Binder execution pending |
+| A01 | Isolated metadata parser service using ParcelFileDescriptor; bounded collection validation and ownership | IMetadataParserService.aidl, MetadataParserService, manifest | isolated parser/FD/raw metadata/AGTM/client/queue/pipe implemented; SDK36/NDK27.3 arm64+x86_64 built; isolated native version, metadata progress/cursor and parsing executed at 5396a1b. Complete acceptance requires the exact-SHA runtime receipt for all four scopes, including metadata and cancellation; arm64 device/native Gallery acceptance separate |
+| A02 | Builder service path/memory | IMotionPhotoBuilderService.aidl, MotionPhotoBuilderService | FD builder implemented; memory/path can use host FDs or direct Java engine. Actual build and 1/3-time rejection executed at 5396a1b; full runtime acceptance follows the exact-SHA four-scope receipt; Moments excluded |
+| A03 | Checker service | IMotionPhotoCheckerService.aidl, MotionPhotoCheckerService | role-limited checker/owner UID/FD/callback bounds implemented; actual version/check and wrong-role rejection executed at 5396a1b. Full runtime acceptance follows the exact-SHA four-scope receipt |
+| A04 | Extractor service with optional output paths | IMotionPhotoExtractorService.aidl, MotionPhotoExtractorService | selected/raw metadata output pipe implemented; host publishes new files. Actual movie extraction compared byte-exact at 5396a1b. Complete AGTM and full runtime acceptance follow the exact-SHA four-scope receipt |
 | V01 | Java/native and Android service integration tests/build packaging | lib/java/build.gradle, lib/android/build.gradle, javatests, core CMake JNI target | C/JNI/Java8 jar and extracted SDK acceptance passed on Linux/macOS/Windows at 9fa6208; Android AAR/real test APK and Apple static XCFramework built; mobile runtime/native permission gates remain separate |
 | V02 | Linux/macOS/Windows existing consumers and fixture/fuzz gates | user repository verify.yml; Google build_and_test.yml | cross-platform original consumers/corpus/fuzz retained; 9fa6208 host CI passed with 143 tests plus fixtures/sanitizers; newest core metadata code has its own continuing checks, never substituted by historical receipts |
 
