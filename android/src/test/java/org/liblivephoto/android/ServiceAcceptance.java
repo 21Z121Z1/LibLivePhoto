@@ -128,7 +128,9 @@ public final class ServiceAcceptance extends Instrumentation {
                         if(Os.lseek(primaryFD.getFileDescriptor(),0,OsConstants.SEEK_CUR)!=3)throw new AssertionError("syntax source cursor changed");
                         return value;
                     } finally { primaryFile.delete();secondaryFile.delete(); }
-                },"android-actual-jni-and-binder");
+                },"android-actual-jni-and-binder",(id,fields,files,sha)->{
+                    Bundle passed=new Bundle();passed.putString("syntaxCase",id);passed.putInt("syntaxFields",fields);passed.putInt("syntaxFiles",files);passed.putString("syntaxManifestSha256",sha);sendStatus(1,passed);
+                });
             }
             Os.lseek(motionFD.getFileDescriptor(),7,OsConstants.SEEK_SET);
             MotionPhotoClient.Source source=MotionPhotoClient.Source.range(motionFD,13,motion.length);

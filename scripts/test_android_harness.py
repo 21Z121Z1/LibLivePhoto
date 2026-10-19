@@ -143,7 +143,8 @@ class RuntimeGates(unittest.TestCase):
                     if scope == crash_scope:
                         return result('INSTRUMENTATION_RESULT: shortMsg=Process crashed.\nINSTRUMENTATION_CODE: 0\n')
                     count = harness.SCOPES[scope] - int(scope == bad_scope)
-                    return result('ANDROID_SERVICE_ACCEPTANCE passed; scope=' + scope +
+                    syntax = ''.join('INSTRUMENTATION_STATUS: syntaxCase='+id+'\nINSTRUMENTATION_STATUS: syntaxManifestSha256='+harness.SYNTAX_MANIFEST_SHA256+'\n' for id in harness.SYNTAX_CASE_IDS) if scope=='syntax' else ''
+                    return result(syntax+'ANDROID_SERVICE_ACCEPTANCE passed; scope=' + scope +
                                   '; assertions=' + str(count) + '\nINSTRUMENTATION_CODE: -1\n')
                 return result('unit-fixture\n')
 
@@ -171,6 +172,15 @@ class RuntimeGates(unittest.TestCase):
         self.assertEqual(receipt['completed_scopes'], list(harness.SCOPES))
         self.assertEqual(receipt['assertions'], 115)
         self.assertTrue(receipt['owned_package_removed'])
+
+    def test_total_count_cannot_substitute_for_individual_new_case_evidence(self):
+        with self.assertRaisesRegex(RuntimeError,'all42 individual'):
+            harness.verify_scope('syntax','ANDROID_SERVICE_ACCEPTANCE passed; scope=syntax; assertions=50\nINSTRUMENTATION_CODE: -1\n')
+
+    def test_syntax_manifest_drift_cannot_produce_success(self):
+        text=''.join('INSTRUMENTATION_STATUS: syntaxCase='+id+'\nINSTRUMENTATION_STATUS: syntaxManifestSha256=wrong\n' for id in harness.SYNTAX_CASE_IDS)
+        with self.assertRaisesRegex(RuntimeError,'exact manifest SHA256'):
+            harness.verify_scope('syntax',text+'ANDROID_SERVICE_ACCEPTANCE passed; scope=syntax; assertions=50\nINSTRUMENTATION_CODE: -1\n')
 
     def test_preinstall_failure_has_receipt_and_diagnostics_without_mutation(self):
         receipt, calls, error = self.scenario(readiness_failure=True)

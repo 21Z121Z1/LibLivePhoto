@@ -9,6 +9,7 @@ import java.util.*;
 public final class SyntaxContracts {
     public interface Reader { byte[] read(String name) throws Exception; }
     public interface Executor { NativeResult execute(String request, byte[] primary, byte[] movie) throws Exception; }
+    public interface CaseObserver { void passed(String id, int fields, int files, String manifestSha256); }
     private static void check(boolean value, String context) { if (!value) throw new AssertionError(context); }
     private static String digest(byte[] bytes) throws Exception {
         StringBuilder text = new StringBuilder();
@@ -24,7 +25,11 @@ public final class SyntaxContracts {
     }
     @SuppressWarnings("unchecked")
     public static int run(Reader reader, Executor executor, String label) throws Exception {
+        return run(reader,executor,label,(id,fields,files,sha)->{});
+    }
+    public static int run(Reader reader, Executor executor, String label, CaseObserver observer) throws Exception {
         byte[] manifestBytes = reader.read("cases.json");
+        String manifestDigest = digest(manifestBytes);
         Map<?,?> manifest = (Map<?,?>)Json.parse(new String(manifestBytes,StandardCharsets.UTF_8));
         for (Map.Entry<?,?> entry : ((Map<?,?>)manifest.get("sha256")).entrySet())
             check(digest(reader.read((String)entry.getKey())).equals(entry.getValue()), "fixture hash "+entry.getKey());
@@ -51,9 +56,10 @@ public final class SyntaxContracts {
             }
             previous.put(id,result); cases++;
             System.out.println("SYNTAX_CONTRACT_CASE "+label+" "+id+" fields="+((List<?>)c.get("expect")).size()+" files="+files.size());
+            observer.passed(id,((List<?>)c.get("expect")).size(),files.size(),manifestDigest);
         }
         check(cases==42,"complete syntax suite required");
-        System.out.println("SYNTAX_CONTRACTS_PASSED entry="+label+" cases="+cases+" manifest_sha256="+digest(manifestBytes));
+        System.out.println("SYNTAX_CONTRACTS_PASSED entry="+label+" cases="+cases+" manifest_sha256="+manifestDigest);
         return cases;
     }
 

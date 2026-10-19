@@ -3,6 +3,7 @@
 import argparse
 import datetime
 import json
+import hashlib
 import re
 import subprocess
 import tempfile
@@ -12,6 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = 'org.liblivephoto.android.acceptance'
 SCOPES = {'core': 20, 'metadata': 11, 'lifecycle': 16, 'concurrency': 18, 'syntax': 50}
+SYNTAX_MANIFEST = ROOT/'fixtures/syntax/cases.json'
+SYNTAX_CASE_IDS = [case['id'] for case in json.loads(SYNTAX_MANIFEST.read_text())['cases']]
+SYNTAX_MANIFEST_SHA256 = hashlib.sha256(SYNTAX_MANIFEST.read_bytes()).hexdigest()
 
 
 def string(value):
@@ -109,6 +113,11 @@ def verify_scope(scope, text):
     if counts != [str(SCOPES[scope])] or codes != ['-1']:
         raise RuntimeError('actual Android acceptance failed in ' + scope + '; expected ' +
                            str(SCOPES[scope]) + ' assertions and INSTRUMENTATION_CODE: -1')
+    if scope == 'syntax':
+        ids = re.findall(r'^INSTRUMENTATION_STATUS: syntaxCase=([^\r\n]+)', text, re.MULTILINE)
+        digests = re.findall(r'^INSTRUMENTATION_STATUS: syntaxManifestSha256=([^\r\n]+)', text, re.MULTILINE)
+        if ids != SYNTAX_CASE_IDS or digests != [SYNTAX_MANIFEST_SHA256]*42:
+            raise RuntimeError('actual Android syntax acceptance requires all42 individual cases in manifest order and the exact manifest SHA256')
 
 
 def diagnostic_snapshot(adb, filename, label, command, timeout):

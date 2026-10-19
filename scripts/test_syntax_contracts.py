@@ -119,5 +119,7 @@ def main():
         'source_sha256':original_hash,'stz2_tables':tables,'packets':legacy,'outputs':outputs,'calls':calls,
         'acceptance':acceptance,'independent_packet_checks':packet_checks,'actual_discarded_unreferenced_media_bytes':len(unused),
         'ffprobe_version':subprocess.check_output(['ffprobe','-version'],text=True).splitlines()[0]}
-    (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print('passed; receipt: '+str(out/'receipt.json'))
+    (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+    print('INDEPENDENT_PACKET_CONTRACTS_PASSED '+json.dumps({'implementation_sha':receipt['implementation_sha'],'outputs':len(packet_checks),'packets':sum(len(row['packets']) for row in packet_checks),'actual_discarded_media_bytes':len(unused),'ffprobe_version':receipt['ffprobe_version']}),flush=True)
+    print('passed; receipt: '+str(out/'receipt.json'))
 if __name__=='__main__':main()

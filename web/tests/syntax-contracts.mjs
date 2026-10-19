@@ -29,8 +29,9 @@ function check(value, context) { if (!value) throw Error(context); }
 export async function runSyntaxContracts({load, process, label}) {
   const manifestBytes = await load('cases.json');
   const manifest = JSON.parse(new TextDecoder().decode(manifestBytes));
+  const digest = async bytes => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)), b => b.toString(16).padStart(2,'0')).join('');
   for (const [name, expected] of Object.entries(manifest.sha256)) {
-    const hash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await load(name))), b => b.toString(16).padStart(2,'0')).join('');
+    const hash = await digest(await load(name));
     check(hash === expected, `fixture hash ${name}`);
   }
   const previous = new Map(), receipts = [];
@@ -52,7 +53,7 @@ export async function runSyntaxContracts({load, process, label}) {
     receipts.push({id:c.id,fields:c.expect.length,files:result.files.length});
     console.log(`SYNTAX_CONTRACT_CASE ${label} ${c.id} fields=${c.expect.length} files=${result.files.length}`);
   }
-  const receipt = {entry:label,cases:receipts.length,checks:receipts};
+  const receipt = {entry:label,cases:receipts.length,checks:receipts,manifest_sha256:await digest(manifestBytes)};
   console.log('SYNTAX_CONTRACTS_PASSED '+JSON.stringify(receipt));
   return receipt;
 }
