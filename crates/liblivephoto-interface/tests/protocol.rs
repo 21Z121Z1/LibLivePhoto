@@ -58,3 +58,35 @@ fn physical_movie_brand_and_absent_optional_xmp_are_reported() {
     assert!(extracted.files.is_empty());
     assert_eq!(extracted.metadata["unavailable"], json!(["xmp"]));
 }
+#[test]
+fn agtm_binding_returns_complete_raw_metadata_and_source_classification_stays_unverified() {
+    let movie = include_bytes!("../../../fixtures/bindings/agtm-video.mp4");
+    let image = include_bytes!("../../../fixtures/bindings/agtm-motion.jpg");
+    let raw = include_bytes!("../../../fixtures/bindings/agtm-raw.bin");
+    let video_result = process(
+        r#"{"action":"agtm","videoInput":true,"time":{"value":"1","timescale":1}}"#,
+        movie,
+        &[],
+    );
+    let image_result = process(r#"{"action":"agtm"}"#, image, &[]);
+    for result in [video_result, image_result] {
+        assert!(result.success);
+        assert_eq!(result.files[0].bytes, raw);
+        assert_eq!(
+            result.metadata["samples"][0]["metadata"]["rules"]
+                .as_array()
+                .unwrap()
+                .len(),
+            2
+        );
+        assert_eq!(result.metadata["renderedPixels"], false);
+    }
+    let classification = process(
+        r#"{"action":"classify-metadata"}"#,
+        include_bytes!("../../../fixtures/bindings/collection.json"),
+        &[],
+    );
+    assert!(classification.success);
+    assert_eq!(classification.metadata["declaresMotion"], true);
+    assert_eq!(classification.metadata["verifiedMotion"], false);
+}

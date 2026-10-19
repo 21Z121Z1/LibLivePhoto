@@ -13,6 +13,8 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
       - run: cargo build --locked -p liblivephoto-native
       - run: swift test --package-path apple
         env:
@@ -20,11 +22,18 @@ jobs:
       - name: Compile iOS native adapters against the simulator SDK
         working-directory: apple
         run: xcodebuild -scheme LibLivePhotoApple -destination 'generic/platform=iOS Simulator' -derivedDataPath ../evidence/local/apple-build CODE_SIGNING_ALLOWED=NO build
+      - run: python3 scripts/package_apple.py
+      - run: python3 scripts/test_apple_simulator.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: apple-sdk-build
-          path: evidence/local/apple-build/Logs
+          path: |
+            evidence/local/apple-build/Logs
+            dist/apple/LibLivePhotoCore.xcframework
+            dist/apple/*receipt.json
+            dist/apple/simulator-acceptance/*.log
+            dist/apple/simulator-acceptance/*receipt.json
   web:
     runs-on: ubuntu-latest
     steps:

@@ -79,6 +79,17 @@ public final class ServiceAcceptance extends Instrumentation {
             NativeResult outOfBounds=invoke(parser,new Request("metadata"),MotionPhotoClient.Source.range(motionFD,13,motion.length+100),null);
             check(!outOfBounds.success&&outOfBounds.files.isEmpty(),"range beyond source diagnosed without publication");
             for (int i=0;i<8;i++) check(invoke(parser,new Request("parse"),source,null).success,"repeated service response/descriptor lifetime");
+            byte[] agtmBytes=asset("bindings/agtm-video.mp4"), rawAgtm=asset("bindings/agtm-raw.bin"), collectionBytes=asset("bindings/collection.json");
+            File agtmFile=file("own-agtm.bin",agtmBytes,11),collectionFile=file("own-collection.bin",collectionBytes,0);
+            try(ParcelFileDescriptor agtmFD=ParcelFileDescriptor.open(agtmFile,ParcelFileDescriptor.MODE_READ_ONLY);
+                ParcelFileDescriptor collectionFD=ParcelFileDescriptor.open(collectionFile,ParcelFileDescriptor.MODE_READ_ONLY)) {
+                MotionPhotoClient.Source agtmSource=MotionPhotoClient.Source.range(agtmFD,11,agtmBytes.length);
+                NativeResult agtm=invoke(parser,new Request("agtm").option("videoInput",true).time(new ExactTime(1,1)),agtmSource,null);
+                check(agtm.success&&agtm.files.size()==1&&Arrays.equals(rawAgtm,agtm.files.get(0).copyBytes()),"actual isolated AGTM service raw byte extraction");
+                check(!invoke(extractor,new Request("agtm").option("videoInput",true).time(new ExactTime(13,16)),agtmSource,null).success,"service AGTM exact time rejection");
+                NativeResult classified=invoke(parser,new Request("classify-metadata"),MotionPhotoClient.Source.range(collectionFD,0,collectionBytes.length),null);
+                check(classified.success&&Boolean.TRUE.equals(classified.metadata.get("declaresMotion"))&&Boolean.FALSE.equals(classified.metadata.get("verifiedMotion")),"serialized metadata declaration is not source validation");
+            } finally { agtmFile.delete();collectionFile.delete(); }
             // A large FD read keeps cancellation observable without replacing
             // the core with a delay/mock service. No private media is used.
             File large=new File(getTargetContext().getCacheDir(),"own-cancel.bin");

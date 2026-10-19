@@ -101,7 +101,7 @@ public enum PhotoKitAdapter {
         let options = PHContentEditingInputRequestOptions()
         options.isNetworkAccessAllowed = networkAccessAllowed
         options.canHandleAdjustmentData = canHandleAdjustmentData
-        options.progressHandler = { fraction, _, stop, _ in
+        options.progressHandler = { fraction, stop in
             if op.state == .cancelled { stop.pointee = true }
             else { op.report(.init(.loading, fraction: fraction)) }
         }

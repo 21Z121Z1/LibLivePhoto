@@ -6,6 +6,7 @@ changes are performed here. Missing toolchains fail with their exact path.
 """
 import argparse, hashlib, json, os, re, shutil, subprocess, zipfile
 from pathlib import Path
+from package_native import dependency_notices, source_identity
 
 ROOT = Path(__file__).resolve().parents[1]
 ABIS = {
@@ -68,13 +69,16 @@ def main():
         dest.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT/'target'/target/'release/liblivephoto_native.so', dest/'liblivephoto_native.so')
     aar = build/'liblivephoto-android.aar'
-    with zipfile.ZipFile(aar, 'w', zipfile.ZIP_DEFLATED) as archive:
+    with zipfile.ZipFile(aar, 'w', zipfile.ZIP_DEFLATED, strict_timestamps=False) as archive:
         archive.write(ROOT/'android/src/main/AndroidManifest.xml', 'AndroidManifest.xml')
         archive.write(build/'classes.jar', 'classes.jar')
         archive.writestr('R.txt', '')
         archive.writestr('proguard.txt', '-keep class org.liblivephoto.NativeEngine { native <methods>; }\n')
         archive.write(ROOT/'LICENSE', 'META-INF/LICENSE')
         archive.write(ROOT/'evidence/native-dependencies.json', 'META-INF/native-dependencies.json')
+        license_files,licenses=dependency_notices()
+        for name,path in license_files.items():archive.write(path, 'META-INF/'+name)
+        archive.writestr('META-INF/dependency-notices.json',json.dumps(licenses,indent=2)+'\n')
         for abi in abis:
             archive.write(build/'jni'/abi/'liblivephoto_native.so', 'jni/'+abi+'/liblivephoto_native.so')
         for source in sorted((ROOT/'android/src/main/aidl').rglob('*.aidl')):
@@ -84,8 +88,12 @@ def main():
     run([*java, 'sun.tools.jar.Main', '--create', '--file', build/'test-classes.jar', '-C', build/'test-classes', '.'])
     run([tools/'d8', '--lib', platform/'android.jar', '--min-api', '26', '--output', build/'dex', build/'classes.jar', build/'test-classes.jar'])
     unsigned = build/'acceptance-unsigned.apk'
+    assets = build/'assets/bindings'
+    assets.mkdir(parents=True, exist_ok=True)
+    for source in (ROOT/'fixtures/bindings').iterdir():
+        if source.is_file(): shutil.copyfile(source, assets/source.name)
     run([tools/'aapt2', 'link', '-o', unsigned, '--manifest', ROOT/'android/src/test/AndroidManifest.xml',
-         '-I', platform/'android.jar', '--min-sdk-version', '26', '--target-sdk-version', '35', '-A', ROOT/'web/public/demo'])
+         '-I', platform/'android.jar', '--min-sdk-version', '26', '--target-sdk-version', '35', '-A', ROOT/'web/public/demo', '-A', build/'assets'])
     with zipfile.ZipFile(unsigned, 'a', zipfile.ZIP_DEFLATED) as archive:
         archive.write(build/'dex/classes.dex', 'classes.dex')
         for abi in abis:
@@ -100,7 +108,7 @@ def main():
     apk = build/'liblivephoto-acceptance.apk'
     run([tools/'apksigner', 'sign', '--ks', key, '--ks-pass', 'pass:local-acceptance-only', '--key-pass', 'pass:local-acceptance-only', '--out', apk, aligned])
     run([tools/'apksigner', 'verify', apk])
-    receipt = {'implementation_sha': subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+    receipt = {**source_identity(),
                'sdk_platform': platform.name, 'build_tools': tools.name, 'ndk': ndk.name, 'abis': abis,
                'artifacts': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in [aar, apk]},
                'runtime_acceptance': 'not implied by building; run scripts/test_android.py on an authorized device/emulator'}

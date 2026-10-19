@@ -14,7 +14,21 @@ public final class NativeSmoke {
     ByteArrayOutputStream wire=new ByteArrayOutputStream();extracted.writeEnvelope(wire);NativeResult transported=NativeResult.readEnvelope(new ByteArrayInputStream(wire.toByteArray()),wire.size());check(transported.success&&Arrays.equals(movie,transported.files.get(0).copyBytes()),"streamed response preserves original payload");
     try{NativeResult.readEnvelope(new ByteArrayInputStream(wire.toByteArray()),16);throw new AssertionError("stream budget ignored");}catch(IOException expected){}
     wire.reset();NativeResult.failure("service error \"quoted\" ").writeEnvelope(wire);check(!NativeResult.decode(wire.toByteArray()).success,"structured transport failure");
+    Path bindings=demo.getParent().getParent().getParent().resolve("fixtures/bindings");byte[] rawAgtm=Files.readAllBytes(bindings.resolve("agtm-raw.bin"));
+    byte[] agtmMovie=Files.readAllBytes(bindings.resolve("agtm-video.mp4")),agtmMotion=Files.readAllBytes(bindings.resolve("agtm-motion.jpg"));
+    Path bounded=Files.createTempFile("liblivephoto-agtm-range-",".bin");try{
+      try(OutputStream out=Files.newOutputStream(bounded)){out.write(new byte[19]);out.write(agtmMovie);out.write(new byte[3]);}
+      try(FileChannel channel=FileChannel.open(bounded,StandardOpenOption.READ)){
+        channel.position(5);
+        for(Input source:Arrays.asList(Input.bytes(agtmMovie),Input.path(bindings.resolve("agtm-video.mp4")),Input.range(channel,19,agtmMovie.length))){NativeResult agtm=engine.agtm(source,new ExactTime(1,1),true);check(agtm.success&&agtm.files.size()==1&&Arrays.equals(rawAgtm,agtm.files.get(0).copyBytes()),"AGTM bytes across memory/path/descriptor-range: "+agtm.headerJson);check(agtm.headerJson.contains("renderedPixels\":false")&&agtm.headerJson.contains("encodedSlopeAngle"),"complete AGTM model without render claim");}
+        check(channel.position()==5&&channel.isOpen(),"AGTM descriptor cursor/ownership");
+      }
+    }finally{Files.delete(bounded);}
+    NativeResult imageAgtm=engine.agtm(Input.bytes(agtmMotion),null,false);check(imageAgtm.success&&Arrays.equals(rawAgtm,imageAgtm.files.get(0).copyBytes()),"AGTM image's original photo time");
+    check(!engine.agtm(Input.bytes(agtmMovie),new ExactTime(13,16),true).success,"AGTM does not round an unrepresentable metadata-track time");
+    NativeResult classification=engine.classifyMetadata(Input.path(bindings.resolve("collection.json")));check(classification.success&&Boolean.TRUE.equals(classification.metadata.get("declaresMotion"))&&Boolean.FALSE.equals(classification.metadata.get("verifiedMotion")),"serialized collection declares, never revalidates source");
+    check(engine.execute(new Request("metadata").disableThirdParty(true),Input.bytes(agtmMotion),null).success,"provider controls across JNI");
     try{NativeResult.decode(new byte[]{1,2,3,4});throw new AssertionError("bad envelope accepted");}catch(IOException expected){}
-    System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded streamed envelope");
+    System.out.println("JNI_SMOKE passed: version, memory/path/range, exact build/extract/time, diagnostics, cancellation, 32 response lifetimes, bounded streamed envelope, AGTM image/video/input parity, source-unverified collection classification and provider controls");
   }
 }

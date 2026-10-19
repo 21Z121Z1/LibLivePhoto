@@ -36,6 +36,17 @@ jobs:
           java-version: 21
       - run: python scripts/test_java.py
       - run: python scripts/test_c_abi.py
+      - run: python scripts/package_native.py
+      - name: Verify packaged release SDK and external Java consumer
+        shell: bash
+        run: python scripts/test_packaged_sdk.py dist/*-sdk.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-sdk-${{ matrix.os }}
+          path: |
+            dist/*-sdk.zip
+            dist/*-sdk.zip.sha256
+            dist/*-sdk.zip.receipt.json
   fixtures:
     name: Exact original fixture round trips
     runs-on: ubuntu-latest

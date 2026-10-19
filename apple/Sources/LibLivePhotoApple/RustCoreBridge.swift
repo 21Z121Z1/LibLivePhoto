@@ -68,9 +68,18 @@ public final class RustCoreBridge {
     private let responseBytes: Bytes
     private let responseLength: Length
     private let free: Free
-    public init(libraryURL: URL) throws {
+    public convenience init(libraryURL: URL) throws {
         guard libraryURL.isFileURL else { throw LivePhotoAdapterError.invalidResources("native core requires a local library URL") }
-        guard let handle = dlopen(libraryURL.path, RTLD_NOW | RTLD_LOCAL) else { throw LivePhotoAdapterError.unavailable("native core library could not be loaded") }
+        try self.init(handle: dlopen(libraryURL.path, RTLD_NOW | RTLD_LOCAL))
+    }
+    /// For a host that statically links the C core (e.g. the XCFramework).
+    /// Its linker must retain/export the llp_* symbols; no file is dlopened.
+    public convenience init(linkedCore: Bool) throws {
+        guard linkedCore else { throw LivePhotoAdapterError.unavailable("linkedCore must be explicitly enabled") }
+        try self.init(handle: dlopen(nil, RTLD_NOW | RTLD_LOCAL))
+    }
+    private init(handle: UnsafeMutableRawPointer?) throws {
+        guard let handle = handle else { throw LivePhotoAdapterError.unavailable("native core library could not be loaded") }
         func symbol<T>(_ name: String, _ type: T.Type) throws -> T {
             guard let address = dlsym(handle, name) else { throw LivePhotoAdapterError.unavailable("missing native symbol: \(name)") }
             return unsafeBitCast(address, to: type)

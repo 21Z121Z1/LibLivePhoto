@@ -58,8 +58,9 @@ int main(int argc, char** argv) {
     if (src!=MP4_INVALID_FILE_HANDLE) MP4Close(src);
     if (dst!=MP4_INVALID_FILE_HANDLE) MP4Close(dst);
   } else return 2;
+  const std::string input_tracks=Tracks(input), output_tracks=argc>3?Tracks(argv[3]):"null";
   std::cout<<"MP4_REFERENCE_JSON\t{\"success\":"<<(ok?"true":"false")
            <<",\"optimizationSupported\":"<<(support?"true":"false")
-           <<",\"summary\":"<<JsonText(summary)<<",\"inputTracks\":"<<Tracks(input)
-           <<",\"outputTracks\":"<<(argc>3?Tracks(argv[3]):"null")<<"}\n";
+           <<",\"summary\":"<<JsonText(summary)<<",\"inputTracks\":"<<input_tracks
+           <<",\"outputTracks\":"<<output_tracks<<"}\n";
 }
