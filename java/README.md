@@ -15,7 +15,9 @@ NativeResult built = engine.build(Input.bytes(still), Input.bytes(movie),
 
 Set `-Dliblivephoto.native.path=/absolute/path/to/the/library` or configure the
 normal platform library search path for `livephoto_native`. Methods expose actual
-parse/check/extract/build/metadata/AGTM capabilities; `Request` + `execute` exposes
+parse/check/extract/build/metadata/AGTM capabilities; `extractMetadata` copies
+complete source blocks with raw/coded-content labels and a cumulative budget.
+`Request` + `execute` exposes
 provider filtering, explicit independent parts, Apple pair IDs, sidecar/drop policy,
 selected resources, track import/removal and optimization. Request JSON follows the
 shared `liblivephoto-interface` protocol. No Google Java/protobuf ABI compatibility
@@ -30,7 +32,7 @@ No reflection into private FileDescriptor fields or guessed raw descriptor is us
 
 Outputs are owned byte buffers with name/MIME/resource identity and an exact JSON
 report. `data()` is read-only; `copyBytes()` returns a new array. `writeNew` refuses
-to overwrite existing paths. A successful call means the operation ran; consult
+to overwrite existing paths. Success includes a valid check result; consult
 its semantic result (`valid`, `samples`, plan blockers and resource dispositions).
 No method uploads, publishes, transcodes or implicitly deletes tracks. Original
 inputs are cloned/snapshotted and remain unchanged.

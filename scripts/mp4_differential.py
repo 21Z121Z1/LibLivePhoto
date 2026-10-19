@@ -6,6 +6,7 @@ are recorded rather than silently treating Google output as normative.
 """
 import argparse,hashlib,json,shlex,subprocess,tempfile
 from pathlib import Path
+from package_native import source_identity
 from google_differential import packets
 ROOT=Path(__file__).resolve().parents[1];SHA='12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3'
 def run(args,**kw):
@@ -45,6 +46,6 @@ def main():
     src=ROOT/'web/public/demo/motion.mp4';rust=out/'copy-rust.mp4';google_out=out/'copy-google.mp4';expected=packets(src)*2
     report=json.loads(run([probe,'import',src,rust,src,'1']));reference=google(['copy-track',src,google_out,src,'1']);assert reference['success'];assert packets(rust)==expected
     rows.append({'case':'copy-existing-video-track','google':reference,'google_comparison':compare(expected,packets(google_out)),'rust':compare(expected,packets(rust)),'rust_report':report})
-    receipt={'reference_sha':SHA,'implementation_sha':run(['git','-C',ROOT,'rev-parse','HEAD']).strip(),'working_tree_diff_sha256':hashlib.sha256(run(['git','-C',ROOT,'diff','HEAD']).encode()).hexdigest(),'cases':rows,'limits':['Google builder primary-track path deletes metadata; Rust optimizer retains it. Removal requires explicit track selection.','Google MP4CopyTrack is audited as an internal primitive; this does not claim Google exposes arbitrary track import through its facade.','Fragmented/indexed/external/unknown reference layouts are rejected by the bounded Rust API.','No metadata track or Moments construction is performed.']}
+    receipt={'reference_sha':SHA,**source_identity(),'working_tree_diff_sha256':hashlib.sha256(run(['git','-C',ROOT,'diff','HEAD']).encode()).hexdigest(),'cases':rows,'limits':['Google builder primary-track path deletes metadata; Rust optimizer retains it. Removal requires explicit track selection.','Google MP4CopyTrack is audited as an internal primitive; this does not claim Google exposes arbitrary track import through its facade.','Fragmented/indexed/external/unknown reference layouts are rejected by the bounded Rust API.','No metadata track or Moments construction is performed.']}
     (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print(out/'receipt.json')
 if __name__=='__main__':main()

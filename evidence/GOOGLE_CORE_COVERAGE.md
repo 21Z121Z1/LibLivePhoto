@@ -1,5 +1,12 @@
 # Google core coverage
 
+This preserves the **first-stage historical comparison**. Later metadata,
+scoring/remux, CLI/JNI/Android and Apple/web implementations are tracked in
+[the complete inventory](GOOGLE_COMPLETE_INVENTORY.md) and
+[acceptance checklist](ACCEPTANCE_CHECKLIST.md). Historical “later work” and
+“pending” cells below are not current implementation status. Original evidence
+is retained for traceability.
+
 This is a behavior comparison. It is not C++ ABI compatibility or device acceptance.
 The reference is Google libmotionphoto commit
 `12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3` ([source tree][google]).

@@ -42,6 +42,11 @@ Read [format support](FORMAT_SUPPORT.md), [compatibility](COMPATIBILITY.md),
 [vendor evidence](evidence/VENDORS.md) before making a compatibility claim.
 The first Google core comparison is recorded in the [coverage matrix](evidence/GOOGLE_CORE_COVERAGE.md).
 The [run receipt](evidence/GOOGLE_CORE_RUN.md) records the tested SHA, commands and results.
+The [complete interface inventory](evidence/GOOGLE_COMPLETE_INVENTORY.md) and
+[acceptance checklist](evidence/ACCEPTANCE_CHECKLIST.md) track subsequent work
+and remaining native/device gates. See [native SDK](NATIVE_SDK.md), [CLI](CLI.md),
+[Java/JNI](java/README.md), [Android](android/README.md), [Apple](apple/README.md)
+and the [local browser demo](web/README.md).
 See [core integration](CORE_INTEGRATION.md) for file ranges, AVIF, timed AGTM,
 display/color facts, explicit codec contracts and metadata-track removal.
 

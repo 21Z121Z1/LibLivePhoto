@@ -15,7 +15,9 @@ import PhotosUI
     public func play(style: PHLivePhotoViewPlaybackStyle = .full) { view.startPlayback(with: style) }
     public func stop() { view.stopPlayback() }
     public func setMuted(_ muted: Bool) { view.isMuted = muted }
-    public var playbackGesture: NSGestureRecognizer { view.playbackGestureRecognizer }
+    /// The macOS SDK has no public playbackGestureRecognizer accessor.
+    /// Hosts can attach an AppKit gesture and call play/stop explicitly.
+    public static let playbackGestureAccess = Capability.unavailable("macOS PHLivePhotoView has no public playbackGestureRecognizer accessor")
     public func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) { state = .playing(playbackStyle); onState?(state) }
     public func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) { state = .idle; onState?(state) }
 }

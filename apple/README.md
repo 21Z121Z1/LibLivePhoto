@@ -17,7 +17,7 @@ The caller obtains the appropriate Photo Library permission. No API is invoked
 automatically by package import. Compilation/invalid-input tests do not exercise
 user libraries or prove valid-pair import acceptance.
 
-NativePlayback wraps iOS and macOS system views, state, mute and system playback gesture. Its native object test does not establish physical playback/HDR acceptance.
+NativePlayback wraps iOS and macOS system views, state and mute. The public system playback gesture accessor exists on iOS; macOS reports that accessor unavailable. Its native object test does not establish physical playback/HDR acceptance.
 NativeEditingSession forwards the system frame processor/audio volume and owns
 preview/output cancellation. Operations on each editing context are serialized by the adapter; retain
 sessions/wrappers for their operation lifetime. NativeOperation callbacks may run

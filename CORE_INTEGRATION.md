@@ -108,8 +108,10 @@ inventing weight scaling. It also retains unknown preset selectors as selectors.
 `reference_json()` provides Google's first-rule projection; `details_json()`
 exposes every rule. `extract_agtm_from_video` supports standalone MP4/MOV inputs.
 The API extracts metadata, not rendered pixels. Existing Google scoring and
-stabilization descriptor interpretation remains pending; Moments construction is
-explicitly excluded by the user's latest scope instruction.
+stabilization descriptors are decoded by `decode_video_metadata` and
+`extract_video_metadata`: raw/unknown bits, exact times and semantic issues stay
+available. Nine same-input decoder vectors match the pinned reference. Moments
+construction remains explicitly excluded.
 
 `remux::remove_metadata_tracks(movie, ids)` is explicit opt-in deletion. Only
 unique metadata track IDs are accepted. The operation rejects fragmented/indexed
@@ -119,6 +121,22 @@ Its report lists removed and retained IDs. Unreferenced sample bytes remain in
 `mdat`; this operation does not erase their contents. It does not compact files,
 import tracks from another movie or implement fast-start optimization.
 Default extraction/building does not remove metadata tracks, including AGTM.
+
+Additional `remux::import_tracks`, `remove_tracks`, `optimize`,
+`optimization_support` and `track_summary` APIs provide bounded general remux.
+They rewrite/promote chunk offsets, preserve encoded samples and exact timing,
+allocate unique imported IDs and report metadata sidecars/discarded bytes.
+Unreferenced media stays retained unless compaction is explicitly allowed.
+Fragmented/indexed/external/reference-bearing unknown contracts are rejected.
+Pinned MP4CopyTrack/optimizer/delete comparisons cover real H.264 B frames, AAC,
+existing Apple metadata and hvc1. See `scripts/mp4_differential.py`.
+
+`MetadataEngine` reads ordinary JPEG/HEIC/AVIF block/header extents, raw metadata,
+provider projections and handler controls. Persisted collection classification
+clears source verification. Complete selected blocks can be extracted from the
+original source under a separate budget. Namespace-equivalent prefixes and
+ordinary HEIF XMP without mpvd are exposed where the pinned provider/splitter
+does not expose them. Raw metadata extraction does not decode pixels.
 
 ## Consumer migration
 
