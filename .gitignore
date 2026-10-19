@@ -6,3 +6,9 @@
 /evidence/local/
 /research/private/
 /.codex/
+/web/node_modules/
+/web/dist/
+/web/test-results/
+/web/playwright-report/
+/apple/.build/
+/apple/.swiftpm/

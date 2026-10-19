@@ -1,0 +1,47 @@
+name: Apple adapter and local web
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  apple:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - run: swift test --package-path apple
+      - name: Compile iOS native adapters against the simulator SDK
+        working-directory: apple
+        run: xcodebuild -scheme LibLivePhotoApple -destination 'generic/platform=iOS Simulator' -derivedDataPath ../evidence/local/apple-build CODE_SIGNING_ALLOWED=NO build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apple-sdk-build
+          path: evidence/local/apple-build/Logs
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: cargo install wasm-bindgen-cli --version 0.2.104 --locked
+      - run: npm ci --prefix web --ignore-scripts
+      - run: npm --prefix web test
+      - run: npm --prefix web run build
+      - run: cd web && npx playwright install --with-deps chromium
+      - run: npm --prefix web run test:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-browser-evidence
+          path: web/test-results

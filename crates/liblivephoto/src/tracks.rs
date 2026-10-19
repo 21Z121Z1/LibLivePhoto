@@ -339,65 +339,7 @@ pub(crate) fn metadata_at<'a>(
     if count > 1_000_000 {
         return Err(Error::InvalidResource);
     }
-    let stts = find(&tables, b"stts").ok_or(Error::InvalidResource)?;
-    let timing = payload(data, stts);
-    let mut times = Vec::with_capacity(count);
-    let mut decode = 0i64;
-    for row in timing
-        .get(8..)
-        .ok_or(Error::InvalidResource)?
-        .as_chunks::<8>()
-        .0
-    {
-        let n = u32_at(row, 0)? as usize;
-        let duration = u32_at(row, 4)?;
-        if times.len().checked_add(n).is_none_or(|v| v > count) {
-            return Err(Error::InvalidResource);
-        }
-        for _ in 0..n {
-            times.push((decode, duration));
-            decode = decode
-                .checked_add(i64::from(duration))
-                .ok_or(Error::InvalidPresentation)?;
-        }
-    }
-    if times.len() != count {
-        return Err(Error::InvalidResource);
-    }
-    if let Some(ctts) = find(&tables, b"ctts") {
-        let p = payload(data, ctts);
-        if !matches!(p.first(), Some(0 | 1))
-            || p.len()
-                != 8 + (u32_at(p, 4)? as usize)
-                    .checked_mul(8)
-                    .ok_or(Error::InvalidResource)?
-        {
-            return Err(Error::InvalidResource);
-        }
-        let mut index = 0usize;
-        for row in p[8..].as_chunks::<8>().0 {
-            let n = u32_at(row, 0)? as usize;
-            let offset = if p[0] == 1 {
-                i64::from(i32::from_be_bytes(field(row, 4)?))
-            } else {
-                i64::from(u32_at(row, 4)?)
-            };
-            let end = index
-                .checked_add(n)
-                .filter(|v| *v <= count)
-                .ok_or(Error::InvalidResource)?;
-            for value in &mut times[index..end] {
-                value.0 = value
-                    .0
-                    .checked_add(offset)
-                    .ok_or(Error::InvalidPresentation)?;
-            }
-            index = end;
-        }
-        if index != count {
-            return Err(Error::InvalidResource);
-        }
-    }
+    let times = sample_timing(data, &tables, count)?;
     let stsd = find(&tables, b"stsd").ok_or(Error::InvalidResource)?;
     let entries = parse_boxes(data, stsd.data_start + 8..stsd.data_end)
         .map_err(|_| Error::InvalidResource)?;
@@ -435,4 +377,183 @@ pub(crate) fn metadata_at<'a>(
         },
     )?;
     Ok(result)
+}
+
+fn sample_timing(data: &[u8], tables: &[BoxHeader], count: usize) -> Result<Vec<(i64, u32)>> {
+    let stts = find(tables, b"stts").ok_or(Error::InvalidResource)?;
+    let timing = payload(data, stts);
+    let mut times = Vec::with_capacity(count);
+    let mut decode = 0i64;
+    for row in timing
+        .get(8..)
+        .ok_or(Error::InvalidResource)?
+        .as_chunks::<8>()
+        .0
+    {
+        let n = u32_at(row, 0)? as usize;
+        let duration = u32_at(row, 4)?;
+        if times.len().checked_add(n).is_none_or(|v| v > count) {
+            return Err(Error::InvalidResource);
+        }
+        for _ in 0..n {
+            times.push((decode, duration));
+            decode = decode
+                .checked_add(i64::from(duration))
+                .ok_or(Error::InvalidPresentation)?;
+        }
+    }
+    if times.len() != count {
+        return Err(Error::InvalidResource);
+    }
+    if let Some(ctts) = find(tables, b"ctts") {
+        let p = payload(data, ctts);
+        if !matches!(p.first(), Some(0 | 1))
+            || p.len()
+                != 8 + (u32_at(p, 4)? as usize)
+                    .checked_mul(8)
+                    .ok_or(Error::InvalidResource)?
+        {
+            return Err(Error::InvalidResource);
+        }
+        let mut index = 0usize;
+        for row in p[8..].as_chunks::<8>().0 {
+            let n = u32_at(row, 0)? as usize;
+            let offset = if p[0] == 1 {
+                i64::from(i32::from_be_bytes(field(row, 4)?))
+            } else {
+                i64::from(u32_at(row, 4)?)
+            };
+            let end = index
+                .checked_add(n)
+                .filter(|v| *v <= count)
+                .ok_or(Error::InvalidResource)?;
+            for value in &mut times[index..end] {
+                value.0 = value
+                    .0
+                    .checked_add(offset)
+                    .ok_or(Error::InvalidPresentation)?;
+            }
+            index = end;
+        }
+        if index != count {
+            return Err(Error::InvalidResource);
+        }
+    }
+    Ok(times)
+}
+
+/// Exact presentation timestamps for one video track, including unit-rate edits.
+/// Sample indices remain decode-order indices; returned timestamps are sorted.
+/// Does not decode frames or assume a constant frame rate. Fragmentation and
+/// non-unit edit rates are explicitly unsupported. Allocation is caller-bounded.
+pub(crate) fn video_frames(
+    data: &[u8],
+    id: u32,
+    max_frames: usize,
+) -> Result<Vec<crate::FrameTime>> {
+    let container = inspect(data, ResourceId(0), false)?;
+    let track = container
+        .tracks
+        .iter()
+        .find(|t| t.id == id && t.kind == TrackKind::Video)
+        .ok_or(Error::InvalidResource)?;
+    let top = parse_boxes(data, 0..data.len()).map_err(|_| Error::InvalidResource)?;
+    if find(&top, b"moof").is_some() {
+        return Err(Error::UnsupportedLayout("fragmented frame timing"));
+    }
+    let moov = find(&top, b"moov").ok_or(Error::InvalidResource)?;
+    let movie = children(data, moov)?;
+    if find(&movie, b"mvex").is_some() {
+        return Err(Error::UnsupportedLayout("fragmented frame timing"));
+    }
+    let trak = movie
+        .iter()
+        .filter(|b| b.kind.as_bytes() == b"trak")
+        .nth(track.index)
+        .ok_or(Error::InvalidResource)?;
+    let tc = children(data, trak)?;
+    let mdia = find(&tc, b"mdia").ok_or(Error::InvalidResource)?;
+    let mc = children(data, mdia)?;
+    let minf = find(&mc, b"minf").ok_or(Error::InvalidResource)?;
+    let mi = children(data, minf)?;
+    let stbl = find(&mi, b"stbl").ok_or(Error::InvalidResource)?;
+    let tables = children(data, stbl)?;
+    let count = u32_at(
+        payload(data, find(&tables, b"stsz").ok_or(Error::InvalidResource)?),
+        8,
+    )? as usize;
+    if count > max_frames.min(1_000_000) {
+        return Err(Error::InputLimit);
+    }
+    let mut budget = 0;
+    validate_samples(data, &tables, &top, &mut budget, |_, _, _| Ok(()))?;
+    if count
+        .checked_mul(track.edits.len().max(1))
+        .is_none_or(|n| n > 1_000_000)
+    {
+        return Err(Error::InputLimit);
+    }
+    let times = sample_timing(data, &tables, count)?;
+    let mut frames = Vec::new();
+    if track.edits.is_empty() {
+        frames.extend(
+            times
+                .into_iter()
+                .enumerate()
+                .map(|(sample_index, (value, _))| crate::FrameTime {
+                    sample_index,
+                    time: crate::MediaTime {
+                        value,
+                        timescale: track.timescale,
+                    },
+                }),
+        );
+    } else {
+        let movie_scale = container
+            .movie_timescale
+            .ok_or(Error::InvalidPresentation)?;
+        let mut elapsed = 0i64;
+        for edit in &track.edits {
+            if edit.rate_integer != 1 || edit.rate_fraction != 0 || edit.media_start < -1 {
+                return Err(Error::UnsupportedLayout("non-unit frame timing edit"));
+            }
+            let duration =
+                i64::try_from(edit.movie_duration).map_err(|_| Error::InvalidPresentation)?;
+            if edit.media_start >= 0 {
+                for (sample_index, (pts, _)) in times.iter().enumerate() {
+                    let offset = pts
+                        .checked_sub(edit.media_start)
+                        .ok_or(Error::InvalidPresentation)?;
+                    if offset < 0
+                        || i128::from(offset) * i128::from(movie_scale)
+                            >= i128::from(duration) * i128::from(track.timescale)
+                    {
+                        continue;
+                    }
+                    if frames.len() >= max_frames.min(1_000_000) {
+                        return Err(Error::InputLimit);
+                    }
+                    let time = crate::presentation::add_exact(
+                        crate::MediaTime {
+                            value: elapsed,
+                            timescale: movie_scale,
+                        },
+                        crate::MediaTime {
+                            value: offset,
+                            timescale: track.timescale,
+                        },
+                    )?;
+                    frames.push(crate::FrameTime { sample_index, time });
+                }
+            }
+            elapsed = elapsed
+                .checked_add(duration)
+                .ok_or(Error::InvalidPresentation)?;
+        }
+    }
+    frames.sort_by(|a, b| {
+        (i128::from(a.time.value) * i128::from(b.time.timescale))
+            .cmp(&(i128::from(b.time.value) * i128::from(a.time.timescale)))
+    });
+    Ok(frames)
 }

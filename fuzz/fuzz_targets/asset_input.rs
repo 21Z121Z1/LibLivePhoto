@@ -11,6 +11,7 @@ libfuzzer_sys::fuzz_target!(|data:&[u8]| {
             for r in p.resources(){assert!(p.extract(r,std::io::sink()).is_ok());}
             let _=p.still_metadata();
             let _=p.sample_descriptions();
+            for track in p.asset().containers.iter().flat_map(|c|&c.tracks).filter(|t|t.kind==TrackKind::Video){let _=p.frame_times(track.id,4096);}
             let _=p.agtm_at(MediaTime::new(0,1).unwrap());
         }
         if data.len()>2 {

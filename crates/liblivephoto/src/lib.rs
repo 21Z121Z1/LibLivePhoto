@@ -21,6 +21,7 @@ mod model;
 mod motion_video;
 #[path = "vendor/oplus/parser.rs"]
 mod oppo;
+mod presentation;
 pub mod remux;
 mod scanner;
 mod timeline;
@@ -42,6 +43,7 @@ pub use live_photo_mov::{LivePhotoMovieError, LivePhotoMovieResult};
 pub use live_photo_still::{LivePhotoStillError, LivePhotoStillResult};
 pub use media::*;
 pub use model::ByteRange;
+pub use presentation::*;
 pub use vendor::honor::{inspect_honor_metadata, HonorMetadata, HonorRecord, HonorVariant};
 
 pub(crate) use android::parse_android_motion_photo;
