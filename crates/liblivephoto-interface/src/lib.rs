@@ -3,8 +3,12 @@
 //! original inputs are immutable. Publication belongs to the caller/CLI.
 use liblivephoto::*;
 use serde_json::{json, Value};
+use std::borrow::Cow;
 use std::ops::ControlFlow;
 pub const MAX_INPUT: usize = 128 * 1024 * 1024;
+const MAX_RESPONSE: usize = 320 * 1024 * 1024;
+const MAX_RESPONSE_METADATA: usize = 64 * 1024 * 1024;
+const MAX_RESPONSE_FILES: usize = 4096;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OperationFile {
     pub name: String,
@@ -30,20 +34,16 @@ impl OperationResult {
     /// u32 MIME length/string, u32 name length/string, i64 resource ID (-1=none),
     /// u32 data length + raw data. No base64 media copies or lossy numeric time.
     pub fn into_envelope(self) -> std::result::Result<Vec<u8>, String> {
-        let metadata =
-            serde_json::to_vec(&json!({"success":self.success,"metadata":self.metadata}))
-                .map_err(|e| e.to_string())?;
-        if metadata.len() > 64 * 1024 * 1024 || self.files.len() > 4096 {
-            return Err("response budget exceeded".into());
-        }
-        let total = self
-            .files
-            .iter()
-            .try_fold(metadata.len() + 12, |n, f| {
-                n.checked_add(f.bytes.len() + f.name.len() + f.mime.len() + 20)
-            })
-            .filter(|n| *n <= 320 * 1024 * 1024)
-            .ok_or("response budget exceeded")?;
+        let metadata = envelope_metadata(self.success, &self.metadata)?;
+        let total = checked_response_len(
+            metadata.len(),
+            self.files.iter().map(|file| ResponseFile {
+                name: &file.name,
+                mime: &file.mime,
+                resource_id: file.resource_id,
+                byte_len: file.bytes.len(),
+            }),
+        )?;
         let mut output = Vec::with_capacity(total);
         output.extend(b"LLP1");
         put(&mut output, &metadata)?;
@@ -63,6 +63,40 @@ impl OperationResult {
         }
         Ok(output)
     }
+}
+fn envelope_metadata(success: bool, metadata: &Value) -> std::result::Result<Vec<u8>, String> {
+    serde_json::to_vec(&json!({"success":success,"metadata":metadata})).map_err(|e| e.to_string())
+}
+struct ResponseFile<'a> {
+    name: &'a str,
+    mime: &'a str,
+    resource_id: Option<usize>,
+    byte_len: usize,
+}
+fn checked_response_len<'a>(
+    metadata_len: usize,
+    files: impl ExactSizeIterator<Item = ResponseFile<'a>>,
+) -> std::result::Result<usize, String> {
+    if metadata_len > MAX_RESPONSE_METADATA || files.len() > MAX_RESPONSE_FILES {
+        return Err("response budget exceeded".into());
+    }
+    let mut total = metadata_len
+        .checked_add(12)
+        .ok_or("response budget exceeded")?;
+    for file in files {
+        for size in [file.name.len(), file.mime.len(), file.byte_len] {
+            u32::try_from(size).map_err(|_| "response field too large")?;
+            total = total.checked_add(size).ok_or("response budget exceeded")?;
+        }
+        file.resource_id
+            .map(i64::try_from)
+            .transpose()
+            .map_err(|_| "resource ID exceeds protocol range")?;
+        total = total.checked_add(20).ok_or("response budget exceeded")?;
+    }
+    (total <= MAX_RESPONSE)
+        .then_some(total)
+        .ok_or_else(|| "response budget exceeded".into())
 }
 fn put(out: &mut Vec<u8>, value: &[u8]) -> std::result::Result<(), String> {
     let n = u32::try_from(value.len()).map_err(|_| "response field too large")?;
@@ -168,18 +202,141 @@ fn ext(mime: &str) -> &'static str {
         _ => "bin",
     }
 }
-fn resource_file(
-    photo: &MotionPhoto<'_>,
-    resource: &Resource,
-) -> std::result::Result<OperationFile, MotionPhotoReadError> {
-    let mut bytes = Vec::new();
-    photo.extract(resource, &mut bytes)?;
-    Ok(OperationFile {
-        name: format!("resource-{}.{}", resource.id.0, ext(&resource.mime)),
-        mime: resource.mime.clone(),
-        resource_id: Some(resource.id.0),
-        bytes,
-    })
+enum ExtractFile<'p> {
+    Resource {
+        resource: &'p Resource,
+        name: String,
+        byte_len: usize,
+    },
+    Xmp(Cow<'p, [u8]>),
+}
+impl<'p> ExtractFile<'p> {
+    fn resource(
+        photo: &MotionPhoto<'_>,
+        resource: &'p Resource,
+    ) -> std::result::Result<Self, String> {
+        let byte_len = usize::try_from(
+            photo
+                .extract(resource, std::io::sink())
+                .map_err(|e| e.to_string())?,
+        )
+        .map_err(|_| "response field too large")?;
+        Ok(Self::Resource {
+            resource,
+            name: format!("resource-{}.{}", resource.id.0, ext(&resource.mime)),
+            byte_len,
+        })
+    }
+    fn fields(&self) -> ResponseFile<'_> {
+        match self {
+            Self::Resource {
+                resource,
+                name,
+                byte_len,
+            } => ResponseFile {
+                name,
+                mime: &resource.mime,
+                resource_id: Some(resource.id.0),
+                byte_len: *byte_len,
+            },
+            Self::Xmp(bytes) => ResponseFile {
+                name: "metadata.xmp",
+                mime: "application/rdf+xml",
+                resource_id: None,
+                byte_len: bytes.len(),
+            },
+        }
+    }
+}
+struct CheckedExtraction<'p, 'i> {
+    photo: &'p MotionPhoto<'i>,
+    files: Vec<ExtractFile<'p>>,
+    metadata: Value,
+}
+impl<'p, 'i> CheckedExtraction<'p, 'i> {
+    fn from_request(
+        photo: &'p MotionPhoto<'i>,
+        request: &Value,
+    ) -> std::result::Result<Self, String> {
+        let mut files = Vec::new();
+        let mut unavailable = Vec::new();
+        if let Some(selected) = request.get("resourceIds") {
+            let selected = selected
+                .as_array()
+                .filter(|a| a.len() <= MAX_RESPONSE_FILES)
+                .ok_or("invalid resourceIds")?;
+            let mut seen = std::collections::BTreeSet::new();
+            for id in selected {
+                let id = id
+                    .as_u64()
+                    .and_then(|n| usize::try_from(n).ok())
+                    .filter(|n| seen.insert(*n))
+                    .ok_or("invalid/duplicate resource ID")?;
+                let resource = photo
+                    .resources()
+                    .find(|r| r.id.0 == id)
+                    .ok_or("resource ID missing")?;
+                files.push(ExtractFile::resource(photo, resource)?);
+            }
+        } else {
+            if request["still"].as_bool().unwrap_or(true) {
+                files.push(ExtractFile::resource(photo, photo.still())?);
+            }
+            if request["video"].as_bool().unwrap_or(true) {
+                files.push(ExtractFile::resource(photo, photo.motion_video())?);
+            }
+            if request["xmp"].as_bool().unwrap_or(true) {
+                if let Some(bytes) = photo.xmp_bytes().map_err(|e| e.to_string())? {
+                    files.push(ExtractFile::Xmp(bytes));
+                } else {
+                    unavailable.push("xmp");
+                }
+            }
+        }
+        let metadata = json!({"files":files.iter().map(|file| {
+            let file = file.fields();
+            json!({"name":file.name,"mime":file.mime,"resourceId":file.resource_id,"bytes":file.byte_len.to_string()})
+        }).collect::<Vec<_>>(),"unavailable":unavailable});
+        checked_response_len(
+            envelope_metadata(true, &metadata)?.len(),
+            files.iter().map(ExtractFile::fields),
+        )?;
+        Ok(Self {
+            photo,
+            files,
+            metadata,
+        })
+    }
+    fn materialize(self) -> std::result::Result<OperationResult, String> {
+        let mut files = Vec::with_capacity(self.files.len());
+        for file in self.files {
+            files.push(match file {
+                ExtractFile::Resource {
+                    resource,
+                    name,
+                    byte_len,
+                } => {
+                    let mut bytes = Vec::with_capacity(byte_len);
+                    self.photo
+                        .extract(resource, &mut bytes)
+                        .map_err(|e| e.to_string())?;
+                    OperationFile {
+                        name,
+                        mime: resource.mime.clone(),
+                        resource_id: Some(resource.id.0),
+                        bytes,
+                    }
+                }
+                ExtractFile::Xmp(bytes) => OperationFile {
+                    name: "metadata.xmp".into(),
+                    mime: "application/rdf+xml".into(),
+                    resource_id: None,
+                    bytes: bytes.into_owned(),
+                },
+            });
+        }
+        Ok(ok(self.metadata, files))
+    }
 }
 /// Request JSON is capped independently of immutable source bytes. Invalid input
 /// is an explicit response; no path, process, network or publication occurs here.
@@ -538,54 +695,7 @@ fn execute(
                 files: Vec::new(),
             })
         }
-        "extract" => {
-            let mut files = Vec::new();
-            let mut unavailable = Vec::new();
-            if let Some(selected) = v.get("resourceIds") {
-                let selected = selected
-                    .as_array()
-                    .filter(|a| a.len() <= 4096)
-                    .ok_or("invalid resourceIds")?;
-                let mut seen = std::collections::BTreeSet::new();
-                for id in selected {
-                    let id = id
-                        .as_u64()
-                        .and_then(|n| usize::try_from(n).ok())
-                        .filter(|n| seen.insert(*n))
-                        .ok_or("invalid/duplicate resource ID")?;
-                    let r = photo
-                        .resources()
-                        .find(|r| r.id.0 == id)
-                        .ok_or("resource ID missing")?;
-                    files.push(resource_file(&photo, r).map_err(|e| e.to_string())?);
-                }
-            } else {
-                if v["still"].as_bool().unwrap_or(true) {
-                    files.push(resource_file(&photo, photo.still()).map_err(|e| e.to_string())?);
-                }
-                if v["video"].as_bool().unwrap_or(true) {
-                    files.push(
-                        resource_file(&photo, photo.motion_video()).map_err(|e| e.to_string())?,
-                    );
-                }
-                if v["xmp"].as_bool().unwrap_or(true) {
-                    if let Some(bytes) = photo.xmp_bytes().map_err(|e| e.to_string())? {
-                        files.push(OperationFile {
-                            name: "metadata.xmp".into(),
-                            mime: "application/rdf+xml".into(),
-                            resource_id: None,
-                            bytes: bytes.into_owned(),
-                        });
-                    } else {
-                        unavailable.push("xmp");
-                    }
-                }
-            }
-            Ok(ok(
-                json!({"files":files.iter().map(|f|json!({"name":f.name,"mime":f.mime,"resourceId":f.resource_id,"bytes":f.bytes.len().to_string()})).collect::<Vec<_>>(),"unavailable":unavailable}),
-                files,
-            ))
-        }
+        "extract" => CheckedExtraction::from_request(&photo, v)?.materialize(),
         "agtm" => Ok(agtm(
             photo.motion_video_bytes().map_err(|e| e.to_string())?,
             requested_time
@@ -681,4 +791,60 @@ fn agtm(video: &[u8], time: MediaTime) -> OperationResult {
         entries.push(json!({"trackId":sample.track_id,"sampleIndex":sample.sample_index,"time":{"value":sample.presentation.value.to_string(),"timescale":sample.presentation.timescale},"metadata":metadata.details_json()}));
     }
     ok(json!({"samples":entries,"renderedPixels":false}), files)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn response_file(byte_len: usize) -> ResponseFile<'static> {
+        ResponseFile {
+            name: "ab",
+            mime: "xyz",
+            resource_id: None,
+            byte_len,
+        }
+    }
+
+    #[test]
+    fn response_limit_includes_wrapper_fields_and_framing() {
+        let payload = MAX_RESPONSE - 3 - 12 - 20 - 2 - 3;
+        assert_eq!(
+            checked_response_len(3, [response_file(payload)].into_iter()).unwrap(),
+            MAX_RESPONSE
+        );
+        assert_eq!(
+            checked_response_len(3, [response_file(payload + 1)].into_iter()).unwrap_err(),
+            "response budget exceeded"
+        );
+        assert!(checked_response_len(MAX_RESPONSE_METADATA, std::iter::empty()).is_ok());
+        assert!(checked_response_len(MAX_RESPONSE_METADATA + 1, std::iter::empty()).is_err());
+        assert!(checked_response_len(0, (0..MAX_RESPONSE_FILES).map(|_| response_file(0))).is_ok());
+        assert!(
+            checked_response_len(0, (0..MAX_RESPONSE_FILES + 1).map(|_| response_file(0))).is_err()
+        );
+    }
+
+    #[test]
+    #[cfg(target_pointer_width = "64")]
+    fn response_fields_and_public_results_retain_protocol_range_checks() {
+        assert_eq!(
+            checked_response_len(0, [response_file(u32::MAX as usize + 1)].into_iter())
+                .unwrap_err(),
+            "response field too large"
+        );
+        let result = ok(
+            json!({}),
+            vec![OperationFile {
+                name: "x".into(),
+                mime: "x".into(),
+                resource_id: Some(i64::MAX as usize + 1),
+                bytes: Vec::new(),
+            }],
+        );
+        assert_eq!(
+            result.into_envelope().unwrap_err(),
+            "resource ID exceeds protocol range"
+        );
+    }
 }
