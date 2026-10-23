@@ -386,8 +386,8 @@ impl<'a> MotionPhoto<'a> {
                     photo.asset.motion.mime.as_str(),
                 ),
             ] {
-                if !declared.eq_ignore_ascii_case(observed)
-                    && !(declared.eq_ignore_ascii_case("image/heif") && observed == "image/heic")
+                if !(declared.eq_ignore_ascii_case(observed)
+                    || declared.eq_ignore_ascii_case("image/heif") && observed == "image/heic")
                 {
                     if options.mode == ParseMode::Strict {
                         return Err(MotionPhotoReadError::MetadataMismatch(field));

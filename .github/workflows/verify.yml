@@ -8,6 +8,26 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  extraction:
+    name: Bounded extraction and historical replay
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact checked-out head
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - uses: dtolnay/rust-toolchain@stable
+      - run: python3 scripts/verify_extraction.py run --evidence evidence/local/verify-extraction
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bounded-extraction-evidence
+          path: evidence/local/verify-extraction/
   portable:
     name: Portable (${{ matrix.os }})
     strategy:

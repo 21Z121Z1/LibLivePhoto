@@ -39,7 +39,7 @@ jobs:
             dist/apple/simulator-acceptance/*.log
             dist/apple/simulator-acceptance/*receipt.json
   web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
