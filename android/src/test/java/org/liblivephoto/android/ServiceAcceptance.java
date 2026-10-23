@@ -2,6 +2,7 @@ package org.liblivephoto.android;
 
 import android.app.Instrumentation;
 import android.os.*;
+import android.os.storage.StorageManager;
 import android.system.*;
 import org.liblivephoto.*;
 import java.io.*;
@@ -55,6 +56,100 @@ public final class ServiceAcceptance extends Instrumentation {
         return client.execute(request,p,m,null).result().get(40,TimeUnit.SECONDS);
     }
     private boolean scenario(String name) { return "all".equals(scope)||name.equals(scope); }
+    private final class ReadGate extends ProxyFileDescriptorCallback implements AutoCloseable {
+        private final byte[] bytes;
+        private final long deadline;
+        private final CountDownLatch prepared = new CountDownLatch(1);
+        private final CountDownLatch readEntered = new CountDownLatch(1);
+        private final CountDownLatch allowRead = new CountDownLatch(1);
+        private final CountDownLatch released = new CountDownLatch(1);
+        private final AtomicBoolean closing = new AtomicBoolean();
+        private final HandlerThread thread = new HandlerThread("acceptance-proxy-read") {
+            @Override protected void onLooperPrepared() {
+                prepared.countDown();
+                if (closing.get()) Looper.myLooper().quitSafely();
+            }
+        };
+        private ParcelFileDescriptor descriptor;
+        ReadGate(byte[] motion, long deadline) {
+            this.deadline = deadline;
+            bytes = new byte[13 + motion.length + 4];
+            System.arraycopy(motion, 0, bytes, 13, motion.length);
+        }
+        long remainingNanos() throws TimeoutException {
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) throw new TimeoutException("proxy queue test exceeded its 40-second budget");
+            return remaining;
+        }
+        void open() throws Exception {
+            thread.start();
+            if (!prepared.await(remainingNanos(), TimeUnit.NANOSECONDS)) throw new TimeoutException("proxy handler did not start");
+            StorageManager storage = getTargetContext().getSystemService(StorageManager.class);
+            if (storage == null) throw new IOException("StorageManager unavailable for proxy source");
+            descriptor = storage.openProxyFileDescriptor(ParcelFileDescriptor.MODE_READ_ONLY, this, new Handler(thread.getLooper()));
+            Os.lseek(descriptor.getFileDescriptor(), 7, OsConstants.SEEK_SET);
+        }
+        void awaitRead() throws Exception {
+            if (!readEntered.await(remainingNanos(), TimeUnit.NANOSECONDS)) throw new TimeoutException("first parse did not enter proxy read");
+            remainingNanos();
+        }
+        @Override public long onGetSize() { return bytes.length; }
+        @Override public int onRead(long offset, int size, byte[] data) throws ErrnoException {
+            if (readEntered.getCount() != 0) {
+                android.util.Log.i("LibLivePhotoAcceptance", "queue proxy read entered");
+                readEntered.countDown();
+            }
+            try {
+                long remaining = deadline - System.nanoTime();
+                if (remaining <= 0 || !allowRead.await(remaining, TimeUnit.NANOSECONDS))
+                    throw new ErrnoException("proxy read gate deadline", OsConstants.ETIMEDOUT);
+            } catch (InterruptedException error) {
+                Thread.currentThread().interrupt();
+                throw new ErrnoException("proxy read gate interrupted", OsConstants.EINTR);
+            }
+            if (offset >= bytes.length) return 0;
+            int count = (int)Math.min(size, bytes.length - offset);
+            System.arraycopy(bytes, (int)offset, data, 0, count);
+            return count;
+        }
+        @Override public void onRelease() {
+            android.util.Log.i("LibLivePhotoAcceptance", "queue proxy descriptor released");
+            released.countDown();
+        }
+        @Override public void close() throws Exception {
+            allowRead.countDown();
+            Exception failure = null;
+            boolean interrupted = false;
+            try {
+                if (descriptor != null) {
+                    descriptor.close();
+                    if (!released.await(remainingNanos(), TimeUnit.NANOSECONDS)) throw new TimeoutException("proxy descriptor did not release");
+                }
+            } catch (Exception error) {
+                failure = error;
+                interrupted = error instanceof InterruptedException;
+            } finally {
+                closing.set(true);
+                if (prepared.getCount() == 0) thread.quitSafely();
+                else thread.interrupt();
+                long remaining = deadline - System.nanoTime();
+                if (remaining > 0 && thread.isAlive()) {
+                    try { thread.join(remaining / 1000000, (int)(remaining % 1000000)); }
+                    catch (InterruptedException error) {
+                        interrupted = true;
+                        if (failure == null) failure = error; else failure.addSuppressed(error);
+                    }
+                }
+                if (thread.isAlive()) {
+                    thread.interrupt();
+                    TimeoutException error = new TimeoutException("proxy handler did not stop within the operation budget");
+                    if (failure == null) failure = error; else failure.addSuppressed(error);
+                }
+            }
+            if (interrupted) Thread.currentThread().interrupt();
+            if (failure != null) throw failure;
+        }
+    }
     private final class BindingTrace implements MotionPhotoClient.BindingObserver {
         private final ArrayDeque<String> events = new ArrayDeque<>();
         private int omitted;
@@ -188,9 +283,25 @@ public final class ServiceAcceptance extends Instrumentation {
             if(scenario("concurrency")) {
             markPhase("concurrent reads and queued service operations");
             List<MotionPhotoClient.Operation> concurrent=new ArrayList<>();
-            for(int i=0;i<3;i++) concurrent.add(parser.execute(new Request("parse"),source,null,null));
-            for(MotionPhotoClient.Operation operation:concurrent) check(operation.result().get(40,TimeUnit.SECONDS).success,"concurrent bounded pipe readers and service queue drain");
-            check(Os.lseek(motionFD.getFileDescriptor(),0,OsConstants.SEEK_CUR)==7,"concurrent reads preserve caller cursor");
+            long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(40);
+            try(ReadGate gate=new ReadGate(motion,deadline)) {
+                try {
+                    gate.open();
+                    concurrent.add(parser.execute(new Request("parse"),MotionPhotoClient.Source.range(gate.descriptor,13,motion.length),null,null));
+                    gate.awaitRead();
+                    markPhase("queue first parse active via proxy read");
+                    for(int i=0;i<2;i++) concurrent.add(parser.execute(new Request("parse"),source,null,null));
+                    markPhase("queue one active and two submissions accepted; release read");
+                    gate.allowRead.countDown();
+                    for(MotionPhotoClient.Operation operation:concurrent) check(operation.result().get(gate.remainingNanos(),TimeUnit.NANOSECONDS).success,"concurrent bounded pipe readers and service queue drain");
+                    markPhase("three queued parse results succeeded");
+                    check(Os.lseek(motionFD.getFileDescriptor(),0,OsConstants.SEEK_CUR)==7
+                            &&Os.lseek(gate.descriptor.getFileDescriptor(),0,OsConstants.SEEK_CUR)==7,"concurrent reads preserve caller cursors");
+                } finally {
+                    gate.allowRead.countDown();
+                    for(MotionPhotoClient.Operation operation:concurrent) if(!operation.result().isDone()) operation.cancel();
+                }
+            }
             }
             if(scenario("metadata")) {
             markPhase("metadata binding assets");

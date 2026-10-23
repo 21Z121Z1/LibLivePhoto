@@ -145,6 +145,7 @@ jobs:
           avdmanager list avd
           "$ANDROID_HOME/emulator/emulator" -list-avds
           test -f "$ANDROID_AVD_HOME/llp_acceptance.ini"
+          adb start-server > android/build/adb-start-server.log 2>&1
           "$ANDROID_HOME/emulator/emulator" -avd llp_acceptance -port 5554 -no-window -no-audio -no-boot-anim -no-snapshot -no-metrics -gpu swiftshader_indirect -accel on > android/build/emulator.log 2>&1 &
           emulator_pid=$!
           emulator_start=$(pid_start "$emulator_pid")
