@@ -40,7 +40,6 @@ def command(evidence, state, name, args):
 
 
 def launch(evidence):
-    evidence.mkdir(parents=True, exist_ok=False)
     scratch = Path(tempfile.mkdtemp(prefix="llp-verify-")).resolve()
     (scratch / ".llp-verification-owner").write_text(str(evidence))
     state = {"head": head(), "scratch": str(scratch), "commands": [], "driver_sha256": digest(Path(__file__)), "verdict": "STARTED"}
@@ -101,8 +100,11 @@ def main():
     parser.add_argument("--evidence", type=Path, required=True)
     args = parser.parse_args()
     evidence = args.evidence.resolve()
-    if args.mode in ["launch", "run"] and evidence.exists():
-        parser.error("evidence directory already exists; choose a new directory")
+    if args.mode in ["launch", "run"]:
+        try:
+            evidence.mkdir(parents=True, exist_ok=False)
+        except FileExistsError:
+            parser.error("evidence directory already exists; choose a new directory")
     state = None
     try:
         if args.mode in ["launch", "run"]:

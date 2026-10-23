@@ -23,7 +23,7 @@ For a manual drive, first run:
 python3 scripts/verify_extraction.py launch --evidence evidence/local/verify-extraction
 ```
 
-Launch builds `llp` in a new temporary target directory. `receipt.json` identifies the committed head, binary hash, and owned scratch directory. A successful build makes the short-lived CLI ready. No server, device, credentials, or user data directory is needed.
+Launch claims a new evidence directory with `mkdir` before error recovery can read a receipt. An existing directory exits with code 2 and keeps its session unchanged. Launch builds `llp` in a new temporary target directory. `receipt.json` identifies the committed head, binary hash, and owned scratch directory. A successful build makes the short-lived CLI ready. No server, device, credentials, or user data directory is needed.
 
 ## Doctor
 
