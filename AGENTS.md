@@ -8,5 +8,6 @@ For resource-extraction work, use the canonical [verification skill](.agents/ski
 | Keep unknown bytes, request order, default XMP behavior, and explicit invalid-selection errors. | Interface extraction and protocol tests. |
 | Preserve the three historical aggregate-budget fixes. A compile failure is not a reproduced behavior failure. | The driver runs the current regression tests. `scripts/replay_historical_budgets.py` also requires four real historical assertion failures followed by four passes. |
 | Run the same extraction verification locally and in CI. | `python3 scripts/verify_extraction.py run --evidence evidence/local/verify-extraction` in the extraction verification job. |
+| A refused verification launch must preserve an existing session's receipt and scratch files. | `scripts/test_verification_ownership.py` drives both `launch` and `run` as subprocesses in the common driver. |
 
 Keep device, decoder, memory, and performance claims limited to evidence actually collected. The extraction driver does not establish those claims.

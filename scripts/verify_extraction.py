@@ -65,6 +65,7 @@ def doctor(evidence, state):
 def drive(evidence, state):
     if not state.get("doctor") or state["head"] != head():
         raise RuntimeError("run doctor on the current committed head before drive")
+    command(evidence, state, "session-ownership", [sys.executable, str(ROOT / "scripts/test_verification_ownership.py")])
     command(evidence, state, "library", ["cargo", "test", "--locked", "-p", "liblivephoto", "--test", "core_contract", "--test", "video_metadata", "--test", "agtm_complete"])
     command(evidence, state, "bridge", ["cargo", "test", "--locked", "-p", "liblivephoto-bridge", "--lib"])
     command(evidence, state, "interface-cli", ["cargo", "test", "--locked", "-p", "liblivephoto-interface", "-p", "liblivephoto-cli", "--all-targets"])
@@ -100,6 +101,8 @@ def main():
     parser.add_argument("--evidence", type=Path, required=True)
     args = parser.parse_args()
     evidence = args.evidence.resolve()
+    if args.mode in ["launch", "run"] and evidence.exists():
+        parser.error("evidence directory already exists; choose a new directory")
     state = None
     try:
         if args.mode in ["launch", "run"]:

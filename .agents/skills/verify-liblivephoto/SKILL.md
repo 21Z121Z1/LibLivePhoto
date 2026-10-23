@@ -39,7 +39,7 @@ Doctor reads the build identity and runs `llp --version`. It requires the record
 python3 scripts/verify_extraction.py drive --evidence evidence/local/verify-extraction
 ```
 
-The driver runs the existing core, interface, and CLI tests, then both budget replay scripts. The [feature map](features/README.md) identifies the actual journeys and observable results. The CLI command test builds, checks, extracts, compares output bytes, and verifies refusal to overwrite an existing directory. Each test owns its scratch paths, so concurrent runs do not share output directories.
+The driver first checks that refused `launch` and `run` commands preserve an existing verification session. It then runs the existing core, interface, and CLI tests, followed by both budget replay scripts. The [feature map](features/README.md) identifies the actual journeys and observable results. The CLI command test builds, checks, extracts, compares output bytes, and verifies refusal to overwrite an existing directory. Each test owns its scratch paths, so concurrent runs do not share output directories.
 
 ## Evidence
 
