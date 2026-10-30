@@ -16,7 +16,7 @@ to produce identical AAC bytes. FFmpeg is a GPL-enabled development tool here;
 its executable/source is not redistributed or linked into the library. These
 owned data files use the repository license. Actual commands, four hashes and
 separate research-source licenses are in
-[the source ledger](../../evidence/syntax-round3-sources.json).
+[the source ledger](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/syntax-round3-sources.json).
 
 `scripts/test_syntax_contracts.py` exercises the real CLI and independently uses
 ffprobe for each packet's SHA256, exact DTS/PTS/duration and file index target.

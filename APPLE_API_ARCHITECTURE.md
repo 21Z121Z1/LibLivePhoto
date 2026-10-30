@@ -109,7 +109,7 @@ No deployment or publication has been performed.
 
 ## Still open
 
-The [Google inventory](evidence/GOOGLE_COMPLETE_INVENTORY.md) retains every open
+The [Google inventory](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/GOOGLE_COMPLETE_INVENTORY.md) retains every open
 Google interface/provider/remux/wrapper item. Moments construction is excluded.
 Native valid-pair loading/export now has actual tests plus a real RustCoreBridge C ABI client; the next CI receipt must establish their outcome. Native valid-pair PhotoKit import/edit/playback and Gallery/Photos UX still need
 permissioned Apple device/corpus runs. Apple SDK runtime behavior, full official
@@ -120,8 +120,8 @@ and local demonstration, not full Google or Apple ecosystem coverage.
 The `d5729c7` Apple CI checkpoint also builds the static XCFramework and actually
 executes the Swift bridge linked with Rust in iOS 26.5 Simulator (owned iPhone
 17e instance): parse/exact time, original movie extraction, complete AGTM and
-errors pass. Receipt: `evidence/mobile-and-sdk-d5729c7.json`. It does not access a
+errors pass. Receipt: [mobile-and-sdk-d5729c7.json](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/mobile-and-sdk-d5729c7.json). It does not access a
 Photos library or prove physical display/gesture/HDR/camera acceptance. Actual
 LivePhotosKit runtime remains blocked by the environment proxy's CDN 403; see
-`evidence/livephotoskit-access.json` rather than treating the binding unit test
+[livephotoskit-access.json](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/livephotoskit-access.json) rather than treating the binding unit test
 as an Apple SDK run.

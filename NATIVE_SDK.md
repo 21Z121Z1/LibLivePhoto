@@ -84,9 +84,9 @@ Lossless remux preserves packets and exact time; opt-in compaction/drop is repor
 Round4 verified source **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
 all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
 at every applicable native, mobile and actual browser entry. See the
-[handoff](evidence/HANDOFF_ROUND4_20261019.md),
-[terminal receipt](evidence/platform-bd6f85b.json) and
-[remaining boundaries](evidence/REMAINING_WORK.md). Native Gallery/Photos and
+[handoff](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/HANDOFF_ROUND4_20261019.md),
+[terminal receipt](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/platform-bd6f85b.json) and
+[remaining boundaries](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/REMAINING_WORK.md). Native Gallery/Photos and
 full ICC/AAC/rendering/device compatibility are still unverified or partial.
 
 The shared operation protocol now has a minimal WASM export generated into

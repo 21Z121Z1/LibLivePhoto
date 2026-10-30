@@ -95,7 +95,7 @@ supports package-scoped exit history. Exit descriptions are diagnostic text, not
 a stable machine-readable protocol or an inferred root cause.
 The final runtime receipt is also printed to CI stdout, including completed
 scopes, exact assertion total and confirmed owned-package cleanup.
-The [bounded bind investigation](../evidence/ANDROID_BIND_ROUND2.md) adds optional
+The [bounded bind investigation](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/ANDROID_BIND_ROUND2.md) adds optional
 client event traces and debuggable-host lifecycle/native-work traces, plus
 per-scope bound-service/system/exit snapshots. These locate accepted binds,
 missing callbacks and handshake delays separately; they do not change the

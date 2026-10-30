@@ -2,14 +2,14 @@
 
 This phase extends the implementation at PR #1 commit
 `794ab552596db0f66095600d23cf7937a631b9ec`. It does not replace the existing
-resource model, Apple writer or plan/execute boundary. The [initial coverage matrix](evidence/GOOGLE_CORE_COVERAGE.md)
-is a historical checkpoint; the [current inventory](evidence/GOOGLE_COMPLETE_INVENTORY.md)
-and [source/test map](evidence/SOURCE_TEST_MAP.md) track implemented subsets,
+resource model, Apple writer or plan/execute boundary. The [initial coverage matrix](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/GOOGLE_CORE_COVERAGE.md)
+is a historical checkpoint; the [current inventory](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/GOOGLE_COMPLETE_INVENTORY.md)
+and [source/test map](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/SOURCE_TEST_MAP.md) track implemented subsets,
 operation-specific contracts and remaining acceptance requirements.
 
 ## Inputs and outputs
 
-For vendor inspection, [round5's contract matrix](evidence/VENDOR_PRESERVATION_ROUND5.md)
+For vendor inspection, [round5's contract matrix](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/VENDOR_PRESERVATION_ROUND5.md)
 distinguishes existing asset-level resource extraction from the new read-only
 Samsung catalogue and vivo declaration audit. Explicit stream selection copies
 the selected original container bytes; it does not establish a Gallery playback
@@ -31,7 +31,7 @@ descriptor and uses positional reads. The caller retains ownership and its
 cursor. On Windows, `open_file` restores the cursor after `seek_read`; callers
 must synchronize other operations on the file and cloned handles. Windows and
 macOS tests and packaged consumers actually passed at verified baseline
-`4848e5f`; see [the exact execution receipt](evidence/stable-baseline-4848e5f.json).
+`4848e5f`; see [the exact execution receipt](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/stable-baseline-4848e5f.json).
 Other platforms report unsupported positional input.
 Zero length does not mean the remainder of the file.
 
@@ -136,7 +136,7 @@ Unknown/private tags remain raw; other versions report Unsupported. Date/class/
 PCS semantics, required tags, profile-ID hashes, LUT interpretation and colour
 rendering are not certified. Default preservation does not run this as a writer
 repair or normalize original ICC bytes. Gain-map/HDR rendering remains absent.
-The [normative/source/runtime map](evidence/NORMATIVE_CONFORMANCE.md) records
+The [normative/source/runtime map](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/NORMATIVE_CONFORMANCE.md) records
 which clauses are supported subsets. HEIF self-contained construction0/1 is
 supported; construction2 and external item sources are rejected explicitly.
 Absolute item data inside the old meta payload survives append-only metadata
@@ -177,7 +177,7 @@ Unknown JSON stays original text in `rawJson`, including number spelling; no
 unknown stream is called depth, no ID equality proves capture pairing, and raw
 `imageTime` is not converted through average FPS. The separate55-byte/length2=2
 variant has static/synthetic evidence only. This adds no native vendor writer or
-Gallery playback/editing claim. See [vendor evidence and gaps](evidence/VENDOR_RESEARCH_20261019.md).
+Gallery playback/editing claim. See [vendor evidence and gaps](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/VENDOR_RESEARCH_20261019.md).
 
 `inspect_vivo_media_extensions(movie)` and `MotionPhoto::vivo_media_extensions()`
 read top-level `vivoMediaEStream`/`vivoMediaExtInfo` UUIDs from a complete,
@@ -197,7 +197,7 @@ extractable. Multiple known UUIDs require an explicit association and fail.
 Limits are256MiB input,65536 top-level boxes,4096 streams/one of each known UUID
 and16MiB aggregate stream payload; metadata collections also retain their
 existing4096-block/16MiB cumulative bounds. No native writer was added. See
-[independent source and original-byte evidence](evidence/VENDOR_RESEARCH_ROUND2.md).
+[independent source and original-byte evidence](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/VENDOR_RESEARCH_ROUND2.md).
 
 `agtm_at(MediaTime)` returns original metadata sample bytes, track/sample IDs,
 presentation interval and decoded version-0 baseline fields. It reads validated
@@ -291,9 +291,9 @@ private vendor writers and application codec/HDR policies remain separate work.
 Round4 verified source **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
 all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
 at every applicable native, mobile and actual browser entry. See the
-[handoff](evidence/HANDOFF_ROUND4_20261019.md),
-[terminal receipt](evidence/platform-bd6f85b.json) and
-[remaining boundaries](evidence/REMAINING_WORK.md). Native Gallery/Photos and
+[handoff](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/HANDOFF_ROUND4_20261019.md),
+[terminal receipt](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/platform-bd6f85b.json) and
+[remaining boundaries](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/REMAINING_WORK.md). Native Gallery/Photos and
 full ICC/AAC/rendering/device compatibility are still unverified or partial.
 
 `AacConfiguration` gained public `channel_configuration` and `program_config`
