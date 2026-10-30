@@ -75,7 +75,7 @@ def main():
         archive.writestr('R.txt', '')
         archive.writestr('proguard.txt', '-keep class org.liblivephoto.NativeEngine { native <methods>; }\n')
         archive.write(ROOT/'LICENSE', 'META-INF/LICENSE')
-        archive.write(ROOT/'evidence/native-dependencies.json', 'META-INF/native-dependencies.json')
+        archive.write(ROOT/'fixtures/native-dependencies.json', 'META-INF/native-dependencies.json')
         license_files,licenses=dependency_notices()
         for name,path in license_files.items():archive.write(path, 'META-INF/'+name)
         archive.writestr('META-INF/dependency-notices.json',json.dumps(licenses,indent=2)+'\n')

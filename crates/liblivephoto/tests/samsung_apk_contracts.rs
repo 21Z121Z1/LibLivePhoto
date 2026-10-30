@@ -1,5 +1,5 @@
 //! Owned synthetic controls for the signed Samsung component observations in
-//! evidence/SAMSUNG_APK_ROUND7.md. No vendor APK or implementation is linked.
+//! Static Samsung package observations live on branch archive/evidence-20261030 at evidence/SAMSUNG_APK_ROUND7.md. No vendor APK or implementation is linked.
 mod common;
 use liblivephoto::*;
 

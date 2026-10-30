@@ -9,7 +9,7 @@ fn external_originals_validate_with_resource_and_time_preservation() {
             PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../research/private/public-samples")
         });
     let manifest: serde_json::Value =
-        serde_json::from_str(include_str!("../../../evidence/public-samples.json")).unwrap();
+        serde_json::from_str(include_str!("data/public-samples.json")).unwrap();
     let still = fs::read(root.join("Apple Live Photo/Apple iPhone 15 - photo.HEIC")).unwrap();
     let movie = fs::read(root.join("Apple Live Photo/Apple iPhone 15 - video.MOV")).unwrap();
     let apple = MotionPhoto::parse(

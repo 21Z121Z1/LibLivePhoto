@@ -63,3 +63,15 @@ cargo run --locked -p liblivephoto --example convert -- samsung-jpeg-sef /tmp/ll
 Swift 包在 `apple` 目录。`Package.swift` 声明 Swift tools 5.9、macOS 13、iOS 16，库名是 `LibLivePhotoApple`。那台机器没装 Swift。同一提交上，[Apple adapter and local web](https://github.com/21Z121Z1/LibLivePhoto/actions/runs/41029330012) 的作业 `apple` 成功。作业会跑 `swift test --package-path apple`，以及 iOS 模拟器验收。模拟器结果不能当作「照片」已经验收。
 
 WASM 演示在 `web`。同一工作流里的作业 `web` 成功。它使用 `wasm32-unknown-unknown`、`wasm-bindgen-cli` 0.2.104 和 Node 24，然后跑 Node 测试和 Chrome 浏览器测试。那台机器的 Node 是 v22.23.4，那些 Web 命令没有在那里执行。
+
+## 重新生成收据
+
+在仓库根目录运行，并传入一个新目录。`evidence/` 已被 Git 忽略，收据不会进入版本库。CI 会把该目录作为构件上传。
+
+```sh
+python3 scripts/verify_extraction.py run --evidence evidence/local/verify-extraction
+```
+
+脚本会构建 `llp`，核对当前检出的提交，运行库、接口和 CLI 测试，然后运行 `replay_extraction_budget.py` 与 `replay_historical_budgets.py`。差分脚本、`scripts/test_syntax_contracts.py` 和 `scripts/fuzz.sh` 也写到 `evidence/local`。它们不修改已跟踪的文件。
+
+较早的研究笔记和以提交 SHA 命名的收据在分支 [`archive/evidence-20261030`](https://github.com/21Z121Z1/LibLivePhoto/tree/archive/evidence-20261030/evidence)，提交 `2fb54887aba91c0fbb607120038b93afc7dca8f0`。索引见[研究笔记](research.zh-CN.md)。

@@ -3,7 +3,7 @@
 /fixtures/cache/
 /fuzz/corpus/
 /fuzz/artifacts/
-/evidence/local/
+/evidence/
 /research/private/
 /.codex/
 /web/node_modules/

@@ -35,8 +35,8 @@ Google's Oplus JXRS checksum/JSON-directory cases and pure OpCamera XMP have
 bounded synthetic/reference coverage, independently of the original ColorOS
 LPEX corpus. Checksum semantics and native Gallery compatibility remain open.
 No Oplus native writer or semantic role for stream2 is added. See the
-[current source/test map](evidence/SOURCE_TEST_MAP.md) and
-[five-vendor evidence matrix](evidence/VENDOR_RESEARCH_20261019.md).
+[current source/test map](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/SOURCE_TEST_MAP.md) and
+[five-vendor evidence matrix](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/VENDOR_RESEARCH_20261019.md).
 
 The repository contains synthetic test vectors and hashes of external originals.
 It does not redistribute the external photos or proprietary components.
@@ -45,12 +45,12 @@ Round3 adds optional ICC4.4 envelope checks, AAC-LC PCE channel declarations and
 entry-version0/1 wave/esds inspection, plus one nonfragmented index alternative:
 stz2 widths4/8/16. These are bounded syntax/preservation contracts, not full ICC/
 AAC semantics, colour/audio rendering or native Gallery support. See
-[exact scope and execution](evidence/HANDOFF_ROUND3_20261019.md).
+[exact scope and execution](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/HANDOFF_ROUND3_20261019.md).
 
 Round4 verified source **bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7** passed
 all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
 at every applicable native, mobile and actual browser entry. See the
-[handoff](evidence/HANDOFF_ROUND4_20261019.md),
-[terminal receipt](evidence/platform-bd6f85b.json) and
-[remaining boundaries](evidence/REMAINING_WORK.md). Native Gallery/Photos and
+[handoff](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/HANDOFF_ROUND4_20261019.md),
+[terminal receipt](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/platform-bd6f85b.json) and
+[remaining boundaries](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/REMAINING_WORK.md). Native Gallery/Photos and
 full ICC/AAC/rendering/device compatibility are still unverified or partial.

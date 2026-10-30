@@ -63,3 +63,15 @@ Those commands were not run on that machine. The CI results are for commit `042a
 The Swift package is the `apple` directory. `Package.swift` declares Swift tools 5.9, macOS 13, iOS 16, and the library name `LibLivePhotoApple`. Swift was not installed on that machine. The [Apple adapter and local web](https://github.com/21Z121Z1/LibLivePhoto/actions/runs/41029330012) job `apple` succeeded on the same commit. The job runs `swift test --package-path apple` and an iOS Simulator acceptance. A simulator result leaves Photos acceptance unverified.
 
 The WASM demo lives in `web`. The `web` job in that same workflow succeeded. It uses the `wasm32-unknown-unknown` target, `wasm-bindgen-cli` 0.2.104, and Node 24, then runs the Node tests and the Chrome browser tests. Node on that machine was v22.23.4, and those web commands were not run there.
+
+## Regenerate a receipt
+
+Run this from the repository root and pass a new directory. `evidence/` is gitignored, so the receipt stays out of the tree. CI uploads that directory as an artifact.
+
+```sh
+python3 scripts/verify_extraction.py run --evidence evidence/local/verify-extraction
+```
+
+The script builds `llp`, checks the checked-out head, runs the library, interface, and CLI tests, then `replay_extraction_budget.py` and `replay_historical_budgets.py`. Differential scripts, `scripts/test_syntax_contracts.py`, and `scripts/fuzz.sh` also write under `evidence/local`. They do not update tracked files.
+
+Older research notes and SHA-named receipts are on branch [`archive/evidence-20261030`](https://github.com/21Z121Z1/LibLivePhoto/tree/archive/evidence-20261030/evidence) at `2fb54887aba91c0fbb607120038b93afc7dca8f0`. The index is [Research notes](research.md).

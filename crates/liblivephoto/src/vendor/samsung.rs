@@ -1,4 +1,4 @@
-//! Independent implementation of evidence/SAMSUNG_SEF_SPEC.md.
+//! Independent Samsung SEF reader and direct JPEG writer. The research note is on branch archive/evidence-20261030 at evidence/SAMSUNG_SEF_SPEC.md.
 use crate::{ByteRange, MotionPhotoReadError as Error};
 type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug, Clone, PartialEq, Eq)]
