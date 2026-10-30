@@ -1,0 +1,1220 @@
+{
+  "implementation_sha": "03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b",
+  "workflows": [
+    {
+      "id": 39331001138,
+      "name": "Verify independent format library",
+      "head_sha": "03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39331001138",
+      "created_at": "2026-10-19T21:53:41Z",
+      "updated_at": "2026-10-19T21:57:48Z"
+    },
+    {
+      "id": 39331001070,
+      "name": "Apple adapter and local web",
+      "head_sha": "03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39331001070",
+      "created_at": "2026-10-19T21:53:41Z",
+      "updated_at": "2026-10-19T22:00:17Z"
+    },
+    {
+      "id": 39331000997,
+      "name": "Android native services",
+      "head_sha": "03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39331000997",
+      "created_at": "2026-10-19T21:53:41Z",
+      "updated_at": "2026-10-19T22:19:16Z"
+    }
+  ],
+  "logical_jobs": [
+    {
+      "id": 118328855685,
+      "name": "Portable (macos-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39331001138
+    },
+    {
+      "id": 118328855710,
+      "name": "Exact original fixture round trips",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39331001138
+    },
+    {
+      "id": 118328855744,
+      "name": "Portable (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39331001138
+    },
+    {
+      "id": 118328855988,
+      "name": "Portable (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39331001138
+    },
+    {
+      "id": 118328856378,
+      "name": "Sanitizer and coverage campaign",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39331001138
+    },
+    {
+      "id": 118328853372,
+      "name": "web",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39331001070
+    },
+    {
+      "id": 118328853775,
+      "name": "apple",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39331001070
+    },
+    {
+      "id": 118328852798,
+      "name": "sdk-and-services",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39331000997
+    }
+  ],
+  "artifact_metadata": [
+    {
+      "id": 12224627244,
+      "name": "native-sdk-ubuntu-latest",
+      "size_in_bytes": 9608987,
+      "github_reported_digest": "sha256:910372d8b6ffde5027b891e85b0af144fa422bdc1ce99bb70ca15fa94a26cb94",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12223914386,
+      "name": "native-sdk-macos-latest",
+      "size_in_bytes": 9118083,
+      "github_reported_digest": "sha256:c3ec520a7aae70d7c91b9daeeb972e2dcd47c9860e2075b481f679ba6bd40e1a",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12223783423,
+      "name": "sanitizer-coverage-logs",
+      "size_in_bytes": 224762,
+      "github_reported_digest": "sha256:7b53f25929e6a1730a5c88530eb3f85f015aaca1c886974d8f59df587dbfca8b",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12223493981,
+      "name": "native-sdk-windows-latest",
+      "size_in_bytes": 7321418,
+      "github_reported_digest": "sha256:1a0af3ed697fc9398e8def3fef4e27fa9170a94c3fc321af317b6aa7d7cf28d0",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12225110518,
+      "name": "web-browser-evidence",
+      "size_in_bytes": 396974,
+      "github_reported_digest": "sha256:c40a0022e057d0a13a5f3dec6610787d0b27b79e9ab7d6a8bda3569f9383aac8",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12225021086,
+      "name": "apple-sdk-build",
+      "size_in_bytes": 22547827,
+      "github_reported_digest": "sha256:5c4a5cb4d3d38c9329933002949bffa3bbe116381d911493214584ba08da8f70",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12225731431,
+      "name": "android-service-evidence",
+      "size_in_bytes": 4685405,
+      "github_reported_digest": "sha256:962ed3da928c9f50cad9c336705badbf3df5ee0506b6b773ec92b4293f25b6bd",
+      "payload_downloaded": false
+    }
+  ],
+  "scope": "Exact source runtime acceptance, not OEM Gallery/Photos or physical renderer/capture acceptance; no model/tier, KVM/permission/network/deadline changes.",
+  "schema_version": 1,
+  "case_suites": {
+    "syntax": {
+      "count": 42,
+      "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+      "case_ids": [
+        "icc-valid",
+        "icc-unsupported",
+        "icc-truncated",
+        "icc-budget",
+        "pce-wave",
+        "pce-stz2",
+        "pce-stz2-unused",
+        "direct-aac",
+        "direct-version",
+        "direct-version-inspect",
+        "direct-duplicate",
+        "direct-duplicate-inspect",
+        "direct-extension",
+        "direct-extension-inspect",
+        "pce-truncated",
+        "mixed-sizes",
+        "stz2-preserve",
+        "stz2-preserve-parse",
+        "stz2-compact",
+        "stz2-compact-parse",
+        "stz2-remove-audio",
+        "stz2-import-audio",
+        "legacy-preserve",
+        "legacy-preserve-parse",
+        "legacy-compact",
+        "legacy-compact-parse",
+        "legacy-remove-audio",
+        "legacy-import-audio",
+        "agtm-stz2",
+        "pce-build",
+        "pce-extract",
+        "pce-built-time",
+        "direct-build",
+        "direct-extract",
+        "direct-built-time",
+        "version-build",
+        "version-extract",
+        "duplicate-build",
+        "duplicate-extract",
+        "extension-build",
+        "extension-extract",
+        "inexact-third"
+      ]
+    },
+    "vendor": {
+      "count": 13,
+      "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+      "case_ids": [
+        "samsung-normal",
+        "samsung-no-primary",
+        "samsung-no-primary-parse-rejected",
+        "samsung-ambiguous",
+        "samsung-ambiguous-parse-rejected",
+        "samsung-bad-pointer",
+        "samsung-bad-pointer-parse-rejected",
+        "vivo-alias",
+        "vivo-id-conflict",
+        "vivo-xmp-span-conflict",
+        "vivo-bad-stream",
+        "samsung-primary-original-bytes",
+        "vivo-conflicting-id-original-bytes"
+      ]
+    },
+    "vendor-selection": {
+      "count": 20,
+      "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+      "case_ids": [
+        "distinct-normal-record-0",
+        "distinct-normal-record-2",
+        "distinct-no-primary-record-0",
+        "distinct-no-primary-record-2",
+        "distinct-ambiguous-record-2",
+        "distinct-ambiguous-record-3",
+        "distinct-bad-pointer-record-0",
+        "pointer-alias-record-0",
+        "pointer-alias-record-1",
+        "bad-pointer-selection-rejected",
+        "unknown-record-selection-rejected",
+        "missing-record-selection-rejected",
+        "negative-selection-rejected",
+        "selection-overflow-rejected",
+        "selection-provider-disabled",
+        "ambiguous-default-extract-still-rejected",
+        "pointer-alias-default-extract-still-rejected",
+        "selection-conflicting-still-flag-rejected",
+        "selection-strict-parser-flag-rejected",
+        "vivo-alias-source-ranges"
+      ]
+    }
+  },
+  "desktop_actual_execution": {
+    "macos": {
+      "job_id": 118328855685,
+      "rust_runs": [
+        [
+          242,
+          0,
+          3
+        ],
+        [
+          242,
+          0,
+          3
+        ]
+      ],
+      "actual_transport_suites": [
+        {
+          "entry": "host-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "vendor-host-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "vendor-selection-host-jni",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "host-c-abi",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-host-c-abi",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-host-c-abi",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        },
+        {
+          "entry": "packaged-release-cli",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-packaged-release-cli",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-packaged-release-cli",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        },
+        {
+          "entry": "packaged-compiled-c",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-packaged-compiled-c",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-packaged-compiled-c",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true
+        }
+      ],
+      "log_sha256": "cf05d95a6716a89d22336426de30fca7681396268e3b323f8bfa8a9628d0fb77"
+    },
+    "ubuntu": {
+      "job_id": 118328855744,
+      "rust_runs": [
+        [
+          242,
+          0,
+          3
+        ],
+        [
+          242,
+          0,
+          3
+        ]
+      ],
+      "actual_transport_suites": [
+        {
+          "entry": "host-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "vendor-host-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "vendor-selection-host-jni",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "host-c-abi",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-host-c-abi",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-host-c-abi",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        },
+        {
+          "entry": "packaged-release-cli",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-packaged-release-cli",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-packaged-release-cli",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        },
+        {
+          "entry": "packaged-compiled-c",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-packaged-compiled-c",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-packaged-compiled-c",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "cli-syntax",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-cli",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-cli",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        }
+      ],
+      "log_sha256": "20e01d796201ccb742efff61775475f566d4e3a32829340143a8aa9f2c3d349c"
+    },
+    "windows": {
+      "job_id": 118328855988,
+      "rust_runs": [
+        [
+          241,
+          0,
+          3
+        ],
+        [
+          241,
+          0,
+          3
+        ]
+      ],
+      "actual_transport_suites": [
+        {
+          "entry": "host-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "vendor-host-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "vendor-selection-host-jni",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "host-c-abi",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-host-c-abi",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-host-c-abi",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        },
+        {
+          "entry": "packaged-release-cli",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-packaged-release-cli",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-packaged-release-cli",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        },
+        {
+          "entry": "packaged-compiled-c",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 97,
+          "byte_exact_output_checks": 20
+        },
+        {
+          "entry": "vendor-packaged-compiled-c",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 54,
+          "byte_exact_output_checks": 2
+        },
+        {
+          "entry": "vendor-selection-packaged-compiled-c",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true,
+          "per_case_report_ids_match_locked_order": true,
+          "field_checks": 51,
+          "byte_exact_output_checks": 9
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+          "suite": "syntax",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "suite": "vendor",
+          "runtime_canonical_ids_and_digest_validated": true
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "suite": "vendor-selection",
+          "runtime_canonical_ids_and_digest_validated": true
+        }
+      ],
+      "log_sha256": "0d144c33848775e0c7b86cb8abfecd15036f142d68ea845dc1b175df85b329c5"
+    }
+  },
+  "web_actual_execution": {
+    "actual_runtime_suites": [
+      {
+        "entry": "node-wasm",
+        "cases": 42,
+        "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+        "suite": "syntax",
+        "runtime_canonical_ids_and_digest_validated": true,
+        "per_case_report_ids_match_locked_order": true,
+        "field_checks": 97,
+        "byte_exact_output_checks": 20
+      },
+      {
+        "entry": "node-wasm-vendor",
+        "cases": 13,
+        "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+        "suite": "vendor",
+        "runtime_canonical_ids_and_digest_validated": true,
+        "per_case_report_ids_match_locked_order": true,
+        "field_checks": 54,
+        "byte_exact_output_checks": 2
+      },
+      {
+        "entry": "node-wasm-vendor-selection",
+        "cases": 20,
+        "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+        "suite": "vendor-selection",
+        "runtime_canonical_ids_and_digest_validated": true,
+        "per_case_report_ids_match_locked_order": true,
+        "field_checks": 51,
+        "byte_exact_output_checks": 9
+      },
+      {
+        "entry": "chrome-wasm",
+        "cases": 42,
+        "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+        "suite": "syntax",
+        "runtime_canonical_ids_and_digest_validated": true,
+        "per_case_report_ids_match_locked_order": true,
+        "field_checks": 97,
+        "byte_exact_output_checks": 20
+      },
+      {
+        "entry": "chrome-wasm-vendor",
+        "cases": 13,
+        "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+        "suite": "vendor",
+        "runtime_canonical_ids_and_digest_validated": true,
+        "per_case_report_ids_match_locked_order": true,
+        "field_checks": 54,
+        "byte_exact_output_checks": 2
+      },
+      {
+        "entry": "chrome-wasm-vendor-selection",
+        "cases": 20,
+        "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+        "suite": "vendor-selection",
+        "runtime_canonical_ids_and_digest_validated": true,
+        "per_case_report_ids_match_locked_order": true,
+        "field_checks": 51,
+        "byte_exact_output_checks": 9
+      }
+    ],
+    "browser_tests": 10,
+    "chrome_version": "155.0.8059.84",
+    "node_old_timing_tests": 4,
+    "node_actual_wasm_tests": 3,
+    "http_methods": "GET/HEAD only",
+    "log_sha256": "d1b5604a4e4df9f0ff5028ce9763ae8d26e5bcb058f277b7381b07d41178f144"
+  },
+  "apple_actual_execution": {
+    "swift_xctest_tests": 13,
+    "swift_xctest_failures": 0,
+    "runtime_receipt": {
+      "implementation_sha": "03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b",
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+      "architecture": "arm64",
+      "device": "04846F77-5006-4A08-B878-03A6A8B5164D",
+      "device_type": "com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation",
+      "result": "passed",
+      "scope": "actual Swift plus statically linked Rust C ABI in owned iOS Simulator",
+      "bootstatus_completed": true,
+      "runtime_process_passed": true,
+      "springboard_ui_acceptance": false,
+      "photos_library_import_edit": false,
+      "physical_playback_hdr": false,
+      "runtime_available": true,
+      "runtime_version": "26.2",
+      "compiler_sdk": "/Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk",
+      "syntax_cases": 42,
+      "vendor_suites": {
+        "vendor": {
+          "cases": 13,
+          "case_ids": [
+            "samsung-normal",
+            "samsung-no-primary",
+            "samsung-no-primary-parse-rejected",
+            "samsung-ambiguous",
+            "samsung-ambiguous-parse-rejected",
+            "samsung-bad-pointer",
+            "samsung-bad-pointer-parse-rejected",
+            "vivo-alias",
+            "vivo-id-conflict",
+            "vivo-xmp-span-conflict",
+            "vivo-bad-stream",
+            "samsung-primary-original-bytes",
+            "vivo-conflicting-id-original-bytes"
+          ],
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        "vendor-selection": {
+          "cases": 20,
+          "case_ids": [
+            "distinct-normal-record-0",
+            "distinct-normal-record-2",
+            "distinct-no-primary-record-0",
+            "distinct-no-primary-record-2",
+            "distinct-ambiguous-record-2",
+            "distinct-ambiguous-record-3",
+            "distinct-bad-pointer-record-0",
+            "pointer-alias-record-0",
+            "pointer-alias-record-1",
+            "bad-pointer-selection-rejected",
+            "unknown-record-selection-rejected",
+            "missing-record-selection-rejected",
+            "negative-selection-rejected",
+            "selection-overflow-rejected",
+            "selection-provider-disabled",
+            "ambiguous-default-extract-still-rejected",
+            "pointer-alias-default-extract-still-rejected",
+            "selection-conflicting-still-flag-rejected",
+            "selection-strict-parser-flag-rejected",
+            "vivo-alias-source-ranges"
+          ],
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600"
+        }
+      },
+      "owned_device_deleted": true
+    },
+    "actual_runtime_suites": [
+      {
+        "entry": "macos-swift-c-abi",
+        "suite": "syntax",
+        "cases": 42,
+        "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+        "per_case_ids_match_locked_order": true,
+        "field_checks": 97,
+        "byte_exact_output_checks": 20
+      },
+      {
+        "entry": "macos-swift-vendor",
+        "suite": "vendor",
+        "cases": 13,
+        "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+        "per_case_ids_match_locked_order": true,
+        "field_checks": 54,
+        "byte_exact_output_checks": 2
+      },
+      {
+        "entry": "macos-swift-vendor-selection",
+        "suite": "vendor-selection",
+        "cases": 20,
+        "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+        "per_case_ids_match_locked_order": true,
+        "field_checks": 51,
+        "byte_exact_output_checks": 9
+      },
+      {
+        "entry": "ios-simulator-swift-c-abi",
+        "suite": "syntax",
+        "cases": 42,
+        "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+        "per_case_ids_match_locked_order": true,
+        "field_checks": 97,
+        "byte_exact_output_checks": 20
+      },
+      {
+        "entry": "ios-simulator-vendor",
+        "suite": "vendor",
+        "cases": 13,
+        "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+        "per_case_ids_match_locked_order": true,
+        "field_checks": 54,
+        "byte_exact_output_checks": 2
+      },
+      {
+        "entry": "ios-simulator-vendor-selection",
+        "suite": "vendor-selection",
+        "cases": 20,
+        "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+        "per_case_ids_match_locked_order": true,
+        "field_checks": 51,
+        "byte_exact_output_checks": 9
+      }
+    ],
+    "job_log_sha256": "0481559fbfc9276a201a09c0bffa9ae5228462e184b076ac5ecf68addbaafaa3"
+  },
+  "android_actual_execution": {
+    "runtime_receipt": {
+      "result": "passed",
+      "completed_scopes": [
+        "core",
+        "metadata",
+        "lifecycle",
+        "concurrency",
+        "syntax",
+        "vendor"
+      ],
+      "assertions": 156,
+      "legacy_assertions": 115,
+      "gallery_acceptance": false,
+      "readiness_deadline_seconds": 120,
+      "readiness_max_attempts": 40,
+      "per_scope_deadline_seconds": 240,
+      "per_operation_deadline_seconds": 40,
+      "installation_confirmed": true,
+      "bind_deadline_seconds": 20,
+      "ready_future_wait_deadline_seconds": 20,
+      "ready_future_wait_starts_after_bind_returns": true,
+      "synchronous_bind_bounded_by_scope_deadline": true,
+      "installation_outcome_uncertain": false,
+      "owned_package_removed": true,
+      "implementation_sha": "03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b",
+      "readiness_attempts": 1,
+      "package_absence_confirmed": true,
+      "active_scope": "vendor",
+      "vendor_suites": {
+        "vendor": {
+          "count": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b",
+          "case_ids": [
+            "samsung-normal",
+            "samsung-no-primary",
+            "samsung-no-primary-parse-rejected",
+            "samsung-ambiguous",
+            "samsung-ambiguous-parse-rejected",
+            "samsung-bad-pointer",
+            "samsung-bad-pointer-parse-rejected",
+            "vivo-alias",
+            "vivo-id-conflict",
+            "vivo-xmp-span-conflict",
+            "vivo-bad-stream",
+            "samsung-primary-original-bytes",
+            "vivo-conflicting-id-original-bytes"
+          ]
+        },
+        "vendor-selection": {
+          "count": 20,
+          "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600",
+          "case_ids": [
+            "distinct-normal-record-0",
+            "distinct-normal-record-2",
+            "distinct-no-primary-record-0",
+            "distinct-no-primary-record-2",
+            "distinct-ambiguous-record-2",
+            "distinct-ambiguous-record-3",
+            "distinct-bad-pointer-record-0",
+            "pointer-alias-record-0",
+            "pointer-alias-record-1",
+            "bad-pointer-selection-rejected",
+            "unknown-record-selection-rejected",
+            "missing-record-selection-rejected",
+            "negative-selection-rejected",
+            "selection-overflow-rejected",
+            "selection-provider-disabled",
+            "ambiguous-default-extract-still-rejected",
+            "pointer-alias-default-extract-still-rejected",
+            "selection-conflicting-still-flag-rejected",
+            "selection-strict-parser-flag-rejected",
+            "vivo-alias-source-ranges"
+          ]
+        }
+      },
+      "device": "Android SDK built for x86_64",
+      "sdk": "35",
+      "abi": "x86_64",
+      "hardware": "ranchu",
+      "scope": "installed APK, four remote services, isolated parser, actual Rust JNI, FD ranges/ownership, byte-exact extract/build, diagnostics/cancel"
+    },
+    "per_case_trace_verification": {
+      "vendor_ids_and_digests_match_locked_order": true,
+      "vendor_case_count": 33,
+      "syntax_case_count": 42,
+      "vendor_remote_binder_calls": 33,
+      "connections": 24,
+      "all_remote_pids_differ_from_client": true,
+      "ready_wait_elapsed_ms_min": 3196,
+      "ready_wait_elapsed_ms_max": 15933,
+      "vendor_phases": [
+        {
+          "suite": "vendor",
+          "action": "metadata",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "metadata",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "parse",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "metadata",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "parse",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "metadata",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "parse",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "metadata",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "metadata",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "metadata",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "metadata",
+          "remote_pid": 4415
+        },
+        {
+          "suite": "vendor",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "extract",
+          "remote_pid": 4514
+        },
+        {
+          "suite": "vendor-selection",
+          "action": "metadata",
+          "remote_pid": 4415
+        }
+      ]
+    },
+    "job_log_sha256": "e260dc5248e7415406f0787b3de1e1a0291da8c1fbfbc0c042d82a074aa39d19"
+  },
+  "bounded_asan": {
+    "targets": [
+      "asset_input",
+      "header_input",
+      "remux_input"
+    ],
+    "executions": [
+      105950,
+      2313992,
+      206428
+    ],
+    "total_executions": 2626370,
+    "peak_rss_mib": [
+      473,
+      750,
+      468
+    ],
+    "crashes": 0,
+    "job_log_sha256": "d2034f11798890b63196797aadc2e3713952fabee1f93b101e78188a145e28c8",
+    "limit": "bounded regression campaign; does not validate renderer, OEM semantics or every input"
+  },
+  "independent_original_corpus": {
+    "job_id": 118328855710,
+    "passed_tests": 2,
+    "sha_locked_inputs": 14,
+    "executed_separately_from_default_ignored_tests": true
+  },
+  "historical_android_outcomes": {
+    "round5_failed_attempt": "vendor-round5-android-attempt1.json",
+    "round5_successful_attempt": "platform-0ece07a.json",
+    "round5_first_install_outcome": "uncertain; return224 before assertions; cleanup unconfirmed on terminated runner",
+    "round5_first_root_cause": "unresolved; later runner successes do not establish a fix",
+    "round6_current_attempt": 1
+  },
+  "local_receipt": "round6-local-verification.json",
+  "artifact_digest_limit": "GitHub-reported artifact archive digests only; artifact payloads were not downloaded or locally hashed. The independently built and tested local Linux SDK digest is recorded separately in round6-local-verification.json."
+}

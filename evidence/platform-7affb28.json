@@ -1,0 +1,669 @@
+{
+  "implementation_sha": "7affb283d61e070f505c27e18c202cec85e80841",
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "branch": "codex/google-core-coverage-20261019",
+  "source_identity": "Exact CI checkout. Diagnostic instrumentation only; no timeout increase, retry, assertion removal or root-cause fix. Immutable local baseline/verified-7affb28 points at this commit.",
+  "source_objects": {
+    "Cargo.toml": "31afd8e6a5e611174fc826613c4d91cb63bd8752",
+    "Cargo.lock": "05e5a92e2722074d64a35460b38ea706fcaa239e",
+    "crates": "2f8144ca1d0d399e2aa50eb66afb815864a95217",
+    "fuzz": "bcd2ec0b3338d14741d71ea0e95b1375cba983c3",
+    "scripts": "ccef717e08cb7d267c9f7b50f38014fa530e0102",
+    "java": "fec2387468434285b4ed7e5e2741141f8d2ba989",
+    "android": "9f44bed8ec16b4e0a20eb5de55990cba31d37f9b",
+    "apple": "dfce4d6cfdda9bbc2ac7a6e15629931df3e749b4",
+    "web": "f195d780eba5305b4cef5817c8004b11b49e9ed6",
+    "native": "eec2f68cd192c1afdc76d67dcebbca800d9f08c9",
+    "fixtures": "d29a6b6805d1094a4231a878a76c8f2246adba03",
+    ".github/workflows": "472a032127d00194ae08945344c308b5992f2e7e"
+  },
+  "runs": [
+    {
+      "id": 39294243252,
+      "name": "Apple adapter and local web",
+      "head_sha": "7affb283d61e070f505c27e18c202cec85e80841",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39294243252",
+      "created_at": "2026-10-19T17:27:14Z",
+      "updated_at": "2026-10-19T17:35:43Z"
+    },
+    {
+      "id": 39294243212,
+      "name": "Verify independent format library",
+      "head_sha": "7affb283d61e070f505c27e18c202cec85e80841",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39294243212",
+      "created_at": "2026-10-19T17:27:14Z",
+      "updated_at": "2026-10-19T17:31:34Z"
+    },
+    {
+      "id": 39294243168,
+      "name": "Android native services",
+      "head_sha": "7affb283d61e070f505c27e18c202cec85e80841",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39294243168",
+      "created_at": "2026-10-19T17:27:14Z",
+      "updated_at": "2026-10-19T17:43:30Z"
+    }
+  ],
+  "jobs": [
+    {
+      "id": 118202500805,
+      "run_id": 39294243168,
+      "name": "sdk-and-services",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118202500488,
+      "run_id": 39294243212,
+      "name": "Exact original fixture round trips",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118202501042,
+      "run_id": 39294243212,
+      "name": "Portable (windows-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118202501151,
+      "run_id": 39294243212,
+      "name": "Sanitizer and coverage campaign",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118202501278,
+      "run_id": 39294243212,
+      "name": "Portable (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118202501702,
+      "run_id": 39294243212,
+      "name": "Portable (macos-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118202500752,
+      "run_id": 39294243252,
+      "name": "web",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118202501218,
+      "run_id": 39294243252,
+      "name": "apple",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12207589321,
+      "name": "android-service-evidence",
+      "run_id": 39294243168,
+      "size_in_bytes": 3845804,
+      "digest": "sha256:0f2b4350b2f5c9fa5f8da2b55851ad346fb2782015bce699b45c26c0aaec8aef",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12207232128,
+      "name": "native-sdk-ubuntu-latest",
+      "run_id": 39294243212,
+      "size_in_bytes": 9431756,
+      "digest": "sha256:3ad4a739343f092189703f730cc8d9aca8d70cede2fbd70b296d2b49a82c7243",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12207213408,
+      "name": "sanitizer-coverage-logs",
+      "run_id": 39294243212,
+      "size_in_bytes": 177065,
+      "digest": "sha256:f1b0ad1411226d63e22be7db6fc9972053d789d4f332868f38e4e9f3285d9c58",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12207147533,
+      "name": "native-sdk-windows-latest",
+      "run_id": 39294243212,
+      "size_in_bytes": 7133416,
+      "digest": "sha256:383f11bb5d8b2d9e7cd4fd3f44c70c8a56fd115e13c9000b17fb0277cb88bc64",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12206588468,
+      "name": "native-sdk-macos-latest",
+      "run_id": 39294243212,
+      "size_in_bytes": 8970719,
+      "digest": "sha256:bccd9dbc9830e02a90ad3869c65d0ce3ae1cda26ac04ae8291989c001550bc53",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12207242813,
+      "name": "web-browser-evidence",
+      "run_id": 39294243252,
+      "size_in_bytes": 394097,
+      "digest": "sha256:cf1895e36318e688e804d6b0efeaa533066b362ac1b5b869a5b32cbf44c720e9",
+      "downloaded_into_this_container": false
+    },
+    {
+      "id": 12206419477,
+      "name": "apple-sdk-build",
+      "run_id": 39294243252,
+      "size_in_bytes": 22370490,
+      "digest": "sha256:142a5192d8c84446e7ccd52838a3e25b2b66476faf8ebec3591072314bc25610",
+      "downloaded_into_this_container": false
+    }
+  ],
+  "portable": {
+    "Linux": {
+      "default": {
+        "passed": 205,
+        "failed": 0,
+        "ignored": 3
+      },
+      "all_features": {
+        "passed": 205,
+        "failed": 0,
+        "ignored": 3
+      }
+    },
+    "macOS": {
+      "default": {
+        "passed": 205,
+        "failed": 0,
+        "ignored": 3
+      },
+      "all_features": {
+        "passed": 205,
+        "failed": 0,
+        "ignored": 3
+      }
+    },
+    "Windows": {
+      "default": {
+        "passed": 204,
+        "failed": 0,
+        "ignored": 3
+      },
+      "all_features": {
+        "passed": 204,
+        "failed": 0,
+        "ignored": 3
+      },
+      "excluded": "Unix-only range_and_borrowed_fd_use_the_same_relative_collection_without_moving_cursor"
+    }
+  },
+  "public_original_fixtures": {
+    "tests_passed": 2,
+    "sha_locked_files": 14,
+    "private_original_analysis_executed": false
+  },
+  "native_consumers": {
+    "C_ABI": "actual passed",
+    "JVM_JNI": "actual passed",
+    "external_Rust": "actual passed",
+    "extracted_release_SDK": "Actual release CLI, C ABI, external Java JAR and manifest hashes passed on all three host platforms."
+  },
+  "sanitizer": {
+    "sanitizer": "address",
+    "requested_seconds_per_target": 60,
+    "actual_seconds_per_target": 61,
+    "max_input_bytes": 1048576,
+    "rss_limit_mb": 2048,
+    "per_input_timeout_seconds": 5,
+    "targets": [
+      {
+        "name": "asset_input",
+        "executions": 63481,
+        "peak_rss_mb": 471
+      },
+      {
+        "name": "container_headers",
+        "executions": 1307157,
+        "peak_rss_mb": 637
+      },
+      {
+        "name": "remux",
+        "executions": 163386,
+        "peak_rss_mb": 462
+      }
+    ],
+    "total_executions": 1534024,
+    "crashes": 0
+  },
+  "android": {
+    "result": "passed",
+    "completed_scopes": [
+      "core",
+      "metadata",
+      "lifecycle",
+      "concurrency"
+    ],
+    "assertions": 65,
+    "gallery_acceptance": false,
+    "readiness_deadline_seconds": 120,
+    "readiness_max_attempts": 40,
+    "per_scope_deadline_seconds": 240,
+    "per_operation_deadline_seconds": 40,
+    "installation_confirmed": true,
+    "bind_deadline_seconds": 20,
+    "installation_outcome_uncertain": false,
+    "owned_package_removed": true,
+    "implementation_sha": "7affb283d61e070f505c27e18c202cec85e80841",
+    "readiness_attempts": 1,
+    "package_absence_confirmed": true,
+    "active_scope": "concurrency",
+    "device": "Android SDK built for x86_64",
+    "sdk": "35",
+    "abi": "x86_64",
+    "hardware": "ranchu",
+    "scope": "installed APK, four remote services, isolated parser, actual Rust JNI, FD ranges/ownership, byte-exact extract/build, diagnostics/cancel",
+    "host_fault_tests_passed": 14,
+    "scope_assertions": {
+      "core": 20,
+      "metadata": 11,
+      "lifecycle": 16,
+      "concurrency": 18
+    },
+    "trace": [
+      {
+        "scope": "core",
+        "pid": 1864,
+        "connection": 1,
+        "service": "MetadataParserService",
+        "events": {
+          "bind.begin": 31,
+          "bind.return": 479,
+          "callback.connected": 16635,
+          "handshake.begin": 16652,
+          "handshake.return": 16857,
+          "ready.complete": 16975,
+          "close.begin": 100141,
+          "unbind.begin": 100245,
+          "unbind.return": 100348,
+          "close.return": 100416
+        },
+        "handshake_ms": 205
+      },
+      {
+        "scope": "core",
+        "pid": 1864,
+        "connection": 2,
+        "service": "MotionPhotoBuilderService",
+        "events": {
+          "bind.begin": 260,
+          "bind.return": 613,
+          "callback.connected": 14219,
+          "handshake.begin": 14234,
+          "handshake.return": 14306,
+          "close.begin": 80391,
+          "unbind.begin": 80439,
+          "unbind.return": 80469,
+          "close.return": 80471
+        },
+        "handshake_ms": 72
+      },
+      {
+        "scope": "core",
+        "pid": 1864,
+        "connection": 3,
+        "service": "MotionPhotoCheckerService",
+        "events": {
+          "bind.begin": 12,
+          "bind.return": 550,
+          "callback.connected": 14404,
+          "handshake.begin": 14427,
+          "handshake.return": 14595,
+          "ready.complete": 14611,
+          "close.begin": 63504,
+          "unbind.begin": 63546,
+          "unbind.return": 63567,
+          "close.return": 63582
+        },
+        "handshake_ms": 168
+      },
+      {
+        "scope": "core",
+        "pid": 1864,
+        "connection": 4,
+        "service": "MotionPhotoExtractorService",
+        "events": {
+          "bind.begin": 1,
+          "bind.return": 92,
+          "callback.connected": 10003,
+          "handshake.begin": 10009,
+          "handshake.return": 10158,
+          "close.begin": 46975,
+          "unbind.begin": 46982,
+          "unbind.return": 47149,
+          "close.return": 47166
+        },
+        "handshake_ms": 149
+      },
+      {
+        "scope": "metadata",
+        "pid": 2580,
+        "connection": 1,
+        "service": "MetadataParserService",
+        "events": {
+          "bind.begin": 24,
+          "bind.return": 3774,
+          "callback.connected": 22056,
+          "handshake.begin": 22102,
+          "handshake.return": 22983,
+          "ready.complete": 23043,
+          "close.begin": 66388,
+          "unbind.begin": 66404,
+          "unbind.return": 67931,
+          "close.return": 67935
+        },
+        "handshake_ms": 881
+      },
+      {
+        "scope": "metadata",
+        "pid": 2580,
+        "connection": 2,
+        "service": "MotionPhotoBuilderService",
+        "events": {
+          "bind.begin": 0,
+          "bind.return": 1021,
+          "callback.connected": 11085,
+          "handshake.begin": 11128,
+          "handshake.return": 11276,
+          "ready.complete": 11383,
+          "close.begin": 40428,
+          "unbind.begin": 40436,
+          "unbind.return": 41812,
+          "close.return": 41844
+        },
+        "handshake_ms": 148
+      },
+      {
+        "scope": "metadata",
+        "pid": 2580,
+        "connection": 3,
+        "service": "MotionPhotoCheckerService",
+        "events": {
+          "bind.begin": 1,
+          "bind.return": 151,
+          "callback.connected": 6683,
+          "handshake.begin": 6685,
+          "handshake.return": 6757,
+          "close.begin": 26724,
+          "unbind.begin": 26725,
+          "unbind.return": 28043,
+          "close.return": 28067
+        },
+        "handshake_ms": 72
+      },
+      {
+        "scope": "metadata",
+        "pid": 2580,
+        "connection": 4,
+        "service": "MotionPhotoExtractorService",
+        "events": {
+          "bind.begin": 113,
+          "bind.return": 215,
+          "callback.connected": 11951,
+          "handshake.begin": 11978,
+          "handshake.return": 12217,
+          "ready.complete": 12220,
+          "close.begin": 18920,
+          "unbind.begin": 18939,
+          "unbind.return": 19313,
+          "close.return": 19339
+        },
+        "handshake_ms": 239
+      },
+      {
+        "scope": "lifecycle",
+        "pid": 3038,
+        "connection": 1,
+        "service": "MetadataParserService",
+        "events": {
+          "bind.begin": 31,
+          "bind.return": 336,
+          "callback.connected": 5029,
+          "handshake.begin": 5058,
+          "handshake.return": 5074,
+          "ready.complete": 5160,
+          "close.begin": 82162,
+          "unbind.begin": 82178,
+          "unbind.return": 82272,
+          "close.return": 82273
+        },
+        "handshake_ms": 16
+      },
+      {
+        "scope": "lifecycle",
+        "pid": 3038,
+        "connection": 2,
+        "service": "MotionPhotoBuilderService",
+        "events": {
+          "bind.begin": 15,
+          "bind.return": 116,
+          "callback.connected": 5554,
+          "handshake.begin": 5556,
+          "handshake.return": 5788,
+          "ready.complete": 5806,
+          "close.begin": 76012,
+          "unbind.begin": 76046,
+          "unbind.return": 76076,
+          "close.return": 76087
+        },
+        "handshake_ms": 232
+      },
+      {
+        "scope": "lifecycle",
+        "pid": 3038,
+        "connection": 3,
+        "service": "MotionPhotoCheckerService",
+        "events": {
+          "bind.begin": 33,
+          "bind.return": 1423,
+          "callback.connected": 7038,
+          "handshake.begin": 7053,
+          "handshake.return": 7082,
+          "close.begin": 68534,
+          "unbind.begin": 68535,
+          "unbind.return": 68609,
+          "close.return": 68618
+        },
+        "handshake_ms": 29
+      },
+      {
+        "scope": "lifecycle",
+        "pid": 3038,
+        "connection": 4,
+        "service": "MotionPhotoExtractorService",
+        "events": {
+          "bind.begin": 1,
+          "bind.return": 47,
+          "callback.connected": 3814,
+          "handshake.begin": 3837,
+          "handshake.return": 3873,
+          "close.begin": 60459,
+          "unbind.begin": 60467,
+          "unbind.return": 60497,
+          "close.return": 60500
+        },
+        "handshake_ms": 36
+      },
+      {
+        "scope": "concurrency",
+        "pid": 3473,
+        "connection": 1,
+        "service": "MetadataParserService",
+        "events": {
+          "bind.begin": 59,
+          "bind.return": 167,
+          "callback.connected": 3641,
+          "handshake.begin": 3660,
+          "handshake.return": 3718,
+          "ready.complete": 3719,
+          "close.begin": 36896,
+          "unbind.begin": 36925,
+          "unbind.return": 37059,
+          "close.return": 37102
+        },
+        "handshake_ms": 58
+      },
+      {
+        "scope": "concurrency",
+        "pid": 3473,
+        "connection": 2,
+        "service": "MotionPhotoBuilderService",
+        "events": {
+          "bind.begin": 1,
+          "bind.return": 129,
+          "callback.connected": 3496,
+          "handshake.begin": 3497,
+          "handshake.return": 3551,
+          "ready.complete": 3552,
+          "close.begin": 32282,
+          "unbind.begin": 32283,
+          "unbind.return": 32331,
+          "close.return": 32333
+        },
+        "handshake_ms": 54
+      },
+      {
+        "scope": "concurrency",
+        "pid": 3473,
+        "connection": 3,
+        "service": "MotionPhotoCheckerService",
+        "events": {
+          "bind.begin": 1,
+          "bind.return": 57,
+          "callback.connected": 3720,
+          "handshake.begin": 3728,
+          "handshake.return": 3777,
+          "ready.complete": 3790,
+          "close.begin": 28361,
+          "unbind.begin": 28363,
+          "unbind.return": 28395,
+          "close.return": 28397
+        },
+        "handshake_ms": 49
+      },
+      {
+        "scope": "concurrency",
+        "pid": 3473,
+        "connection": 4,
+        "service": "MotionPhotoExtractorService",
+        "events": {
+          "bind.begin": 3,
+          "bind.return": 80,
+          "callback.connected": 8412,
+          "handshake.begin": 8425,
+          "handshake.return": 8536,
+          "ready.complete": 8537,
+          "close.begin": 23529,
+          "unbind.begin": 23547,
+          "unbind.return": 23586,
+          "close.return": 23596
+        },
+        "handshake_ms": 111
+      }
+    ],
+    "timing_contract": "bind_deadline_seconds20 is the unchanged ready().get(20) wait after synchronous bindService returns, not a total bind deadline. The240-second scope bound also covers the synchronous bind call.",
+    "measured_slow_metadata_connection": {
+      "bind_begin_ms": 24,
+      "bind_return_ms": 3774,
+      "callback_connected_ms": 22056,
+      "handshake_begin_ms": 22102,
+      "handshake_return_ms": 22983,
+      "ready_complete_ms": 23043,
+      "handshake_ms": 881,
+      "observed_ready_complete_minus_bind_return_ms": 19269,
+      "timestamp_semantics": "Client trace timestamps follow the corresponding calls. ready.complete is logged after CompletableFuture.complete, so the observed interval is not a stopwatch measurement of the waiting thread;4d02be4 reports that wait directly."
+    },
+    "trace_limits": "Client relative elapsedMs and service absolute SystemClock elapsedMs have different origins. Bounded logcat snapshots can omit early lifecycle rows; ready.complete may race the status snapshot. Successful65 assertions verify readiness/PID separation even where individual rows are absent. Do not invent absent trace events.",
+    "conclusion": "All four installed-runtime scopes and owned-package cleanup passed. Startup/callback intervals dominate several connections in this successful run; this does not explain or fix either earlier failure.",
+    "historical_failures": [
+      {
+        "receipt": "platform-71b778f.json",
+        "state": "first isolated ready-future timeout, zero assertions, root cause unresolved"
+      },
+      {
+        "receipt": "platform-c15648c.json",
+        "state": "core20 then metadata Process crashed; unclassified process death, separate unresolved failure"
+      }
+    ]
+  },
+  "apple": {
+    "macOS_XCTest_passed": 11,
+    "iOS_Swift_Rust": "actual passed",
+    "device": "iPhone SE (3rd generation)",
+    "runtime": "iOS26.2 (Build23C54)",
+    "compiler": "Xcode26.6, iPhoneSimulator26.5 SDK",
+    "bootstatus_completed": true,
+    "owned_device_deleted": true,
+    "iOS26_5_runtime_acceptance": false,
+    "physical_Photos_acceptance": false
+  },
+  "web": {
+    "node_tests_passed": 4,
+    "actual_Google_Chrome_tests_passed": 7,
+    "Google_Chrome_version": "155.0.8059.39",
+    "LivePhotosKit_runtime_acceptance": false
+  },
+  "limits": [
+    "Android API35/x86_64 emulator and iOS26.2 Simulator are bounded process acceptance, not physical arm64, Gallery/Photos/capture/HDR or vendor-native interoperability.",
+    "Seven artifact metadata/digests were read; no archive body was transferred into this container and the earlier CONNECT403 block was not retried or bypassed.",
+    "New vivo UUID stream implementation at9988a1d is not part of this7affb28 verification."
+  ],
+  "read_job_stdout": {
+    "118202500805": {
+      "bytes": 304433,
+      "sha256": "893ca64dd3586a46712e5f3bc31466c157595faae6dd675cfbc185179e13f7f4",
+      "materialization": "Decoded GitHub job stdout; one final newline retained/appended in the private local copy."
+    },
+    "118202500488": {
+      "bytes": 32557,
+      "sha256": "36ac9a63f58e54713a59efd848d4d6ff05260767058f3fe7518d4390da84e5c0",
+      "materialization": "Decoded GitHub job stdout; one final newline retained/appended in the private local copy."
+    },
+    "118202501042": {
+      "bytes": 130776,
+      "sha256": "892843bd99ff871322cb5dba934babdeb073ceaec726acd0a6255c19aaff5d67",
+      "materialization": "Decoded GitHub job stdout; one final newline retained/appended in the private local copy."
+    },
+    "118202501151": {
+      "bytes": 1502830,
+      "sha256": "2d2d49873be46f4d93c28693a5b186661f6f375587fd58dcb5765ebe16462f5f",
+      "materialization": "Decoded GitHub job stdout; one final newline retained/appended in the private local copy."
+    },
+    "118202501278": {
+      "bytes": 129426,
+      "sha256": "849418c342f75ae744c8cb10b40ff284c1d5cbaf721a6eecf63a896adf3383f7",
+      "materialization": "Decoded GitHub job stdout; one final newline retained/appended in the private local copy."
+    },
+    "118202501702": {
+      "bytes": 129436,
+      "sha256": "2f37516fae2fbcfd7e7c5c139e9a451338c408f7e668dcecbc0e3475d74d5992",
+      "materialization": "Decoded GitHub job stdout; one final newline retained/appended in the private local copy."
+    },
+    "118202500752": {
+      "bytes": 89128,
+      "sha256": "e13ba94e1134fc6ee122a96195a4828318d5250df28422b4c76a7a31855b9a5b",
+      "materialization": "Decoded GitHub job stdout; one final newline retained/appended in the private local copy."
+    },
+    "118202501218": {
+      "bytes": 182711,
+      "sha256": "ab2d287568ac0f7ddf4ec998e6ae0fb2752766781e46e5b832de6c4cb5288e28",
+      "materialization": "Decoded GitHub job stdout; one final newline retained/appended in the private local copy."
+    }
+  }
+}

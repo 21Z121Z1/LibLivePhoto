@@ -1,0 +1,73 @@
+{
+  "library_file_id": "libfile_1e0bff0056cc8191bafdd46f9cb3ff89",
+  "file_id": "file_00000000e34881f5a38bcc505d94f3e4",
+  "file_name": "ISO_IEC_23008-12_2025_zh(1).md",
+  "size_bytes": 339029,
+  "prepare_materialize": "authorized transfer returned",
+  "destination": "/workspace/private-standards/iso23008-2025-vny2vxsq",
+  "local_download": "blocked; not materialized",
+  "reason": "urllib HTTPS CONNECT proxy tunnel failed: 403 Forbidden",
+  "source_body_committed": false,
+  "source_body_published": false,
+  "library_head_read": "succeeded through authorized library_read; not local materialization",
+  "library_readable_header": "Third edition, 2025-07; ISO/IEC2025 copyright",
+  "library_body_sections_actually_read": [
+    "6.2",
+    "6.5.1",
+    "6.5.10.1-6.5.10.3",
+    "6.5.12.1-6.5.12.3",
+    "6.5.5.1-6.5.5.3"
+  ],
+  "local_body_exists": false,
+  "color_clause_read": {
+    "access": "authorized library_read",
+    "start_line": 1097,
+    "end_line": 1133,
+    "local_materialization": false,
+    "interpretation": "Facts/preservation only; colr multiplicity and paired ICC+nclx constraints are not fully validated. Referenced ColourInformationBox BMFF body was not obtained."
+  },
+  "library_read_windows": [
+    {
+      "section": "header",
+      "method": "library_read",
+      "start_line": 1,
+      "end_line": 20
+    },
+    {
+      "section": "6.2",
+      "method": "library_read",
+      "start_line": 872,
+      "end_line": 889
+    },
+    {
+      "section": "6.5.1",
+      "method": "library_read",
+      "start_line": 1000,
+      "end_line": 1026
+    },
+    {
+      "section": "6.5.5.1-6.5.5.3",
+      "method": "library_read",
+      "start_line": 1097,
+      "end_line": 1133
+    },
+    {
+      "section": "6.5.10.1-6.5.10.3",
+      "method": "library_read",
+      "start_line": 1240,
+      "end_line": 1318
+    },
+    {
+      "section": "6.5.12.1-6.5.12.3",
+      "method": "library_read",
+      "start_line": 1310,
+      "end_line": 1357
+    },
+    {
+      "section": "Table3",
+      "method": "library_find; data-reference match containing HTML table",
+      "start_line": 3601,
+      "end_line": 3606
+    }
+  ]
+}

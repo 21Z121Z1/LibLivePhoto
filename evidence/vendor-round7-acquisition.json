@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "base_delivery_sha": "272879c52ee60542754f0fdfbc3c24ccfdb7a196",
+  "previous_verified_implementation_sha": "03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b",
+  "recorded_at_utc": "2026-10-19T23:49:44.670025+00:00",
+  "outbound_conclusion": "Not a complete container egress outage: GitHub HTML/Git, PyPI and Debian work. Nine separate ordinary probe requests were refused by the proxy at CONNECT before origin TLS/body. Exact policy is unknown; origin availability is not determined. Old rejected URLs were not retried, no proxy/resolver/CAPTCHA/permission bypass was used. Authorized connector metadata searches are distinct from container requests and contain no APK bodies.",
+  "ordinary_probe_results": [
+    {
+      "id": "public-code-control",
+      "url": "https://github.com/",
+      "representation": "ordinary HTTPS GET; no proxy/header bypass; read max65536bytes",
+      "status": 200,
+      "final_url": "https://github.com/",
+      "content_type": "text/html; charset=utf-8",
+      "sample_bytes": 65536,
+      "sample_sha256": "edcb57062b965eeb106c08b8afd56e03d1b64e9450d533ebd3ee0f9c2ccb3fab",
+      "body_prefix": "\n\n\n\n\n\n\n\n<!DOCTYPE html>\n<html\n  lang=\"en\"\n  data-color-mode=\"dark\" dat",
+      "elapsed_s": 0.36
+    },
+    {
+      "id": "tool-metadata-control",
+      "url": "https://pypi.org/pypi/androguard/json",
+      "representation": "ordinary HTTPS GET; no proxy/header bypass; read max65536bytes",
+      "status": 200,
+      "final_url": "https://pypi.org/pypi/androguard/json",
+      "content_type": "application/json",
+      "sample_bytes": 51676,
+      "sample_sha256": "3fe5e107c77b8a2ec145fba5b68152960e788dc3cfaaf8a0cb4359ff1c9c6b09",
+      "body_prefix": "{\"info\":{\"author\":\"desnos\",\"author_email\":\"desnos@t0t0.fr\",\"bugtrack_u",
+      "elapsed_s": 0.26
+    },
+    {
+      "id": "independent-mirror-apkpure",
+      "url": "https://apkpure.com/albums/com.vivo.gallery",
+      "representation": "ordinary HTTPS GET; no proxy/header bypass; read max65536bytes",
+      "error": "URLError(OSError('Tunnel connection failed: 403 Forbidden'))",
+      "sample_bytes": 0,
+      "elapsed_s": 0.02
+    },
+    {
+      "id": "independent-mirror-apkcombo",
+      "url": "https://apkcombo.com/oneplus-gallery/com.oneplus.gallery/",
+      "representation": "ordinary HTTPS GET; no proxy/header bypass; read max65536bytes",
+      "error": "URLError(OSError('Tunnel connection failed: 403 Forbidden'))",
+      "sample_bytes": 0,
+      "elapsed_s": 0.02
+    },
+    {
+      "id": "aptoide-oppo",
+      "url": "https://coloros-gallery3d.en.aptoide.com/app",
+      "representation": "ordinary GET, maximum1048576bytes",
+      "error": "URLError(OSError('Tunnel connection failed: 403 Forbidden'))",
+      "bytes": 0
+    },
+    {
+      "id": "public-github-vivo-apps",
+      "url": "https://github.com/mrcopper4321/Vivo-App/releases",
+      "representation": "ordinary GET, maximum1048576bytes",
+      "status": 200,
+      "final_url": "https://github.com/mrcopper4321/Vivo-App/releases",
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 223672,
+      "sha256": "089961557a03320d22661966971bea5f5107995cea436728832a79b74bdb89fe"
+    },
+    {
+      "id": "oppo-softonic",
+      "url": "https://oppo-photos.en.softonic.com/android",
+      "representation": "ordinary GET, maximum1048576bytes",
+      "error": "URLError(OSError('Tunnel connection failed: 403 Forbidden'))",
+      "bytes": 0
+    },
+    {
+      "id": "appteka-vivo-origin",
+      "url": "https://appteka.store/app/6a7r184180",
+      "representation": "ordinary HTTPS GET max1048576bytes",
+      "error": "URLError(OSError('Tunnel connection failed: 403 Forbidden'))",
+      "bytes": 0
+    },
+    {
+      "id": "container-github-api-search",
+      "url": "https://api.github.com/search/repositories?q=OnePlus+Gallery+apk&per_page=8",
+      "error": "URLError(OSError('Tunnel connection failed: 403 Forbidden'))",
+      "sample_bytes": 0
+    },
+    {
+      "id": "container-github-api-search",
+      "url": "https://api.github.com/search/repositories?q=Oplus+Gallery+apk&per_page=8",
+      "error": "URLError(OSError('Tunnel connection failed: 403 Forbidden'))",
+      "sample_bytes": 0
+    },
+    {
+      "id": "container-github-api-search",
+      "url": "https://api.github.com/search/repositories?q=vivo+gallery+apk&per_page=8",
+      "error": "URLError(OSError('Tunnel connection failed: 403 Forbidden'))",
+      "sample_bytes": 0
+    },
+    {
+      "id": "container-github-api-search",
+      "url": "https://api.github.com/search/repositories?q=Honor+gallery+apk&per_page=8",
+      "error": "URLError(OSError('Tunnel connection failed: 403 Forbidden'))",
+      "sample_bytes": 0
+    }
+  ],
+  "ordinary_probe_summary": {
+    "count": 12,
+    "successful_partial_or_full_text_responses": 3,
+    "connect403_no_body": 9
+  },
+  "packages": [
+    {
+      "file": "MotionPhoto.apk",
+      "bytes": 3981375,
+      "sha256": "61914b7a3eff06b8a8a4af28bd5e4f6cd20bd4f36cf216937b0f111f9a8d73d3",
+      "package": "com.samsung.android.motionphoto.app",
+      "version_name": "5.0.46",
+      "version_code": "504600000",
+      "min_sdk": "34",
+      "target_sdk": "36",
+      "max_sdk": null,
+      "dex_files": [
+        "classes.dex"
+      ],
+      "native_libraries": [
+        "lib/arm64-v8a/libbeep_remover.so"
+      ],
+      "total_uncompressed_bytes": 4272483,
+      "requested_system_libraries": [],
+      "source_repository": "https://github.com/RandomPush/samsung_a55x_dump",
+      "source_commit": "609a8ec6ec3b9c8bb1e4a13199272269725f4fe2",
+      "source_git_path": "system/system/app/MotionPhoto/MotionPhoto.apk",
+      "source_blob_sha1": "101dbb06dfe54f038896402a47cca5b9a81a55f0",
+      "source_url": "https://github.com/RandomPush/samsung_a55x_dump/blob/609a8ec6ec3b9c8bb1e4a13199272269725f4fe2/system/system/app/MotionPhoto/MotionPhoto.apk",
+      "acquisition": "normal HTTPS Git clone with blob filtering, then Git show of the pinned original blob; no APK or native code executed",
+      "apksigner": {
+        "returncode": 0,
+        "integrity_verified": true,
+        "verified_schemes": [
+          "v3"
+        ],
+        "v1_verified": false,
+        "v2_verified": false,
+        "v3_1_verified": false,
+        "v4_verified": false,
+        "source_stamp_verified": false,
+        "signers": 1,
+        "certificate_sha256": "34df0e7a9f1cf1892e45c056b4973cd81ccf148a4050d11aea4ac5a65f900a42",
+        "public_key_sha256": "0470be656b9375d253fbb94c3a87dc7040e2f2760c19c4292eb62cc68e02de4a",
+        "log_sha256": "cc7e75628c7418ba00d1ec6cf80dde36a64a0bf40142a3e0d93ade0399ca2794"
+      },
+      "identity_limit": "Valid APK cryptographic signature; certificate matches the parent-supplied Samsung APKMirror fingerprint. Independent official certificate/OTA provenance has not been authenticated; certificate DN is self-declared.",
+      "official_origin_authenticated": false,
+      "repository_firmware_claim_authenticated": false,
+      "installed_or_executed": false,
+      "redistributed": false
+    },
+    {
+      "file": "SamsungGallery2018.apk",
+      "bytes": 51208290,
+      "sha256": "13256b229fb21525f226d909aeaaedbec04aa0202290455743e992a2eaa5b960",
+      "package": "com.sec.android.gallery3d",
+      "version_name": "15.7.00.43",
+      "version_code": "1570000043",
+      "min_sdk": "30",
+      "target_sdk": "36",
+      "max_sdk": null,
+      "dex_files": [
+        "classes.dex",
+        "classes2.dex",
+        "classes3.dex"
+      ],
+      "native_libraries": [
+        "lib/arm64-v8a/libDiagMonKey.so",
+        "lib/arm64-v8a/libmpbase.so",
+        "lib/arm64-v8a/libo3dp.so",
+        "lib/arm64-v8a/libo3dpImageRenderer.so"
+      ],
+      "total_uncompressed_bytes": 54216418,
+      "requested_system_libraries": [
+        {
+          "{http://schemas.android.com/apk/res/android}name": "org.apache.http.legacy",
+          "{http://schemas.android.com/apk/res/android}required": "false"
+        },
+        {
+          "{http://schemas.android.com/apk/res/android}name": "androidx.window.extensions",
+          "{http://schemas.android.com/apk/res/android}required": "false"
+        },
+        {
+          "{http://schemas.android.com/apk/res/android}name": "androidx.window.sidecar",
+          "{http://schemas.android.com/apk/res/android}required": "false"
+        },
+        {
+          "{http://schemas.android.com/apk/res/android}name": "com.android.extensions.appfunctions",
+          "{http://schemas.android.com/apk/res/android}required": "false"
+        }
+      ],
+      "source_repository": "https://github.com/RandomPush/samsung_a55x_dump",
+      "source_commit": "609a8ec6ec3b9c8bb1e4a13199272269725f4fe2",
+      "source_git_path": "system/system/priv-app/SamsungGallery2018/SamsungGallery2018.apk",
+      "source_blob_sha1": "af9d8f8e86fc9526b6c1b99edcc780117ed07be9",
+      "source_url": "https://github.com/RandomPush/samsung_a55x_dump/blob/609a8ec6ec3b9c8bb1e4a13199272269725f4fe2/system/system/priv-app/SamsungGallery2018/SamsungGallery2018.apk",
+      "acquisition": "normal HTTPS Git clone with blob filtering, then Git show of the pinned original blob; no APK or native code executed",
+      "apksigner": {
+        "returncode": 0,
+        "integrity_verified": true,
+        "verified_schemes": [
+          "v3"
+        ],
+        "v1_verified": false,
+        "v2_verified": false,
+        "v3_1_verified": false,
+        "v4_verified": false,
+        "source_stamp_verified": false,
+        "signers": 1,
+        "certificate_sha256": "34df0e7a9f1cf1892e45c056b4973cd81ccf148a4050d11aea4ac5a65f900a42",
+        "public_key_sha256": "0470be656b9375d253fbb94c3a87dc7040e2f2760c19c4292eb62cc68e02de4a",
+        "log_sha256": "cc7e75628c7418ba00d1ec6cf80dde36a64a0bf40142a3e0d93ade0399ca2794"
+      },
+      "identity_limit": "Valid APK cryptographic signature; certificate matches the parent-supplied Samsung APKMirror fingerprint. Independent official certificate/OTA provenance has not been authenticated; certificate DN is self-declared.",
+      "official_origin_authenticated": false,
+      "repository_firmware_claim_authenticated": false,
+      "installed_or_executed": false,
+      "redistributed": false
+    }
+  ],
+  "actual_vendor_apk_count": 2,
+  "actual_vendor_apk_bytes": 55189665,
+  "firmware_repository_claims": {
+    "README_git_blob": "9b78b2accd33ea1a7b83758b234717d123f616df",
+    "build_prop_git_blob": "9d8b0940930f51d9606b05b48e47f9bb87025cdf",
+    "README_sha256": "63a75405f81922466c733c6640f010a4abf5f458643c54802400a1e59d8850da",
+    "build_prop_sha256": "db0b803c0813a1da29a98071071727340b3203056199971b2ee8d48601d6f33a",
+    "system_fingerprint": "samsung/a55xnsxx/essi:16/BP2A.250605.031.A3/A556EXXSDCZB5:user/release-keys",
+    "system_release": "16",
+    "system_sdk": "36",
+    "incremental": "A556EXXSDCZB5",
+    "security_patch": "2026-02-05",
+    "provenance_inconsistency": "README fingerprint instead says a55x:14/UP1A.231005.007 with the same incremental; manifest and build.prop values are measured separately. No official firmware authentication inferred."
+  },
+  "tools": {
+    "apksigner_debian_packages": [
+      {
+        "url": "https://deb.debian.org/debian/pool/main/a/android-platform-tools-apksig/apksigner_35.0.2-1_all.deb",
+        "bytes": 496208,
+        "sha256": "5525a18d6a4cbb5025c2f74def51fa170b9eefdb98e3be18bb3d5207ed857797"
+      },
+      {
+        "url": "https://deb.debian.org/debian/pool/main/a/android-platform-tools-apksig/libapksig-java_35.0.2-1_all.deb",
+        "bytes": 452368,
+        "sha256": "231c0f14ff5362b62bf92cdfdfbad6338f45f8c2e612dc4c1c96b542160ffe2f"
+      }
+    ],
+    "apksigner_license": "Apache-2.0, inspected Debian upstream/debian copyright; research tooling only, not bundled",
+    "androguard_version": "4.1.3",
+    "androguard_license": "LICENCE-2.0 at v4.1.3, checked separately; classifier alone not relied on",
+    "androguard_license_source": "https://github.com/androguard/androguard/blob/v4.1.3/LICENCE-2.0",
+    "analysis_tool_dependencies": "Isolated research venv; not added to Cargo dependencies or SDK redistribution, no unified dependency-license claim",
+    "androguard_license_git_blob_sha1": "f433b1a53f5b830a205fd2df78e2b34974656c7b",
+    "androguard_license_text_sha256": "809fa1ed21450f59827d1e9aec720bbc4b687434fa22283c6cb5dd82a47ab9c0"
+  },
+  "unobtained_families": {
+    "Samsung_requested_15_9_00_45": "Not downloaded; obtained different signed15.7.00.43 and MotionPhoto5.0.46 via an independent public repository instead. Do not compare their hashes as identical versions.",
+    "OPPO_OnePlus": "Original APK not obtained. Existing denied mirror URLs unretried; the accessible oplus-avalon source explicitly identifies a port and excludes blobs, so it is not original APK evidence.",
+    "Xiaomi": "Original APK not obtained; existing CONNECT403 candidate not retried. Global listing is not a China-build substitute.",
+    "vivo": "Original APK not obtained; independent APKPure/Appteka routes were CONNECT403, newer APKMirror listing not retried through the refused host.",
+    "Honor": "Original APK/attachment URL not obtained; parent reports4PDA403; not retried or bypassed."
+  },
+  "remaining_semantic_gaps": [
+    "vivo imageTime units and stream roles",
+    "Oplus checksum and second-stream role",
+    "Honor original/native variants",
+    "physical Gallery/Photos acceptance"
+  ],
+  "storage": {
+    "vendor_package_bodies_kept_private_under_ignored_research": true,
+    "no_vendor_bodies_staged_or_uploaded": true,
+    "package_bytes": 55189665,
+    "large_transfer_permission_needed": false
+  },
+  "certificate_reference": {
+    "url": "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-gallery/samsung-gallery-15-9-00-45-release/samsung-gallery-15-9-00-45-android-apk-download/",
+    "declared_certificate_sha256": "34df0e7a9f1cf1892e45c056b4973cd81ccf148a4050d11aea4ac5a65f900a42",
+    "representation": "Parent-supplied public-page research declaration; not fetched again in this container; not an official authenticated trust anchor or an obtained15.9APK"
+  },
+  "research_test_source_sha": "933601db46aa6abcdc880daacd74373e5a0f7af5"
+}

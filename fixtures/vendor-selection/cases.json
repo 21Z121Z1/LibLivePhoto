@@ -1,0 +1,784 @@
+{
+  "scope": "independently authored read-only explicit SEF selection, distinct bytes and source aliases; no native role or writer",
+  "cases": [
+    {
+      "id": "distinct-normal-record-0",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "0"
+      },
+      "primary": "distinct-normal.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "samsungRecordIndex"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "selection"
+          ],
+          "value": "explicit-record-index"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedBytesUnchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "extent"
+          ],
+          "value": {
+            "start": "32",
+            "end": "19702"
+          }
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "movie-a.mp4"
+        }
+      ]
+    },
+    {
+      "id": "distinct-normal-record-2",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "2"
+      },
+      "primary": "distinct-normal.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "samsungRecordIndex"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "selection"
+          ],
+          "value": "explicit-record-index"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedBytesUnchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "extent"
+          ],
+          "value": {
+            "start": "19759",
+            "end": "39833"
+          }
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "movie-b.mp4"
+        }
+      ]
+    },
+    {
+      "id": "distinct-no-primary-record-0",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "0"
+      },
+      "primary": "distinct-no-primary.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "samsungRecordIndex"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "selection"
+          ],
+          "value": "explicit-record-index"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedBytesUnchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "extent"
+          ],
+          "value": {
+            "start": "32",
+            "end": "19702"
+          }
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "movie-a.mp4"
+        }
+      ]
+    },
+    {
+      "id": "distinct-no-primary-record-2",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "2"
+      },
+      "primary": "distinct-no-primary.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "samsungRecordIndex"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "selection"
+          ],
+          "value": "explicit-record-index"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedBytesUnchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "extent"
+          ],
+          "value": {
+            "start": "19759",
+            "end": "39833"
+          }
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "movie-b.mp4"
+        }
+      ]
+    },
+    {
+      "id": "distinct-ambiguous-record-2",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "2"
+      },
+      "primary": "distinct-ambiguous.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "samsungRecordIndex"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "metadata",
+            "selection"
+          ],
+          "value": "explicit-record-index"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedBytesUnchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "extent"
+          ],
+          "value": {
+            "start": "19759",
+            "end": "39833"
+          }
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "movie-b.mp4"
+        }
+      ]
+    },
+    {
+      "id": "distinct-ambiguous-record-3",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "3"
+      },
+      "primary": "distinct-ambiguous.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "samsungRecordIndex"
+          ],
+          "value": 3
+        },
+        {
+          "path": [
+            "metadata",
+            "selection"
+          ],
+          "value": "explicit-record-index"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedBytesUnchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "extent"
+          ],
+          "value": {
+            "start": "39857",
+            "end": "59527"
+          }
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "movie-a.mp4"
+        }
+      ]
+    },
+    {
+      "id": "distinct-bad-pointer-record-0",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "0"
+      },
+      "primary": "distinct-bad-pointer.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "samsungRecordIndex"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "selection"
+          ],
+          "value": "explicit-record-index"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedBytesUnchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "extent"
+          ],
+          "value": {
+            "start": "32",
+            "end": "19702"
+          }
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "movie-a.mp4"
+        }
+      ]
+    },
+    {
+      "id": "pointer-alias-record-0",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "0"
+      },
+      "primary": "pointer-alias.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "samsungRecordIndex"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "selection"
+          ],
+          "value": "explicit-record-index"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedBytesUnchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "extent"
+          ],
+          "value": {
+            "start": "4",
+            "end": "19674"
+          }
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "movie-a.mp4"
+        }
+      ]
+    },
+    {
+      "id": "pointer-alias-record-1",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "1"
+      },
+      "primary": "pointer-alias.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "samsungRecordIndex"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "metadata",
+            "selection"
+          ],
+          "value": "explicit-record-index"
+        },
+        {
+          "path": [
+            "metadata",
+            "encodedBytesUnchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "metadata",
+            "role"
+          ],
+          "value": "uninterpreted"
+        },
+        {
+          "path": [
+            "metadata",
+            "extent"
+          ],
+          "value": {
+            "start": "4",
+            "end": "19674"
+          }
+        }
+      ],
+      "files": [
+        {
+          "mime": "video/mp4",
+          "fixture": "movie-a.mp4"
+        }
+      ]
+    },
+    {
+      "id": "bad-pointer-selection-rejected",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "2"
+      },
+      "primary": "distinct-bad-pointer.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "unknown-record-selection-rejected",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "1"
+      },
+      "primary": "distinct-normal.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "missing-record-selection-rejected",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "4096"
+      },
+      "primary": "distinct-normal.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "negative-selection-rejected",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "-1"
+      },
+      "primary": "distinct-normal.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "selection-overflow-rejected",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "18446744073709551616"
+      },
+      "primary": "distinct-normal.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "selection-provider-disabled",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "0",
+        "disableThirdParty": true
+      },
+      "primary": "distinct-normal.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "ambiguous-default-extract-still-rejected",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false
+      },
+      "primary": "distinct-ambiguous.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "pointer-alias-default-extract-still-rejected",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false
+      },
+      "primary": "pointer-alias.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "selection-conflicting-still-flag-rejected",
+      "request": {
+        "action": "extract",
+        "still": true,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "0"
+      },
+      "primary": "distinct-normal.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "selection-strict-parser-flag-rejected",
+      "request": {
+        "action": "extract",
+        "still": false,
+        "video": true,
+        "xmp": false,
+        "samsungRecordIndex": "0",
+        "strict": true
+      },
+      "primary": "distinct-normal.jpg",
+      "success": false,
+      "expect": [],
+      "files": []
+    },
+    {
+      "id": "vivo-alias-source-ranges",
+      "request": {
+        "action": "metadata"
+      },
+      "primary": "vivo-alias.jpg",
+      "success": true,
+      "expect": [
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "footers",
+            0,
+            "sourceIndex"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "footers",
+            0,
+            "extents"
+          ],
+          "value": [
+            {
+              "start": "53371",
+              "end": "53599"
+            }
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "footers",
+            0,
+            "jsonExtents"
+          ],
+          "value": [
+            {
+              "start": "53391",
+              "end": "53537"
+            }
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "footers",
+            0,
+            "identifierExtents"
+          ],
+          "value": [
+            {
+              "start": "53556",
+              "end": "53584"
+            }
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "footers",
+            0,
+            "origins"
+          ],
+          "value": [
+            "TerminalSource",
+            "MotionVideoUuid"
+          ]
+        },
+        {
+          "path": [
+            "metadata",
+            "decoded",
+            0,
+            "value",
+            "declarations",
+            "footers",
+            0,
+            "rawJson"
+          ],
+          "value": "{\"version\":2202,\"com.android.camera.imageTime\":31,\"com.android.camera.livephoto\":\"synthetic-camera-id-00000000\",\"opaque\":1.234567890123456789e100}"
+        }
+      ],
+      "files": []
+    }
+  ],
+  "sha256": {
+    "movie-a.mp4": "e8e35dd0dbf98b8b95ab9561a2debc5e8bb5f6469f2dfb08c6329f9674a70a2e",
+    "movie-b.mp4": "57b5dbe62e9eb2fcb6e9d7d09548b0b3a2d6635740dd243a5635643224f6bc13",
+    "distinct-normal.jpg": "634bdc9adc29dd05661fec8953e479ab624c732ae9ca015ceccda26d34ed8de8",
+    "distinct-no-primary.jpg": "d87cf3ecc09cf1c19246f4aa378e1ba895a46e0c7eb9c6e67f912fe1f500282e",
+    "distinct-ambiguous.jpg": "9b169feb780d7756deb4170d270c3d1733a1c2eee29d78a3f573c0b323c3d751",
+    "distinct-bad-pointer.jpg": "5bc4018b73e23614a3a59ba0b52e35f7737aecd06118f5c487b6b7fcaf52ec43",
+    "pointer-alias.jpg": "ea65a9522268dfbfebe39ae1adcaefde88e4080a8be1a90c9352ba061be45ca4",
+    "vivo-alias.jpg": "78c40253278409fa8818c3f6f56a81a356aa52d3c711101cca2f08d9cb8cce36"
+  }
+}

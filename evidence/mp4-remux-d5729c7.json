@@ -1,0 +1,402 @@
+{
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "implementation_sha": "d5729c7a0893e47a9896d5ca09e9f0ffc0389b23",
+  "working_tree_clean": true,
+  "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "working_tree_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "cases": [
+    {
+      "case": "avc-bframes",
+      "input_sha256": "e8e35dd0dbf98b8b95ab9561a2debc5e8bb5f6469f2dfb08c6329f9674a70a2e",
+      "support_query": {
+        "success": true,
+        "optimizationSupported": true,
+        "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n",
+        "inputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          }
+        ],
+        "outputTracks": null
+      },
+      "rust": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "rust_report": {
+        "discardedMediaBytes": 0,
+        "discardedPaddingBytes": 8,
+        "mappings": [
+          {
+            "new": 1,
+            "old": 1,
+            "source": 0
+          }
+        ],
+        "retainedUnknownMediaBytes": 0,
+        "sidecars": 0
+      },
+      "google": {
+        "success": true,
+        "optimizationSupported": true,
+        "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n",
+        "inputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          }
+        ],
+        "outputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          }
+        ]
+      },
+      "google_comparison": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "google_output_sha256": "cd43e75827ff37e1bb54891d7a16300e9d0be94e14774a0dc0c19e616875d06a"
+    },
+    {
+      "case": "avc-aac",
+      "input_sha256": "162276b6caac4a0118638b3729a80cac3eddf51b7de2a3d91435fe0ab5e6dbfe",
+      "support_query": {
+        "success": true,
+        "optimizationSupported": true,
+        "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n2\taudio\tMPEG-4 AAC LC, 3.021 secs, 128 kbps, 48000 Hz\n",
+        "inputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          },
+          {
+            "id": 2,
+            "handler": "soun",
+            "timescale": 48000,
+            "duration": "145024",
+            "samples": 142
+          }
+        ],
+        "outputTracks": null
+      },
+      "rust": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "rust_report": {
+        "discardedMediaBytes": 0,
+        "discardedPaddingBytes": 8,
+        "mappings": [
+          {
+            "new": 1,
+            "old": 1,
+            "source": 0
+          },
+          {
+            "new": 2,
+            "old": 2,
+            "source": 0
+          }
+        ],
+        "retainedUnknownMediaBytes": 0,
+        "sidecars": 0
+      },
+      "google": {
+        "success": true,
+        "optimizationSupported": true,
+        "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n2\taudio\tMPEG-4 AAC LC, 3.021 secs, 128 kbps, 48000 Hz\n",
+        "inputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          },
+          {
+            "id": 2,
+            "handler": "soun",
+            "timescale": 48000,
+            "duration": "145024",
+            "samples": 142
+          }
+        ],
+        "outputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          },
+          {
+            "id": 2,
+            "handler": "soun",
+            "timescale": 48000,
+            "duration": "145024",
+            "samples": 142
+          }
+        ]
+      },
+      "google_comparison": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "google_output_sha256": "add5465d2b902369c26f254e08c8f3d9f09563e479e1a2e3e35ea7dee995c8be"
+    },
+    {
+      "case": "apple-mebx",
+      "input_sha256": "cd732baffa15dc2f38cc981666c05fa4679a2c3aeb44ddd52b19a41d2470635d",
+      "support_query": {
+        "success": true,
+        "optimizationSupported": true,
+        "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n2\tmeta\n",
+        "inputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          },
+          {
+            "id": 2,
+            "handler": "meta",
+            "timescale": 600,
+            "duration": "1",
+            "samples": 1
+          }
+        ],
+        "outputTracks": null
+      },
+      "rust": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "rust_report": {
+        "discardedMediaBytes": 0,
+        "discardedPaddingBytes": 1273,
+        "mappings": [
+          {
+            "new": 1,
+            "old": 1,
+            "source": 0
+          },
+          {
+            "new": 2,
+            "old": 2,
+            "source": 0
+          }
+        ],
+        "retainedUnknownMediaBytes": 0,
+        "sidecars": 0
+      },
+      "google": {
+        "success": true,
+        "optimizationSupported": true,
+        "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n",
+        "inputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          },
+          {
+            "id": 2,
+            "handler": "meta",
+            "timescale": 600,
+            "duration": "1",
+            "samples": 1
+          }
+        ],
+        "outputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          }
+        ]
+      },
+      "google_comparison": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "google_output_sha256": "d36bbbb808158821dc392ff6df4d356572856d8797ac6d27932bc49168a4e0d6"
+    },
+    {
+      "case": "hvc1-real",
+      "input_sha256": "6555fc0d62242cff6c94d01c70d8b04eb70fdc88855a48eb2bca9e94d089cf12",
+      "support_query": {
+        "success": true,
+        "optimizationSupported": false,
+        "summary": "Track\tType\tInfo\n1\tvideo\thvc1, 3.000 secs, 26 kbps, 720x480 @ 16.000000 fps\n",
+        "inputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          }
+        ],
+        "outputTracks": null
+      },
+      "rust": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "rust_report": {
+        "discardedMediaBytes": 0,
+        "discardedPaddingBytes": 8,
+        "mappings": [
+          {
+            "new": 1,
+            "old": 1,
+            "source": 0
+          }
+        ],
+        "retainedUnknownMediaBytes": 0,
+        "sidecars": 0
+      },
+      "google_optimization": "explicit hvc1 public support-query rejection; optimization not invoked"
+    },
+    {
+      "case": "strip-existing-apple-metadata",
+      "google": {
+        "success": true,
+        "optimizationSupported": true,
+        "summary": "",
+        "inputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          },
+          {
+            "id": 2,
+            "handler": "meta",
+            "timescale": 600,
+            "duration": "1",
+            "samples": 1
+          }
+        ],
+        "outputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          }
+        ]
+      },
+      "google_comparison": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "rust": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "rust_report": {
+        "discardedMediaBytes": 0,
+        "discardedPaddingBytes": 1273,
+        "mappings": [
+          {
+            "new": 1,
+            "old": 1,
+            "source": 0
+          }
+        ],
+        "retainedUnknownMediaBytes": 9,
+        "sidecars": 0
+      }
+    },
+    {
+      "case": "copy-existing-video-track",
+      "google": {
+        "success": true,
+        "optimizationSupported": true,
+        "summary": "",
+        "inputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          }
+        ],
+        "outputTracks": [
+          {
+            "id": 1,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          },
+          {
+            "id": 2,
+            "handler": "vide",
+            "timescale": 16384,
+            "duration": "49152",
+            "samples": 48
+          }
+        ]
+      },
+      "google_comparison": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": false
+      },
+      "rust": {
+        "coded_packets_equal": true,
+        "rational_pts_dts_durations_equal": true
+      },
+      "rust_report": {
+        "discardedMediaBytes": 0,
+        "discardedPaddingBytes": 16,
+        "mappings": [
+          {
+            "new": 1,
+            "old": 1,
+            "source": 0
+          },
+          {
+            "new": 2,
+            "old": 1,
+            "source": 1
+          }
+        ],
+        "retainedUnknownMediaBytes": 0,
+        "sidecars": 1
+      }
+    }
+  ],
+  "limits": [
+    "Google builder primary-track path deletes metadata; Rust optimizer retains it. Removal requires explicit track selection.",
+    "Google MP4CopyTrack is audited as an internal primitive; this does not claim Google exposes arbitrary track import through its facade.",
+    "Fragmented/indexed/external/unknown reference layouts are rejected by the bounded Rust API.",
+    "No metadata track or Moments construction is performed."
+  ]
+}

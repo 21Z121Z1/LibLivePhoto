@@ -1,0 +1,302 @@
+{
+  "implementation_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f",
+  "branch": "codex/google-core-coverage-20261019",
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "runs": [
+    {
+      "id": 39262250914,
+      "head_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f",
+      "status": "completed",
+      "result": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39262250914",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 118092652340,
+          "name": "Portable (ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118092652531,
+          "name": "Portable (macos-latest)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118092652684,
+          "name": "Sanitizer and coverage campaign",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118092652697,
+          "name": "Exact original fixture round trips",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118092652734,
+          "name": "Portable (windows-latest)",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39262250676,
+      "head_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f",
+      "status": "completed",
+      "result": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39262250676",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 118092652600,
+          "name": "web",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118092653161,
+          "name": "apple",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39262250706,
+      "head_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f",
+      "status": "completed",
+      "result": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39262250706",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 118092651189,
+          "name": "sdk-and-services",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "rust_and_consumers": {
+    "workspace_all_features_tests": 154,
+    "local_ignored_fixture_tests": 3,
+    "fixture_ci": "explicit original-fixture job passed; not silently counted as local execution",
+    "clippy": "passed with -D warnings",
+    "jni_c_abi": "actual native calls passed on Linux/macOS/Windows",
+    "release_sdk": "extracted release CLI/native/static/JAR and external consumers passed on all three hosts",
+    "xdremux": "unchanged pinned test at 0688ea7d6270df52cc5968e2c36dd016f13bd31b replayed; consumer not modified"
+  },
+  "web": {
+    "actual_chrome_tests": 7,
+    "timing_unit_tests": 4,
+    "features_exercised": [
+      "actual WASM extraction and exact 13/16 cover time",
+      "compositor frame mediaTime and pixel comparison",
+      "AAC decode/mute",
+      "real HEIC/unsupported video errors and original byte downloads",
+      "same-file reparse with explicit association/time",
+      "URL/seek/cancel/stale event cleanup"
+    ],
+    "result": "passed"
+  },
+  "android": {
+    "result": "passed",
+    "run": 39262250706,
+    "job": 118092651189,
+    "scope_assertions": {
+      "core": 20,
+      "metadata": 11,
+      "lifecycle": 16,
+      "concurrency": 18
+    },
+    "total_assertions": 65,
+    "installed_apk": true,
+    "remote_services": true,
+    "raw_agtm": true,
+    "fd_ownership_and_cursor": true,
+    "byte_exact_movie": true,
+    "concurrent_queue": true,
+    "terminal_cancel": true,
+    "arm64_device_acceptance": false,
+    "gallery_acceptance": false,
+    "artifacts": [
+      {
+        "id": 12191904197,
+        "name": "android-service-evidence",
+        "size_in_bytes": 3631055,
+        "url": "https://api.github.com/repos/21Z121Z1/LibLivePhoto/actions/artifacts/12191904197",
+        "archive_download_url": "https://api.github.com/repos/21Z121Z1/LibLivePhoto/actions/artifacts/12191904197/zip",
+        "expired": false,
+        "created_at": "2026-10-19T13:56:40Z",
+        "expires_at": "2027-01-17T13:41:09Z",
+        "updated_at": "2026-10-19T13:56:40Z",
+        "digest": "sha256:ce6bbd847fa8bdf75ea8d26b835c010aa2015067143e49d40f3f3ed61a0865bd",
+        "workflow_run": {
+          "id": 39262250706,
+          "repository_id": 1403626554,
+          "head_repository_id": 1403626554,
+          "head_branch": "codex/google-core-coverage-20261019",
+          "head_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f"
+        }
+      }
+    ],
+    "runtime": "Android API35, default x86_64 emulator",
+    "build_abis": [
+      "arm64-v8a",
+      "x86_64"
+    ]
+  },
+  "apple": {
+    "result": "passed",
+    "run": 39262250676,
+    "job": 118092653161,
+    "macos_swift_tests": 11,
+    "swift_failures": 0,
+    "actual_local_phlivephoto_resource_export": true,
+    "ios_sdk_compile": true,
+    "xcframework": true,
+    "compiler_sdk": "iPhoneSimulator26.5.sdk",
+    "available_ios_runtimes": [
+      "26.2",
+      "26.4.1",
+      "26.5"
+    ],
+    "actual_simulator_runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+    "actual_runtime_output": "IOS_SIMULATOR_RUNTIME: Version 26.2 (Build 23C54)",
+    "device_type": "com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation",
+    "bootstatus_completed": true,
+    "runtime_process_passed": true,
+    "owned_device_deleted": true,
+    "timeout_recovery_used": false,
+    "proof": "IOS_SIMULATOR_SWIFT_RUST passed: linked static C ABI, exact time, original movie, complete AGTM, errors",
+    "photos_library_import_edit": false,
+    "physical_playback_hdr_capture": false,
+    "artifacts": [
+      {
+        "id": 12192141108,
+        "name": "web-browser-evidence",
+        "size_in_bytes": 393866,
+        "url": "https://api.github.com/repos/21Z121Z1/LibLivePhoto/actions/artifacts/12192141108",
+        "archive_download_url": "https://api.github.com/repos/21Z121Z1/LibLivePhoto/actions/artifacts/12192141108/zip",
+        "expired": false,
+        "created_at": "2026-10-19T13:43:42Z",
+        "expires_at": "2027-01-17T13:41:09Z",
+        "updated_at": "2026-10-19T13:43:42Z",
+        "digest": "sha256:916fd4046cf0b2b65e952c81201b5b5a89e3528a19cd85eae712b2f50606ee5a",
+        "workflow_run": {
+          "id": 39262250676,
+          "repository_id": 1403626554,
+          "head_repository_id": 1403626554,
+          "head_branch": "codex/google-core-coverage-20261019",
+          "head_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f"
+        }
+      },
+      {
+        "id": 12191979376,
+        "name": "apple-sdk-build",
+        "size_in_bytes": 22139889,
+        "url": "https://api.github.com/repos/21Z121Z1/LibLivePhoto/actions/artifacts/12191979376",
+        "archive_download_url": "https://api.github.com/repos/21Z121Z1/LibLivePhoto/actions/artifacts/12191979376/zip",
+        "expired": false,
+        "created_at": "2026-10-19T13:55:38Z",
+        "expires_at": "2027-01-17T13:41:09Z",
+        "updated_at": "2026-10-19T13:55:38Z",
+        "digest": "sha256:3292a3313af1c1e47e899da5a8953d39a5349b44a599136305759a6990a88a77",
+        "workflow_run": {
+          "id": 39262250676,
+          "repository_id": 1403626554,
+          "head_repository_id": 1403626554,
+          "head_branch": "codex/google-core-coverage-20261019",
+          "head_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f"
+        }
+      }
+    ],
+    "ios_26_5_startup": "Previous recorded startup failure remains unresolved; iOS26.2 success is not iOS26.5 acceptance."
+  },
+  "asan": {
+    "requested_seconds_per_target": 60,
+    "actual_seconds_per_target": 61,
+    "executions": {
+      "asset_input": 124068,
+      "container_headers": 2726318,
+      "remux": 292217
+    },
+    "total": 3142603,
+    "result": "passed",
+    "input_limit_bytes": 1048576,
+    "rss_limit_mb": 2048
+  },
+  "reference_differentials": {
+    "provider_cases": 38,
+    "agtm_vectors": 12,
+    "score_vectors": 9,
+    "mp4_cases": 6,
+    "receipts": "Retain exact historical tested implementation SHAs; do not relabel earlier differential runs as this final SHA. Functional regression source trees preserved; final-SHA CI runs above are independent."
+  },
+  "fault_injection": {
+    "local_tests": 7,
+    "command": "python3 scripts/test_apple_harness.py",
+    "scope": "harness failure/ownership/SDK/runtime gates only; not native Simulator evidence"
+  },
+  "remaining": [
+    {
+      "action": "Photos library import/edit/render/commit and physical playback/capture/HDR acceptance",
+      "target": "authorized Apple host library/device and representative assets",
+      "status": "blocked on external resources",
+      "minimum": "a permitted Photos test library and supported physical device/asset; no TCC/privacy bypass"
+    },
+    {
+      "action": "Original Honor corpus and native vendor Gallery acceptance",
+      "target": "legal redistributable original-device samples and authorized vendor devices",
+      "status": "blocked on external resources",
+      "minimum": "representative legal samples plus device/gallery versions"
+    },
+    {
+      "action": "Execute Apple LivePhotosKit SDK",
+      "target": "https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js",
+      "status": "fetch denied",
+      "reason": "proxy tunnel HTTP 403; actual SDK body not downloaded/executed",
+      "minimum": "authorized access to the SDK/full official documentation; no network-control bypass"
+    },
+    {
+      "action": "General media layouts and platform compatibility beyond bounded contracts",
+      "status": "explicit support limits",
+      "details": "fragmented/indexed/external/reference-bearing remux, metadata edits, comprehensive codec/ICC/HDR rendering and every vendor writer/device are not claimed; exact supported subsets and budgets are documented"
+    }
+  ],
+  "scope_exclusion": "Moments construction",
+  "deliverables": [
+    "evidence/GOOGLE_COMPLETE_INVENTORY.md",
+    "evidence/SOURCE_TEST_MAP.md",
+    "evidence/ACCEPTANCE_CHECKLIST.md",
+    "evidence/STABILITY_GATES.md",
+    "CORE_INTEGRATION.md",
+    "NATIVE_SDK.md",
+    "android/README.md",
+    "apple/README.md",
+    "web/README.md"
+  ],
+  "actions_not_taken": [
+    "merge",
+    "force push",
+    "release",
+    "public deployment",
+    "upstream or XDRemux modification",
+    "KVM ACL/access-control change",
+    "new Codex task/model/service-tier change"
+  ],
+  "record_kind": "Immutable verified baseline; later implementation commits require their own execution evidence.",
+  "shipping_source_trees": {
+    "crates": "20558c74caee50a2aa837b55f3ec666b78466bab",
+    "java/src/main": "eb60fa2082bf7b43f9810744af8d4cfa967e3a85",
+    "android/src/main": "d3ca52f86ff9e7d150a306314f2309a997efd84e",
+    "apple/Sources": "63b36261408ca63aabf483ebc1c65a82f301e85a",
+    "web/src": "1af74ff208d1d93ee6a60be927256f95f6c06359",
+    "native/include": "f8640a086548f2a01b71a7d0aefbeedcaea2fa62"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "liblivephoto-local-lab",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "node ../scripts/build-web.mjs",
+    "dev": "node server.mjs",
+    "test": "node --test tests/timing.test.mjs",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": { "@playwright/test": "1.56.1" }
+}

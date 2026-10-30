@@ -1,0 +1,119 @@
+{
+  "implementation_sha": "cd2159d375d22498c9437b7df87c2546700a9288",
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "local_tests": {
+    "command": "cargo test --locked --workspace --all-targets --all-features",
+    "passed": 154,
+    "failed": 0,
+    "ignored": 3
+  },
+  "clippy": {
+    "command": "cargo clippy --locked --workspace --all-targets --all-features -- -D warnings",
+    "result": "passed"
+  },
+  "jni": {
+    "command": "python3 scripts/test_java.py --compiler-java-home /workspace/toolchains/jdk21-overlay",
+    "result": "passed",
+    "includes": [
+      "actual Rust JNI invocation",
+      "byte/time/path/range preservation",
+      "oversize array rejected before retention",
+      "aggregate JSON values and numeric literal allocation bounds"
+    ]
+  },
+  "c_abi": {
+    "command": "python3 scripts/test_c_abi.py",
+    "result": "passed"
+  },
+  "web": {
+    "commands": [
+      "npm --prefix web run build",
+      "BROWSER_EXECUTABLE=/usr/bin/chromium npm --prefix web run test:browser"
+    ],
+    "actual_browser_tests": 7,
+    "result": "passed"
+  },
+  "asan": {
+    "command": "bash scripts/fuzz.sh 20 evidence/local/fuzz-cd2159d",
+    "requested_seconds_per_target": 20,
+    "targets": {
+      "asset_input": {
+        "executions": 27779,
+        "seconds": 21,
+        "sha256": "b51b046434c6f279fa3ef123e3d782b86cdd84894f8b74018e75043f75a0d18e",
+        "result": "passed"
+      },
+      "container_headers": {
+        "executions": 346868,
+        "seconds": 21,
+        "sha256": "33540f8421722fd22eb75d25d082927f488b3ed8f3543f372f8550ec0c7278ac",
+        "result": "passed"
+      },
+      "remux": {
+        "executions": 81555,
+        "seconds": 21,
+        "sha256": "a127aa2f2e4570c42469bc6ed72a8785b8d6d9f52f7e876f34d8d20538d936ec",
+        "result": "passed"
+      }
+    },
+    "total_executions": 456202
+  },
+  "logs": [
+    {
+      "path": "evidence/local/cd2159d-rust.log",
+      "sha256": "481d5820fd61fe48aa80efca5225e0cd307db564a07c3f9dd7d08fd2ffcd9fac"
+    },
+    {
+      "path": "evidence/local/cd2159d-clippy.log",
+      "sha256": "ee1d3fffa2022e962e63e0dbe4d35c9c198450a20c29fc09030f635dbb38bfcd"
+    },
+    {
+      "path": "evidence/local/cd2159d-jni.log",
+      "sha256": "ad76915668cd9717a965a76437e35c02b9c88ca08b0c2a01e0138c8293f5676b"
+    },
+    {
+      "path": "evidence/local/cd2159d-cabi.log",
+      "sha256": "f430d5be83644b9c7c1e0614ac0c7139a69507116fa44b36796e562b02051152"
+    },
+    {
+      "path": "evidence/local/cd2159d-web.log",
+      "sha256": "0429cdaadc6fcbc135f2586dbcc53d0da549b60bd2e45c9c621978783f730942"
+    }
+  ],
+  "ci": {
+    "base_run": 39252859349,
+    "base_result": "success",
+    "platforms": [
+      "ubuntu-latest",
+      "macos-latest",
+      "windows-latest"
+    ],
+    "includes": [
+      "default and all-feature Rust regressions",
+      "clippy and formatting",
+      "original fixture job (including separately run ignored tests)",
+      "C ABI and actual JNI",
+      "release SDK extraction and external jar consumers",
+      "60-second sanitizer targets"
+    ],
+    "apple_web_run": 39252859365,
+    "apple_web_result": "pending at receipt creation",
+    "android_run": 39252859446,
+    "android_result": "not complete at receipt creation; a later harness-only cancellation/completion assertion fix supersedes this run",
+    "sanitizer_executions": {
+      "asset_input": 115375,
+      "container_headers": 5529425,
+      "remux": 287509
+    },
+    "sanitizer_total_executions": 5932309
+  },
+  "scope": "Core bounded parsing/extraction/composition, metadata, remux and maintained wrappers. Original resource bytes, exact time and unknown data retained under explicit policies. No Moments construction.",
+  "remaining_gates": [
+    "Final branch SHA native CI",
+    "All four installed Android service scopes must pass together",
+    "Permissioned Apple Photos import/edit and physical HDR/playback/capture",
+    "Legal original Honor corpus and vendor Gallery acceptance",
+    "LivePhotosKit actual runtime: CDN proxy HTTP 403"
+  ],
+  "evidence_rule": "Only completed commands and CI jobs close gates; local ignored tests, SDK compilation and partial Android operation progress are not counted as native acceptance. Final acceptance uses the exact head SHA CI runtime-receipt; later Android instrumentation corrections change no shipping core behavior."
+}

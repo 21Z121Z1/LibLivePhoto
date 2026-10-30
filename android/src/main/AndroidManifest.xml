@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.liblivephoto.android">
+    <uses-sdk android:minSdkVersion="26" />
+    <application>
+        <service android:name="org.liblivephoto.android.MetadataParserService" android:exported="false" android:isolatedProcess="true" android:process=":llp_metadata" />
+        <service android:name="org.liblivephoto.android.MotionPhotoBuilderService" android:exported="false" android:process=":llp_builder" />
+        <service android:name="org.liblivephoto.android.MotionPhotoCheckerService" android:exported="false" android:process=":llp_checker" />
+        <service android:name="org.liblivephoto.android.MotionPhotoExtractorService" android:exported="false" android:process=":llp_extractor" />
+    </application>
+</manifest>

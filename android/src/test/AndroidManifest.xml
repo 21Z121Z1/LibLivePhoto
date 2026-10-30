@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.liblivephoto.android.acceptance">
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35" />
+    <application android:label="LibLivePhoto native acceptance" android:debuggable="true" android:extractNativeLibs="true">
+        <service android:name="org.liblivephoto.android.MetadataParserService" android:exported="false" android:isolatedProcess="true" android:process=":llp_metadata" />
+        <service android:name="org.liblivephoto.android.MotionPhotoBuilderService" android:exported="false" android:process=":llp_builder" />
+        <service android:name="org.liblivephoto.android.MotionPhotoCheckerService" android:exported="false" android:process=":llp_checker" />
+        <service android:name="org.liblivephoto.android.MotionPhotoExtractorService" android:exported="false" android:process=":llp_extractor" />
+    </application>
+    <instrumentation android:name="org.liblivephoto.android.ServiceAcceptance" android:targetPackage="org.liblivephoto.android.acceptance" />
+</manifest>

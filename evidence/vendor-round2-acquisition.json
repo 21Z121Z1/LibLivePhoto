@@ -1,0 +1,156 @@
+{
+  "continuation_base_sha": "2a8fcbc934d2555adb2ef85f957e6e1d552dcc77",
+  "sources": [
+    {
+      "repository": "https://github.com/imwangwang/vivo-apps",
+      "revision": "6aff38cfa6133250fc58a2fdc5f6452c676440aa",
+      "license": "No root license found; publicly posted decompiled source with unknown original package/version/hash. Static factual inspection only; no source copying, translation, linking or execution.",
+      "files": [
+        {
+          "path": "main/java/com/vivo/media/mediaextendinfo/LivePhotoUtil.java",
+          "sha256": "a4f6e8a77ba5b7c829e0db693a75723dfc1712867aa60da23846921351fb9167",
+          "bytes": 8357
+        },
+        {
+          "path": "main/java/com/vivo/media/mediaextendinfo/MediaExtendInfo.java",
+          "sha256": "21d7b8b7821427a33001ea764cec9ef6bb24b6007af8bb78146802eea61f95d8",
+          "bytes": 14981
+        },
+        {
+          "path": "main/java/com/vivo/media/mediaextendinfo/MediaExtendInfoForPic.java",
+          "sha256": "1875064786e01bf6d8f1c55e69523661941cacb0cb1d1a700ff9eedd040eff67",
+          "bytes": 6464
+        },
+        {
+          "path": "main/java/com/vivo/media/mediaextendinfo/MediaExtendInfoForVideoBoxFormat.java",
+          "sha256": "99e63a653ad7b20efeafa6c2cefb175c3c6312d1bf2cb4293297d78b0b2c35ac",
+          "bytes": 13256
+        },
+        {
+          "path": "main/java/com/vivo/media/mediaextendinfo/MediaExtendInfoUtil.java",
+          "sha256": "5c201bd77998c5051b1726c580744762d22c73f36a505fd6e49ccbbe6e004a70",
+          "bytes": 23055
+        },
+        {
+          "path": "main/java/com/vivo/media/mediaextendinfo/MediaExtendStream.java",
+          "sha256": "7bbdb78910c0714e340989e1fd301a62145a16963d112ac30c9e3a8243872149",
+          "bytes": 20610
+        },
+        {
+          "path": "main/java/com/vivo/media/mediaextendinfo/MediaExtendStreamForPic.java",
+          "sha256": "869bc0d9bbb2f617cb6ed41edb206ee47b5388323ba6f34c9f377a9f3878d2d3",
+          "bytes": 18662
+        },
+        {
+          "path": "main/java/com/vivo/media/mediaextendinfo/MediaExtendStreamForVideoBoxFormat.java",
+          "sha256": "36a1045cc35ba985d2d13356fb5214be479ed15f2981d28577b5b2d66e5ad320",
+          "bytes": 23329
+        },
+        {
+          "path": "main/java/com/vivo/media/mediaextendinfo/Utils.java",
+          "sha256": "60a1d53d830b2c03b96e8ff47fae48e0de8e7759812863707c220337dce3e7ab",
+          "bytes": 1547
+        }
+      ],
+      "materialized_bytes": 130261,
+      "apk_or_firmware_bytes": 0,
+      "package_version_verified": false,
+      "APK_sha256": null
+    },
+    {
+      "repository": "https://github.com/cxxsheng/TiktokSource",
+      "revision": "2c6fb7c918b71713c23c4464e7fbb51b752f54a2",
+      "license": "No root license identified; publicly posted decompiled source; original package/component version and APK hash unknown. Static factual inspection only; not copied, translated, linked or executed.",
+      "files": [
+        {
+          "path": "com/xiaomi/livephoto/MiLivePhotoInfo.java",
+          "git_blob_sha": "731bb9f56ecd3e50a21608e71ebad3b4a190cb31",
+          "origin": "https://github.com/cxxsheng/TiktokSource/blob/2c6fb7c918b71713c23c4464e7fbb51b752f54a2/com/xiaomi/livephoto/MiLivePhotoInfo.java",
+          "bytes": 1552,
+          "sha256": "1e971a203016a75e7a1847be2b2875c560677747dbaedd27b1420053f38f83b5",
+          "materialization_terminal_newline_added": true
+        },
+        {
+          "path": "com/xiaomi/livephoto/MiLivePhotoTools.java",
+          "git_blob_sha": "2bcdd061c66408d73522abd67a14911eddf42ae0",
+          "origin": "https://github.com/cxxsheng/TiktokSource/blob/2c6fb7c918b71713c23c4464e7fbb51b752f54a2/com/xiaomi/livephoto/MiLivePhotoTools.java",
+          "bytes": 48817,
+          "sha256": "f1fbcdd760184bbc9c9d1db9073af348c088dd611700f94bd4f0404aa0b27913",
+          "materialization_terminal_newline_added": true
+        },
+        {
+          "path": "com/oplus/gallery/olive_decoder/reader/a.java",
+          "git_blob_sha": "a128656982d16ca011608d3c44f0c538413309ec",
+          "origin": "https://github.com/cxxsheng/TiktokSource/blob/2c6fb7c918b71713c23c4464e7fbb51b752f54a2/com/oplus/gallery/olive_decoder/reader/a.java",
+          "bytes": 3076,
+          "sha256": "a5179f88a986976ee47eaa158d422dcc82fda53777f4ebda0ea9c777f75341cf",
+          "materialization_terminal_newline_added": true
+        },
+        {
+          "path": "com/oplus/gallery/olive_decoder/source/c.java",
+          "git_blob_sha": "d5d7f945e03a6eecd4ab7f86cd0fea73e4cadf32",
+          "origin": "https://github.com/cxxsheng/TiktokSource/blob/2c6fb7c918b71713c23c4464e7fbb51b752f54a2/com/oplus/gallery/olive_decoder/source/c.java",
+          "bytes": 1528,
+          "sha256": "df4a28c89b08523bb39eb4892d556c6c885976c0588e9e02fee73eaf42ef7bf4",
+          "materialization_terminal_newline_added": true
+        },
+        {
+          "path": "com/oplus/gallery/olive_decoder_android/source/a.java",
+          "git_blob_sha": "06d2ebc09d57092370f35d31eabfc11b89597cfc",
+          "origin": "https://github.com/cxxsheng/TiktokSource/blob/2c6fb7c918b71713c23c4464e7fbb51b752f54a2/com/oplus/gallery/olive_decoder_android/source/a.java",
+          "bytes": 1891,
+          "sha256": "ebd7032ee35eb3ed79c237da9125f3234d5305352aad555a7020aaab5662055a",
+          "materialization_terminal_newline_added": true
+        }
+      ],
+      "canonical_source_bytes": 56864,
+      "apk_body_bytes": 0,
+      "package_version_verified": false,
+      "APK_sha256": null
+    },
+    {
+      "repository": "https://github.com/cxxsheng/TiktokSource",
+      "revision": "2c6fb7c918b71713c23c4464e7fbb51b752f54a2",
+      "files": [
+        {
+          "path": "com/hihonor/mcs/media/datacenter/livephoto/LivePhotoUtils.java",
+          "git_blob_sha": "dc209f67b3fd158e980f1ef899b246d742ebf545",
+          "bytes": 7379,
+          "sha256": "995426a19e8441fad798d89a50c52317e48aa3189f2fe65aa2750782f9a32cde"
+        },
+        {
+          "path": "com/hihonor/mcs/media/datacenter/livephoto/HnLivePhotoUtils.java",
+          "git_blob_sha": "ec2cb3234fe9bb7278ae430b653c465dbd6d4b56",
+          "bytes": 26273,
+          "sha256": "9b9dbd465f98729629d6a78e98cb9f6716ef475084db43c62aeaf6896ad79c35"
+        },
+        {
+          "path": "com/hihonor/mcs/media/datacenter/livephoto/MotionPhotoUtils.java",
+          "git_blob_sha": "da5672167a59a11ab6426d05fa3f487ab620a668",
+          "bytes": 24288,
+          "sha256": "b3fde38591bff3c74aedea5d6a34d7cbe07a15fd2f297306ed90f06c0a657e3e"
+        }
+      ],
+      "package_apk_identity": "unknown; static public decompilation is not an authenticated original SDK/APK",
+      "license": "No root license identified; factual static inspection only; no code copying/translation/linking/execution",
+      "package_version_verified": false,
+      "APK_sha256": null
+    }
+  ],
+  "new_APK_native_firmware_body_bytes": 0,
+  "selected_text_bytes": 245065,
+  "free_bytes_after": 24715993088,
+  "download_policy": "No repeated CONNECT403 transfer, proxy/login/DRM/paywall bypass or vendor executable/native-library execution. Minimal static text and independent existing originals suffice for the implemented wire-framing subset.",
+  "OnePlus_listing_correction": {
+    "url": "https://www.apkmirror.com/apk/oneplus-ltd/oneplus-gallery/oneplus-gallery-15-30-30-release/oneplus-photos-15-30-30-android-apk-download/",
+    "read_UTC_date": "2026-10-19",
+    "version_name": "15.30.30",
+    "version_code": 150300300,
+    "package": "com.oneplus.gallery",
+    "advertised_bytes": 268971840,
+    "body_obtained": false,
+    "APK_sha256": null,
+    "previous_mistake": "com.oplus.gallery was a namespace/permission prefix, not this listing package identity."
+  },
+  "licenses": "No root license identified in newly read decompiled repositories. Static factual research only, no implementation copied/translated/linked; no source bodies or proprietary binaries committed. No new Cargo dependency."
+}

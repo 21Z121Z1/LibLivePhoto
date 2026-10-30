@@ -1,0 +1,52 @@
+{
+  "implementation_sha": "91fc38065d90f09ad971a89097cc022d20bebae6",
+  "workflow_run": 39280158419,
+  "job_id": 118152675017,
+  "conclusion": "failure",
+  "sdk_package_build": "passed",
+  "installed_phase": {
+    "evidence_directory": "android/build/acceptance-heaip3aw",
+    "first_logged_utc": "2026-10-19T15:53:53Z",
+    "failure_logged_utc": "2026-10-19T15:55:59Z",
+    "readiness": "passed; execution reached install",
+    "installation": "not confirmed; outcome uncertain from accessible logs",
+    "error": "APK installation did not confirm success; see adb-commands.jsonl",
+    "completed_scopes": [],
+    "assertions": 0
+  },
+  "accessible_observations": [
+    "sys.boot_completed was 1; the emulator reported boot in 494094ms.",
+    "Outer emulator log includes settings-service Broken pipe (32) and missing-settings-service messages; these do not establish OOM, a system_server crash or the exact install failure.",
+    "Host fault-injection emitted simulated pass/fail markers at 15:43:44 before the actual installed phase; none is counted as native execution."
+  ],
+  "saved_evidence": {
+    "artifact_id": 12200477053,
+    "bytes": 3737090,
+    "digest": "sha256:79e847798ef0dbd650543697a61e072ca84ccf691fb443601d01a79e78f6f0ac",
+    "connector_download": "successful server-side; returned file_00000000b2d081f49186e7d4da3297a5",
+    "container_transfer": {
+      "artifact_id": 12200477053,
+      "file_id": "file_00000000b2d081f49186e7d4da3297a5",
+      "method": "connector-returned file transfer; ordinary HTTPS; no endpoint/proxy changes",
+      "local_body_exists": false,
+      "status": "blocked",
+      "reason": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    "required_members": [
+      "acceptance-heaip3aw/adb-commands.jsonl",
+      "acceptance-heaip3aw/runtime-receipt.json",
+      "acceptance-heaip3aw/logcat.log"
+    ],
+    "body_read": false,
+    "status": "blocked by proxy CONNECT403; no new transport, proxy changes or access bypass attempted"
+  },
+  "followup_code": {
+    "sha": "1753169b3665d7a533e9675897fb78b1977c48b4",
+    "behavior": "Print bounded command failures, installation result, service snapshots and guest logcat to CI stdout; retain structured JSONL. Suppress simulated acceptance markers in host tests.",
+    "root_fix_claimed": false,
+    "deadlines_increased": false,
+    "required_service_assertions": 65,
+    "host_fault_tests_passed": 12
+  },
+  "remaining_action": "Read the exact saved command result when authorized transport is available, or diagnose the next changed-code installed-runtime run from its now-visible bounded diagnostics. Do not infer root cause or relax readiness/scopes."
+}

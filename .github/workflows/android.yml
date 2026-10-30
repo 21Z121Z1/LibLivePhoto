@@ -1,0 +1,183 @@
+name: Android native services
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sdk-and-services:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Verify bounded Android harness gates (fault injection, no device claim)
+        run: python3 scripts/test_android_harness.py
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,x86_64-linux-android
+      - name: Inspect installed SDK, NDK, licenses and virtualization
+        run: |
+          python3 - <<'PY'
+          import os,pathlib
+          sdk=pathlib.Path(os.environ['ANDROID_HOME'])
+          for directory in ['platforms','build-tools','ndk','licenses','system-images']:
+              print(directory, sorted(str(p.relative_to(sdk)) for p in (sdk/directory).glob('*')))
+          print('kvm exists/read/write:',os.path.exists('/dev/kvm'),os.access('/dev/kvm',os.R_OK),os.access('/dev/kvm',os.W_OK))
+          managers=sorted((sdk/'cmdline-tools').glob('*/bin/sdkmanager'))
+          preferred=sdk/'cmdline-tools/latest/bin/sdkmanager'
+          manager=preferred if preferred.is_file() else managers[-1] if managers else None
+          if manager is None: raise SystemExit('installed SDK has no sdkmanager')
+          print('SDK command line tools:',manager.parent)
+          with open(os.environ['GITHUB_PATH'],'a') as output:
+              for path in [manager.parent,sdk/'platform-tools',sdk/'emulator']: output.write(str(path)+'\n')
+          PY
+      - run: python3 scripts/build_android.py
+      - name: Install emulator image under the runner's existing licenses
+        run: sdkmanager 'system-images;android-35;default;x86_64' </dev/null
+      - name: Run an owned accelerated emulator with restored KVM ownership
+        run: |
+          set -euo pipefail
+          mkdir -p android/build
+          emulator_pid= emulator_start= logger_pid= logger_start=
+          kvm_before= kvm_granted= kvm_after= accel_status=
+          kvm_owner_attempted=0
+          job_uid=$(id -u)
+          pid_start() {
+            local value
+            local -a fields
+            IFS= read -r value < "/proc/$1/stat" || return 1
+            read -r -a fields <<< "${value##*) }"
+            printf '%s\n' "${fields[19]}"
+          }
+          stop_owned() {
+            local pid="$1" start="$2" current
+            if [[ -z "$pid" || -z "$start" ]]; then return 0; fi
+            current=$(pid_start "$pid") || return 0
+            if [[ "$current" != "$start" ]]; then
+              echo "Refusing to stop reused PID $pid" >&2
+              return 1
+            fi
+            if ! kill -KILL "$pid" 2>/dev/null; then
+              if kill -0 "$pid" 2>/dev/null; then return 1; fi
+            fi
+            wait "$pid" 2>/dev/null
+            return 0
+          }
+          cleanup() {
+            local original_status=$? cleanup_status=0 current
+            trap - EXIT INT TERM
+            set +e
+            stop_owned "$logger_pid" "$logger_start" || cleanup_status=1
+            stop_owned "$emulator_pid" "$emulator_start" || cleanup_status=1
+            if [[ "$kvm_owner_attempted" == 1 ]]; then
+              current=$(stat -c '%u:%g:%a:%t:%T:%i' /dev/kvm)
+              if [[ -n "$current" && "${current#*:*:*:}" == "${kvm_before#*:*:*:}" ]]; then
+                sudo chown -- "${kvm_before%%:*}" /dev/kvm || cleanup_status=1
+              else
+                echo 'KVM device identity changed before restoration' >&2
+                cleanup_status=1
+              fi
+              kvm_after=$(stat -c '%u:%g:%a:%t:%T:%i' /dev/kvm) || cleanup_status=1
+              if [[ "$kvm_after" != "$kvm_before" ]]; then
+                echo 'KVM ownership restoration did not match the original state' >&2
+                cleanup_status=1
+              fi
+            fi
+            python3 - "$job_uid" "$kvm_before" "$kvm_granted" "$kvm_after" "$original_status" "$cleanup_status" "$accel_status" "$emulator_pid:$emulator_start" "$logger_pid:$logger_start" <<'PY'
+          import json,pathlib,sys
+          job_uid,before,granted,after,status,cleanup,accel,emulator,logger=sys.argv[1:]
+          def device(value):
+              if not value: return None
+              uid,gid,mode,major,minor,inode=value.split(':')
+              return dict(uid=int(uid),gid=int(gid),mode=mode,major=major,minor=minor,inode=int(inode),type='character')
+          def process(value):
+              pid,start=value.split(':')
+              return dict(pid=int(pid),start_ticks=start) if pid else None
+          receipt=dict(device='/dev/kvm',job_uid=int(job_uid),
+                       before=device(before),granted=device(granted),after=device(after),
+                       restored=bool(before) and before==after,
+                       original_exit_code=int(status),cleanup_exit_code=int(cleanup),
+                       accel_check_exit_code=int(accel) if accel else None,
+                       emulator=process(emulator),logger=process(logger))
+          pathlib.Path('android/build/kvm-access-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print('KVM_ACCESS_RECEIPT '+json.dumps(receipt),flush=True)
+          PY
+            if [[ $? != 0 ]]; then cleanup_status=1; fi
+            if [[ -f android/build/kvm-accel-check.log ]]; then cat android/build/kvm-accel-check.log; fi
+            if [[ -f android/build/emulator.log ]]; then cat android/build/emulator.log; fi
+            if [[ "$original_status" == 0 && "$cleanup_status" != 0 ]]; then original_status=1; fi
+            exit "$original_status"
+          }
+          trap cleanup EXIT
+          trap 'exit 130' INT
+          trap 'exit 143' TERM
+          test -c /dev/kvm
+          kvm_before=$(stat -c '%u:%g:%a:%t:%T:%i' /dev/kvm)
+          stat -c 'KVM before: type=%F uid=%u gid=%g mode=%a device=%t:%T inode=%i' /dev/kvm
+          printf 'Job UID: %s\n' "$job_uid"
+          kvm_owner_attempted=1
+          sudo chown -- "$job_uid" /dev/kvm
+          kvm_granted=$(stat -c '%u:%g:%a:%t:%T:%i' /dev/kvm)
+          test "$kvm_granted" = "$job_uid:${kvm_before#*:}"
+          if "$ANDROID_HOME/emulator/emulator" -accel-check > android/build/kvm-accel-check.log 2>&1; then
+            accel_status=0
+          else
+            accel_status=$?
+            exit "$accel_status"
+          fi
+          cat android/build/kvm-accel-check.log
+          export ANDROID_USER_HOME="$RUNNER_TEMP/llp-android-user"
+          export ANDROID_EMULATOR_HOME="$ANDROID_USER_HOME"
+          export ANDROID_AVD_HOME="$RUNNER_TEMP/llp-android-avd"
+          export ANDROID_SERIAL=emulator-5554
+          mkdir -p "$ANDROID_USER_HOME" "$ANDROID_AVD_HOME"
+          echo no | avdmanager create avd -n llp_acceptance -k 'system-images;android-35;default;x86_64' --force
+          avdmanager list avd
+          "$ANDROID_HOME/emulator/emulator" -list-avds
+          test -f "$ANDROID_AVD_HOME/llp_acceptance.ini"
+          adb start-server > android/build/adb-start-server.log 2>&1
+          "$ANDROID_HOME/emulator/emulator" -avd llp_acceptance -port 5554 -no-window -no-audio -no-boot-anim -no-snapshot -no-metrics -gpu swiftshader_indirect -accel on > android/build/emulator.log 2>&1 &
+          emulator_pid=$!
+          emulator_start=$(pid_start "$emulator_pid")
+          adb -s "$ANDROID_SERIAL" wait-for-device logcat -b main -b system -b crash -v threadtime > android/build/guest-live.log 2>&1 &
+          logger_pid=$!
+          logger_start=$(pid_start "$logger_pid")
+          export LLP_EMULATOR_PID="$emulator_pid"
+          python3 - <<'PY'
+          import os,subprocess,time
+          deadline=time.monotonic()+600
+          while time.monotonic()<deadline:
+              try: os.kill(int(os.environ['LLP_EMULATOR_PID']),0)
+              except ProcessLookupError: raise SystemExit('emulator process exited before boot; see emulator.log below')
+              r=subprocess.run(['adb','shell','getprop','sys.boot_completed'],capture_output=True,text=True,timeout=20)
+              if r.returncode==0 and r.stdout.strip()=='1': break
+              time.sleep(5)
+          else: raise SystemExit('emulator failed to boot within 600 seconds; see emulator.log')
+          PY
+          kill -0 "$logger_pid"
+          test "$(pid_start "$logger_pid")" = "$logger_start"
+          python3 scripts/test_android.py
+          kill -0 "$logger_pid"
+          test "$(pid_start "$logger_pid")" = "$logger_start"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-service-evidence
+          path: |
+            android/build/*receipt.json
+            android/build/*.log
+            android/build/acceptance-*/*.json
+            android/build/acceptance-*/*.jsonl
+            android/build/acceptance-*/*.log
+            android/build/liblivephoto-android.aar
+            android/build/liblivephoto-acceptance.apk

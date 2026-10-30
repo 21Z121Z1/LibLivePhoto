@@ -1,0 +1,322 @@
+{
+  "implementation_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+  "baseline_sha": "4848e5fb80b650fdefcedbe9aebedef9de7e627f",
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "runs": [
+    {
+      "id": 39269171895,
+      "name": "Verify independent format library",
+      "head_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+      "status": "completed",
+      "result": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39269171895",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 118116634353,
+          "name": "Exact original fixture round trips",
+          "status": "completed",
+          "result": "success"
+        },
+        {
+          "id": 118116634663,
+          "name": "Sanitizer and coverage campaign",
+          "status": "completed",
+          "result": "success"
+        },
+        {
+          "id": 118116634674,
+          "name": "Portable (macos-latest)",
+          "status": "completed",
+          "result": "success"
+        },
+        {
+          "id": 118116634691,
+          "name": "Portable (ubuntu-latest)",
+          "status": "completed",
+          "result": "success"
+        },
+        {
+          "id": 118116634894,
+          "name": "Portable (windows-latest)",
+          "status": "completed",
+          "result": "success"
+        }
+      ]
+    },
+    {
+      "id": 39269171843,
+      "name": "Apple adapter and local web",
+      "head_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+      "status": "completed",
+      "result": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39269171843",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 118116634033,
+          "name": "web",
+          "status": "completed",
+          "result": "success"
+        },
+        {
+          "id": 118116634457,
+          "name": "apple",
+          "status": "completed",
+          "result": "success"
+        }
+      ]
+    },
+    {
+      "id": 39269171893,
+      "name": "Android native services",
+      "head_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+      "status": "completed",
+      "result": "success",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39269171893",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 118116633964,
+          "name": "sdk-and-services",
+          "status": "completed",
+          "result": "success"
+        }
+      ]
+    }
+  ],
+  "android": {
+    "scopes": [
+      {
+        "scope": "core",
+        "assertions": 20
+      },
+      {
+        "scope": "metadata",
+        "assertions": 11
+      },
+      {
+        "scope": "lifecycle",
+        "assertions": 16
+      },
+      {
+        "scope": "concurrency",
+        "assertions": 18
+      }
+    ],
+    "total_assertions": 65,
+    "installed_apk": true,
+    "remote_services": true,
+    "runtime": "API35 default x86_64 emulator",
+    "build_sdk": 36,
+    "ndk": "27.3.13750724",
+    "build_abis": [
+      "arm64-v8a",
+      "x86_64"
+    ],
+    "arm64_runtime": false,
+    "vendor_gallery": false
+  },
+  "apple": {
+    "macos_swift_tests": 11,
+    "ios_compiler_sdk": "iPhoneSimulator26.5.sdk",
+    "actual_runtime": "Version 26.2 (Build 23C54)",
+    "device_type": "iPhone-SE-3rd-generation",
+    "bootstatus_completed": true,
+    "runtime_process_passed": true,
+    "owned_device_deleted": true,
+    "proof": "IOS_SIMULATOR_SWIFT_RUST passed: linked static C ABI, exact time, original movie, complete AGTM, errors",
+    "ios26_5_startup": "Prior recorded failure remains unresolved; no inference from26.2 success.",
+    "photos_library_import_edit": false,
+    "physical_hdr_playback_capture": false
+  },
+  "web": {
+    "node_unit_tests": 4,
+    "actual_chrome_tests": 7,
+    "livephotoskit_sdk_executed": false
+  },
+  "ci_asan": {
+    "command": "bash scripts/fuzz.sh 60 evidence/local/ci-fuzz",
+    "requested_seconds_per_target": 60,
+    "actual_seconds_per_target": 61,
+    "targets": {
+      "asset_input": 65108,
+      "container_headers": 1321255,
+      "remux": 154773
+    },
+    "total": 1541136,
+    "input_limit_bytes": 1048576,
+    "rss_limit_mb": 2048,
+    "timeout_seconds": 5,
+    "result": "passed"
+  },
+  "artifacts": [
+    {
+      "id": 12195033144,
+      "name": "apple-sdk-build",
+      "bytes": 22146221,
+      "digest": "sha256:d682051784bd1d20eec11d400f4c01cbf445a9953ecab51ee9efad6092f2c788",
+      "run": 39269171843,
+      "head_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39269171843/artifacts/12195033144"
+    },
+    {
+      "id": 12194791349,
+      "name": "web-browser-evidence",
+      "bytes": 394008,
+      "digest": "sha256:f2d6383c362f3d73adb75794ef2a4e99f4b9e4c609d9639ef6687cf22adade6a",
+      "run": 39269171843,
+      "head_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39269171843/artifacts/12194791349"
+    },
+    {
+      "id": 12194798156,
+      "name": "android-service-evidence",
+      "bytes": 3637197,
+      "digest": "sha256:e1a143758318879444d7e71b5618643bf659764f6a19d6ee5328f29819e635cf",
+      "run": 39269171893,
+      "head_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+      "url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39269171893/artifacts/12194798156"
+    }
+  ],
+  "limits": [
+    "Google/XMP/HEIF clauses, pinned-source parity and Apple system acceptance are independent.",
+    "Supplied ISO2025 text is accessible through Library reads; signed transfer failed CONNECT403, local_body_exists remains false.",
+    "Scoring edit-list semantic validation, non-unit/fragmented timing, construction2/external HEIF and full color-pairing/codec conformance remain unsupported or unverified.",
+    "Honor original-device corpus, authorized vendor Gallery/physical Apple Photos/HDR/capture and official LivePhotosKit runtime remain external acceptance gaps.",
+    "Moments construction is excluded. No merge, force push, release or public deployment."
+  ],
+  "source_trees": {
+    "crates": "9e5f1123ca904916c45c65aa3c61c61ab33eec51",
+    "fuzz": "dcaa2efbbb08e73625e60829a0671dfe599fcf54",
+    "scripts": "ff904586131a2f4c854c71b25cf5698bb29f75be",
+    "java/src/main": "eb60fa2082bf7b43f9810744af8d4cfa967e3a85",
+    "android/src/main": "d3ca52f86ff9e7d150a306314f2309a997efd84e",
+    "apple/Sources": "63b36261408ca63aabf483ebc1c65a82f301e85a",
+    "web/src": "1af74ff208d1d93ee6a60be927256f95f6c06359",
+    "native/include": "f8640a086548f2a01b71a7d0aefbeedcaea2fa62"
+  },
+  "local_tests": {
+    "default_passed": 171,
+    "all_features_passed": 171,
+    "ignored_per_default_run": 3,
+    "public_fixture_tests_explicitly_run_locally_and_ci": 2,
+    "private_analysis_original_test_executed": false,
+    "new_rust_tests": 17,
+    "clippy": "passed with -D warnings"
+  },
+  "local_asan": {
+    "remux": {
+      "executions": 191420,
+      "seconds": 61,
+      "peak_rss_mb": 496,
+      "log_sha256": "521547153dc8acd58f68a5dba47e331f36569ba22bb7194197148ed8743cf16e",
+      "result": "passed"
+    },
+    "container_headers": {
+      "executions": 895509,
+      "seconds": 61,
+      "peak_rss_mb": 348,
+      "log_sha256": "49226c153cd343de0c7af832f173dadce39dcb21e7841c2d668dc96628a68ed5",
+      "result": "passed"
+    },
+    "asset_input": {
+      "executions": 92176,
+      "seconds": 61,
+      "peak_rss_mb": 499,
+      "log_sha256": "c98de42817e306a541fa868baeff90da1e188d6a2a5f244fae2c174a14200f50",
+      "result": "passed"
+    }
+  },
+  "local_asan_total": 1179105,
+  "differentials": {
+    "providers": {
+      "cases": 38,
+      "receipt": "/workspace/LibLivePhoto/evidence/local/metadata-diff-mo8bpn3v/receipt.json",
+      "receipt_sha256": "97169328a40e5e0c283502b0dd5c019fc1be75eeb230c660e94bf5ae1b03cfeb",
+      "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+      "implementation_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+      "source_trees_match_commit": true
+    },
+    "agtm": {
+      "cases": 12,
+      "receipt": "/workspace/LibLivePhoto/evidence/local/agtm-diff-hft0862v/receipt.json",
+      "receipt_sha256": "294340165e589216d09aec5ae54f9138150ccb9b11da3b6657b83d08a54f2cc5",
+      "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+      "implementation_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+      "source_trees_match_commit": true
+    },
+    "timed_selection": {
+      "cases": 20,
+      "receipt": "/workspace/LibLivePhoto/evidence/local/timed-metadata-diff-9zv7xr1r/receipt.json",
+      "receipt_sha256": "ef01f48c3b9180b384569aff1c535dc775d76d38a7bacaeb663db603ca14f69f",
+      "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+      "implementation_sha": "76c25e42022c73fb2b5dc7f15fb4ec47cc669796",
+      "source_trees_match_commit": true
+    }
+  },
+  "reference_tests": {
+    "command": "/workspace/reference-build-make/bin/motion_photo_tests",
+    "cwd": "/workspace/reference-run",
+    "passed": 99,
+    "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3"
+  },
+  "xdremux_consumer": {
+    "source_sha": "0688ea7d6270df52cc5968e2c36dd016f13bd31b",
+    "source_file": "crates/xdremux-motion-photo/tests/liblivephoto_interop.rs",
+    "test_source_sha256": "aa3a154f0da02aa1bf79566f7439b2129b56f36dfc0a73c2a58ef225fb1b437b",
+    "unchanged_source_replayed": true,
+    "tests_passed": 1,
+    "consumer_repo_modified": false,
+    "fixture_sha256": "5b555b0fffcec9ffb64a082a0532822431b59fc0490b677cc557e9810b764e70"
+  },
+  "local_logs": [
+    {
+      "path": "evidence/local/standards-edit-default.log",
+      "sha256": "c9ddbcade8a5f812f56c0c2e29e159b568288704ccacf07361788fbc2ca45942"
+    },
+    {
+      "path": "evidence/local/standards-edit-core.log",
+      "sha256": "d0f31340c0b60643dcd8d25bde0b91aa6d347bfd8bb353b2d410eac04eb8f2ea"
+    },
+    {
+      "path": "evidence/local/standards-edit-clippy.log",
+      "sha256": "f74cc021ebb0703da379ca4af32f095c96d84c419149896413e1f4893f13759c"
+    },
+    {
+      "path": "evidence/local/standards-edit-jni.log",
+      "sha256": "a254dcdb812fbaf0bba6af77f3ff29dc1bf1ab619c4a279f438a182823ce3add"
+    },
+    {
+      "path": "evidence/local/standards-edit-c-abi.log",
+      "sha256": "f430d5be83644b9c7c1e0614ac0c7139a69507116fa44b36796e562b02051152"
+    },
+    {
+      "path": "evidence/local/standards-edit-google-tests.log",
+      "sha256": "c9ffa0c58e34d7055fed472b32327cf280a55089b5550e9ec1adafbcd6ff3155"
+    },
+    {
+      "path": "evidence/local/standards-edit-xdremux.log",
+      "sha256": "09a72b69e2226cdc4c734b9e490afea1efcda7dafe0f5978a7d732cdc02f5188"
+    },
+    {
+      "path": "evidence/local/standards-edit-fixtures.log",
+      "sha256": "59dfc9031a53bdcceefd0ba695324c527678ca5f4d01ea431e3e0adb3313ac59"
+    }
+  ],
+  "iso_text_access": {
+    "receipt": "iso23008-materialization-access.json",
+    "provided_size_bytes": 339029,
+    "local_body_exists": false,
+    "authorized_library_sections_read": [
+      "6.2",
+      "6.5.1",
+      "6.5.5.1-6.5.5.3",
+      "6.5.10.1-6.5.10.3",
+      "6.5.12.1-6.5.12.3",
+      "Table3"
+    ],
+    "signed_transfer": "failed CONNECT403; no retry or bypass",
+    "h05_review": "Updated after the code checkpoint; count/pairing constraints remain unvalidated, no whole-color conformance claim."
+  }
+}

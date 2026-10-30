@@ -1,0 +1,691 @@
+{
+  "implementation_sha": "0ece07a053403801f13bb421dad09a57613a3d4e",
+  "source_ref": "codex/vendor-preservation-round5-20261019",
+  "workflows": [
+    {
+      "id": 39323820301,
+      "name": "Verify independent format library",
+      "head_sha": "0ece07a053403801f13bb421dad09a57613a3d4e",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39323820301",
+      "created_at": "2026-10-19T20:59:02Z",
+      "updated_at": "2026-10-19T21:03:27Z"
+    },
+    {
+      "id": 39323820313,
+      "name": "Apple adapter and local web",
+      "head_sha": "0ece07a053403801f13bb421dad09a57613a3d4e",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39323820313",
+      "created_at": "2026-10-19T20:59:02Z",
+      "updated_at": "2026-10-19T21:05:40Z"
+    },
+    {
+      "id": 39323820296,
+      "name": "Android native services",
+      "head_sha": "0ece07a053403801f13bb421dad09a57613a3d4e",
+      "run_attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/21Z121Z1/LibLivePhoto/actions/runs/39323820296",
+      "created_at": "2026-10-19T20:59:02Z",
+      "updated_at": "2026-10-19T21:30:16Z"
+    }
+  ],
+  "logical_jobs": [
+    {
+      "id": 118304402413,
+      "name": "Sanitizer and coverage campaign",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39323820301
+    },
+    {
+      "id": 118304402727,
+      "name": "Portable (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39323820301
+    },
+    {
+      "id": 118304402777,
+      "name": "Portable (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39323820301
+    },
+    {
+      "id": 118304402810,
+      "name": "Portable (macos-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39323820301
+    },
+    {
+      "id": 118304402834,
+      "name": "Exact original fixture round trips",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39323820301
+    },
+    {
+      "id": 118304402117,
+      "name": "web",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39323820313
+    },
+    {
+      "id": 118304402539,
+      "name": "apple",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39323820313
+    },
+    {
+      "id": 118309926045,
+      "name": "sdk-and-services",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39323820296
+    }
+  ],
+  "artifact_metadata": [
+    {
+      "id": 12222115677,
+      "name": "sanitizer-coverage-logs",
+      "size_in_bytes": 160455,
+      "github_reported_digest": "sha256:f90fd9d0d52ecf9c5893efd2ebc07261b3977fb2dbc2aa314dcee1d8a17a53b6",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12222000534,
+      "name": "native-sdk-ubuntu-latest",
+      "size_in_bytes": 9600786,
+      "github_reported_digest": "sha256:47184509644444dd490a2733d678a35895accdc51ad47b502acd9937c794a62d",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12221821546,
+      "name": "native-sdk-macos-latest",
+      "size_in_bytes": 9104911,
+      "github_reported_digest": "sha256:0578c2e596ee17b0e90f62daecc0d439d2f37edd8bca7968c786c35080f05053",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12221537839,
+      "name": "native-sdk-windows-latest",
+      "size_in_bytes": 7312240,
+      "github_reported_digest": "sha256:9f8d26ee079b9f17addd076bbf72334c26fe6170ac6dab45eab6138c38a8d71c",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12222010629,
+      "name": "web-browser-evidence",
+      "size_in_bytes": 395510,
+      "github_reported_digest": "sha256:0d56ecff79e63b2858569f42a4f77eb2e9e7faae14a63938e8f7c3dd7307717a",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12221902251,
+      "name": "apple-sdk-build",
+      "size_in_bytes": 22534786,
+      "github_reported_digest": "sha256:a61dcf06077353f8f3535845a1db8417ed7172b9cfa0e956dff86e49a39e6e0c",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12224010200,
+      "name": "android-service-evidence",
+      "size_in_bytes": 4423854,
+      "github_reported_digest": "sha256:c44789f4e8b5c98ca8856d885fca0e092e89d642bc938706526a200ec4e9335b",
+      "payload_downloaded": false
+    },
+    {
+      "id": 12221173163,
+      "name": "android-service-evidence",
+      "size_in_bytes": 4362744,
+      "github_reported_digest": "sha256:b926da7f2d721f0382e6c21348d62f4cfac97eb653ac3a5772e28199e1a4272c",
+      "payload_downloaded": false
+    }
+  ],
+  "android_first_attempt": {
+    "job_id": 118304402380,
+    "result": "failure",
+    "completed_assertions": 0,
+    "installation_outcome_uncertain": true,
+    "owned_package_removed": false,
+    "details": "vendor-round5-android-attempt1.json"
+  },
+  "android_retry": {
+    "job_id": 118309926045,
+    "run_attempt": 2,
+    "same_source_sha": true,
+    "rerun_request_confirmed": true,
+    "changed_timeouts_permissions_kvm_or_network": false,
+    "runtime_receipt": {
+      "result": "passed",
+      "completed_scopes": [
+        "core",
+        "metadata",
+        "lifecycle",
+        "concurrency",
+        "syntax"
+      ],
+      "assertions": 115,
+      "gallery_acceptance": false,
+      "readiness_deadline_seconds": 120,
+      "readiness_max_attempts": 40,
+      "per_scope_deadline_seconds": 240,
+      "per_operation_deadline_seconds": 40,
+      "installation_confirmed": true,
+      "bind_deadline_seconds": 20,
+      "ready_future_wait_deadline_seconds": 20,
+      "ready_future_wait_starts_after_bind_returns": true,
+      "synchronous_bind_bounded_by_scope_deadline": true,
+      "installation_outcome_uncertain": false,
+      "owned_package_removed": true,
+      "implementation_sha": "0ece07a053403801f13bb421dad09a57613a3d4e",
+      "readiness_attempts": 1,
+      "package_absence_confirmed": true,
+      "active_scope": "syntax",
+      "device": "Android SDK built for x86_64",
+      "sdk": "35",
+      "abi": "x86_64",
+      "hardware": "ranchu",
+      "scope": "installed APK, four remote services, isolated parser, actual Rust JNI, FD ranges/ownership, byte-exact extract/build, diagnostics/cancel"
+    },
+    "connections": [
+      {
+        "service": "MetadataParserService",
+        "client_pid": 1818,
+        "remote_pid": 1904,
+        "ready_wait_ms": 15785
+      },
+      {
+        "service": "MotionPhotoBuilderService",
+        "client_pid": 1818,
+        "remote_pid": 2025,
+        "ready_wait_ms": 17058
+      },
+      {
+        "service": "MotionPhotoCheckerService",
+        "client_pid": 1818,
+        "remote_pid": 2145,
+        "ready_wait_ms": 14239
+      },
+      {
+        "service": "MotionPhotoExtractorService",
+        "client_pid": 1818,
+        "remote_pid": 2235,
+        "ready_wait_ms": 8243
+      },
+      {
+        "service": "MetadataParserService",
+        "client_pid": 2764,
+        "remote_pid": 2830,
+        "ready_wait_ms": 15993
+      },
+      {
+        "service": "MotionPhotoBuilderService",
+        "client_pid": 2764,
+        "remote_pid": 2935,
+        "ready_wait_ms": 9337
+      },
+      {
+        "service": "MotionPhotoCheckerService",
+        "client_pid": 2764,
+        "remote_pid": 3011,
+        "ready_wait_ms": 12101
+      },
+      {
+        "service": "MotionPhotoExtractorService",
+        "client_pid": 2764,
+        "remote_pid": 3113,
+        "ready_wait_ms": 8209
+      },
+      {
+        "service": "MetadataParserService",
+        "client_pid": 3240,
+        "remote_pid": 3293,
+        "ready_wait_ms": 5157
+      },
+      {
+        "service": "MotionPhotoBuilderService",
+        "client_pid": 3240,
+        "remote_pid": 3312,
+        "ready_wait_ms": 4382
+      },
+      {
+        "service": "MotionPhotoCheckerService",
+        "client_pid": 3240,
+        "remote_pid": 3347,
+        "ready_wait_ms": 5247
+      },
+      {
+        "service": "MotionPhotoExtractorService",
+        "client_pid": 3240,
+        "remote_pid": 3381,
+        "ready_wait_ms": 9462
+      },
+      {
+        "service": "MetadataParserService",
+        "client_pid": 3717,
+        "remote_pid": 3742,
+        "ready_wait_ms": 4055
+      },
+      {
+        "service": "MotionPhotoBuilderService",
+        "client_pid": 3717,
+        "remote_pid": 3782,
+        "ready_wait_ms": 4613
+      },
+      {
+        "service": "MotionPhotoCheckerService",
+        "client_pid": 3717,
+        "remote_pid": 3823,
+        "ready_wait_ms": 4854
+      },
+      {
+        "service": "MotionPhotoExtractorService",
+        "client_pid": 3717,
+        "remote_pid": 3858,
+        "ready_wait_ms": 5555
+      },
+      {
+        "service": "MetadataParserService",
+        "client_pid": 4013,
+        "remote_pid": 4041,
+        "ready_wait_ms": 3499
+      },
+      {
+        "service": "MotionPhotoBuilderService",
+        "client_pid": 4013,
+        "remote_pid": 4087,
+        "ready_wait_ms": 6987
+      },
+      {
+        "service": "MotionPhotoCheckerService",
+        "client_pid": 4013,
+        "remote_pid": 4115,
+        "ready_wait_ms": 5694
+      },
+      {
+        "service": "MotionPhotoExtractorService",
+        "client_pid": 4013,
+        "remote_pid": 4145,
+        "ready_wait_ms": 3744
+      }
+    ],
+    "ready_wait_ms_range": [
+      3499,
+      17058
+    ],
+    "syntax_case_ids": [
+      "icc-valid",
+      "icc-unsupported",
+      "icc-truncated",
+      "icc-budget",
+      "pce-wave",
+      "pce-stz2",
+      "pce-stz2-unused",
+      "direct-aac",
+      "direct-version",
+      "direct-version-inspect",
+      "direct-duplicate",
+      "direct-duplicate-inspect",
+      "direct-extension",
+      "direct-extension-inspect",
+      "pce-truncated",
+      "mixed-sizes",
+      "stz2-preserve",
+      "stz2-preserve-parse",
+      "stz2-compact",
+      "stz2-compact-parse",
+      "stz2-remove-audio",
+      "stz2-import-audio",
+      "legacy-preserve",
+      "legacy-preserve-parse",
+      "legacy-compact",
+      "legacy-compact-parse",
+      "legacy-remove-audio",
+      "legacy-import-audio",
+      "agtm-stz2",
+      "pce-build",
+      "pce-extract",
+      "pce-built-time",
+      "direct-build",
+      "direct-extract",
+      "direct-built-time",
+      "version-build",
+      "version-extract",
+      "duplicate-build",
+      "duplicate-extract",
+      "extension-build",
+      "extension-extract",
+      "inexact-third"
+    ],
+    "syntax_manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226",
+    "syntax_individual_case_gate_passed": true,
+    "new_vendor13_cases_executed": false,
+    "first_attempt_cleanup_not_implied": true,
+    "first_failure_root_cause_established": false
+  },
+  "interpretation": "Latest workflow attempts passed. The first failed Android installation remains recorded separately; success on another runner does not establish its root cause or cleanup. Artifact digests are GitHub-reported metadata, not locally rehashed payloads.",
+  "portable_details": {
+    "ubuntu": {
+      "job_id": 118304402727,
+      "rust_runs": [
+        [
+          241,
+          0,
+          3
+        ],
+        [
+          241,
+          0,
+          3
+        ]
+      ],
+      "binding_receipts": [
+        {
+          "entry": "host-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-host-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "host-c-abi",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-host-c-abi",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "packaged-release-cli",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-packaged-release-cli",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "packaged-compiled-c",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-packaged-compiled-c",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "cli-syntax",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-cli",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        }
+      ],
+      "log_sha256": "10984dad63b7173f604b4a0d0f849d33569c291cfed50fc48fb3712cf706a554"
+    },
+    "windows": {
+      "job_id": 118304402777,
+      "rust_runs": [
+        [
+          240,
+          0,
+          3
+        ],
+        [
+          240,
+          0,
+          3
+        ]
+      ],
+      "binding_receipts": [
+        {
+          "entry": "host-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-host-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "host-c-abi",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-host-c-abi",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "packaged-release-cli",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-packaged-release-cli",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "packaged-compiled-c",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-packaged-compiled-c",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        }
+      ],
+      "log_sha256": "521ab1792c70ef4265ef128cfb0093b7cb14ad7af4e7349b82224a1e8b72233b"
+    },
+    "macos": {
+      "job_id": 118304402810,
+      "rust_runs": [
+        [
+          241,
+          0,
+          3
+        ],
+        [
+          241,
+          0,
+          3
+        ]
+      ],
+      "binding_receipts": [
+        {
+          "entry": "host-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-host-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "host-c-abi",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-host-c-abi",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "packaged-release-cli",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-packaged-release-cli",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "packaged-compiled-c",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "vendor-packaged-compiled-c",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 42,
+          "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+        },
+        {
+          "entry": "packaged-jar-jni",
+          "cases": 13,
+          "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+        }
+      ],
+      "log_sha256": "844acc3b34c98d4bd094b4e9de97dd412b9ccc2cd70547aab77e1e91c13f05ed"
+    }
+  },
+  "apple_runtime": {
+    "implementation_sha": "0ece07a053403801f13bb421dad09a57613a3d4e",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+    "architecture": "arm64",
+    "device": "A35BB297-607B-4B7E-8812-D796BE838D10",
+    "device_type": "com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation",
+    "result": "passed",
+    "scope": "actual Swift plus statically linked Rust C ABI in owned iOS Simulator",
+    "bootstatus_completed": true,
+    "runtime_process_passed": true,
+    "springboard_ui_acceptance": false,
+    "photos_library_import_edit": false,
+    "physical_playback_hdr": false,
+    "runtime_available": true,
+    "runtime_version": "26.2",
+    "compiler_sdk": "/Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk",
+    "available_ios_runtimes": [
+      {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+        "version": "26.2"
+      },
+      {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-4",
+        "version": "26.4.1"
+      },
+      {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+        "version": "26.5"
+      }
+    ],
+    "compatible_device_types": [
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro-Max",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-Air",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-17",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro-Max",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-16e",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-16",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Plus",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Pro",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Pro-Max",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-15",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Plus",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-14-Pro",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-14-Pro-Max",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-14",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-14-Plus",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-13-Pro",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-13-Pro-Max",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-13",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-13-mini",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro-Max",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-12",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-12-mini",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-SE--2nd-generation-",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro-Max",
+      "com.apple.CoreSimulator.SimDeviceType.iPhone-11"
+    ],
+    "syntax_cases": 42,
+    "owned_device_deleted": true
+  },
+  "swift_macos": {
+    "tests_passed": 12,
+    "syntax_vectors": 42,
+    "failures": 0,
+    "new_vendor13_cases_executed": false
+  },
+  "web_runtime": {
+    "node_existing_tests": 4,
+    "node_wasm_syntax_test_passed": true,
+    "node_syntax_vectors": 42,
+    "actual_chrome_version": "155.0.8059.84",
+    "browser_tests_passed": 8,
+    "browser_syntax_vectors": 42,
+    "new_vendor13_cases_executed": false,
+    "http_methods": "GET/HEAD only"
+  },
+  "log_sha256": {
+    "round5-ci-118309926045.log": "b6b765ae6b48a1f7ebef0a8960deb3ab5a8d5b1601f1461a64d623b65eb55d75",
+    "round5-ci-118304402539.log": "bb5251fcd6aec73a8b58169ee5e36a057e6380bc6d79e6744abe6ce485b59f64",
+    "round5-ci-118304402810.log": "844acc3b34c98d4bd094b4e9de97dd412b9ccc2cd70547aab77e1e91c13f05ed",
+    "round5-ci-118304402380.log": "f609ccc20faf3442a3cb3fe5dc2a6a2215973b281e7327b13e5ee61497192d3c",
+    "round5-ci-118304402777.log": "521ab1792c70ef4265ef128cfb0093b7cb14ad7af4e7349b82224a1e8b72233b",
+    "round5-ci-118304402413.log": "02e36233551dda630c51b63bc956ac8ef7352fcdbdc29cf412562d7762183de8",
+    "round5-ci-118304402834.log": "a8b7f622467006c4f8c386ea878122d66e4859d9afaa40ad931fb670f43ac581",
+    "round5-ci-118304402727.log": "10984dad63b7173f604b4a0d0f849d33569c291cfed50fc48fb3712cf706a554",
+    "round5-ci-118304402117.log": "f4de4111a88f98cd746f2b72d04e03377f15ada21f8caba1b4e13e4efc708f29"
+  },
+  "scope_limits": [
+    "No physical Android/iOS device, Gallery/Photos import/edit/export or HDR/colour/audio rendering acceptance.",
+    "The new13 vendor cases execute on desktop C/JNI/CLI/packaged SDK consumers; mobile/Swift/WASM keep the existing42-case syntax regression suite.",
+    "First Android installation remains uncertain/cleanup unconfirmed on its terminated runner; successful retry does not resolve that historical outcome."
+  ]
+}

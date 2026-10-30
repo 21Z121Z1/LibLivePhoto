@@ -1,0 +1,3133 @@
+{
+  "cli": {
+    "implementation_sha": "bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "scope": "CLI ICC envelope and AAC-LC/PCE/wave; two-track real owned MOV converted to stz2. ffprobe demux DTS/PTS include its edit handling; raw stts/ctts preservation is also checked by Rust tests. No colour/audio rendering or device acceptance.",
+    "source_sha256": "89f90349361802d11ec0fa115037c6039261eb7841f1eeaac743c13dabac6100",
+    "stz2_tables": 2,
+    "packets": [
+      [
+        0,
+        "-1/8",
+        "0",
+        "1/16",
+        10791,
+        "c0146eb595c755e4a9d27de249bb5aad95648d0c93ac6286b4cc1d39ea305b5f"
+      ],
+      [
+        0,
+        "-1/16",
+        "3/16",
+        "1/16",
+        735,
+        "c4c78de2a4918708b95be83beab82f023d2294ff2fc121c9c08e0853e6ebaba3"
+      ],
+      [
+        1,
+        "-8/375",
+        "-8/375",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        0,
+        "0",
+        "1/16",
+        "1/16",
+        191,
+        "a9cdee0996a185a439afe2fd8822ee72940bc38ca86fdfeb928498412a940a2b"
+      ],
+      [
+        1,
+        "0",
+        "0",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        1,
+        "8/375",
+        "8/375",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        1,
+        "16/375",
+        "16/375",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        0,
+        "1/16",
+        "1/8",
+        "1/16",
+        100,
+        "5f81df8891efccb345f2b7e1d8007b91a31b811ff4a91a3b4324b5db3ee2f5ac"
+      ],
+      [
+        1,
+        "8/125",
+        "8/125",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        1,
+        "32/375",
+        "32/375",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        1,
+        "8/75",
+        "8/75",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        0,
+        "1/8",
+        "3/8",
+        "1/16",
+        421,
+        "af98b7d343a1374b36663210c411685177be84fc4b773de0d089996f11ad78b3"
+      ],
+      [
+        1,
+        "16/125",
+        "16/125",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        1,
+        "56/375",
+        "56/375",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        1,
+        "64/375",
+        "64/375",
+        "8/375",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ],
+      [
+        0,
+        "3/16",
+        "1/4",
+        "1/16",
+        152,
+        "bc1621f9cf75010ab96a8eb89c179026fb3512501221122fc1a045cf627c2881"
+      ],
+      [
+        1,
+        "24/125",
+        "24/125",
+        "1/125",
+        6,
+        "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+      ]
+    ],
+    "outputs": [
+      {
+        "compact": false,
+        "samples": 17,
+        "file_sha256": "49f953911c8339ca9817e826d86381fbf8bc92f162839848954439df80d64bfe",
+        "each_sample_hash_dts_pts_duration_and_index_target_verified": true
+      },
+      {
+        "compact": true,
+        "samples": 17,
+        "file_sha256": "49f953911c8339ca9817e826d86381fbf8bc92f162839848954439df80d64bfe",
+        "each_sample_hash_dts_pts_duration_and_index_target_verified": true
+      }
+    ],
+    "calls": [
+      {
+        "args": [
+          "conformance",
+          "/workspace/LibLivePhoto/fixtures/syntax/icc-structure-v4.4.icc",
+          "--options-json",
+          "{\"profile\":\"icc-structure-v4.4\"}"
+        ],
+        "exit_code": 0,
+        "success": true
+      },
+      {
+        "args": [
+          "conformance",
+          "/workspace/LibLivePhoto/fixtures/syntax/icc-unsupported-v4.3.icc",
+          "--options-json",
+          "{\"profile\":\"icc-structure-v4.4\"}"
+        ],
+        "exit_code": 1,
+        "success": false
+      },
+      {
+        "args": [
+          "conformance",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/icc-range.bin",
+          "--range",
+          "13:168",
+          "--options-json",
+          "{\"profile\":\"icc-structure-v4.4\"}"
+        ],
+        "exit_code": 0,
+        "success": true
+      },
+      {
+        "args": [
+          "conformance",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/truncated.icc",
+          "--options-json",
+          "{\"profile\":\"icc-structure-v4.4\"}"
+        ],
+        "exit_code": 1,
+        "success": false
+      },
+      {
+        "args": [
+          "parse",
+          "/workspace/LibLivePhoto/web/public/demo/cover.jpg",
+          "--parts",
+          "--movie",
+          "/workspace/LibLivePhoto/fixtures/syntax/aac-pce-wave.mov"
+        ],
+        "exit_code": 0,
+        "success": true
+      },
+      {
+        "args": [
+          "conformance",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/unsupported-esds.mov",
+          "--tracks",
+          "1",
+          "--options-json",
+          "{\"profile\":\"google-video-container-1.0\"}"
+        ],
+        "exit_code": 1,
+        "success": false
+      },
+      {
+        "args": [
+          "optimize",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/stz2.mov",
+          "--out",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/preserve"
+        ],
+        "exit_code": 0,
+        "success": true
+      },
+      {
+        "args": [
+          "optimize",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/stz2.mov",
+          "--out",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/compact",
+          "--compact"
+        ],
+        "exit_code": 0,
+        "success": true
+      },
+      {
+        "args": [
+          "optimize",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/sidx.mov"
+        ],
+        "exit_code": 1,
+        "success": false
+      },
+      {
+        "args": [
+          "optimize",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/moof.mov"
+        ],
+        "exit_code": 1,
+        "success": false
+      },
+      {
+        "args": [
+          "optimize",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/mfra.mov"
+        ],
+        "exit_code": 1,
+        "success": false
+      },
+      {
+        "args": [
+          "optimize",
+          "/workspace/LibLivePhoto/evidence/local/syntax-contracts-hufi5k62/uuid.mov"
+        ],
+        "exit_code": 1,
+        "success": false
+      }
+    ],
+    "acceptance": {
+      "entry": "cli-syntax",
+      "cases": 42,
+      "checks": [
+        {
+          "id": "icc-valid",
+          "fields": 2,
+          "files": 0
+        },
+        {
+          "id": "icc-unsupported",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "icc-truncated",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "icc-budget",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "pce-wave",
+          "fields": 9,
+          "files": 0
+        },
+        {
+          "id": "pce-stz2",
+          "fields": 9,
+          "files": 0
+        },
+        {
+          "id": "pce-stz2-unused",
+          "fields": 9,
+          "files": 0
+        },
+        {
+          "id": "direct-aac",
+          "fields": 5,
+          "files": 0
+        },
+        {
+          "id": "direct-version",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "direct-version-inspect",
+          "fields": 3,
+          "files": 0
+        },
+        {
+          "id": "direct-duplicate",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "direct-duplicate-inspect",
+          "fields": 3,
+          "files": 0
+        },
+        {
+          "id": "direct-extension",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "direct-extension-inspect",
+          "fields": 3,
+          "files": 0
+        },
+        {
+          "id": "pce-truncated",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "mixed-sizes",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "stz2-preserve",
+          "fields": 3,
+          "files": 1
+        },
+        {
+          "id": "stz2-preserve-parse",
+          "fields": 9,
+          "files": 0
+        },
+        {
+          "id": "stz2-compact",
+          "fields": 3,
+          "files": 1
+        },
+        {
+          "id": "stz2-compact-parse",
+          "fields": 9,
+          "files": 0
+        },
+        {
+          "id": "stz2-remove-audio",
+          "fields": 2,
+          "files": 1
+        },
+        {
+          "id": "stz2-import-audio",
+          "fields": 1,
+          "files": 1
+        },
+        {
+          "id": "legacy-preserve",
+          "fields": 3,
+          "files": 1
+        },
+        {
+          "id": "legacy-preserve-parse",
+          "fields": 3,
+          "files": 0
+        },
+        {
+          "id": "legacy-compact",
+          "fields": 3,
+          "files": 1
+        },
+        {
+          "id": "legacy-compact-parse",
+          "fields": 3,
+          "files": 0
+        },
+        {
+          "id": "legacy-remove-audio",
+          "fields": 2,
+          "files": 1
+        },
+        {
+          "id": "legacy-import-audio",
+          "fields": 1,
+          "files": 2
+        },
+        {
+          "id": "agtm-stz2",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "pce-build",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "pce-extract",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "pce-built-time",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "direct-build",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "direct-extract",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "direct-built-time",
+          "fields": 1,
+          "files": 0
+        },
+        {
+          "id": "version-build",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "version-extract",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "duplicate-build",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "duplicate-extract",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "extension-build",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "extension-extract",
+          "fields": 0,
+          "files": 1
+        },
+        {
+          "id": "inexact-third",
+          "fields": 2,
+          "files": 0
+        }
+      ],
+      "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+    },
+    "independent_packet_checks": [
+      {
+        "kind": "stz2",
+        "operation": "preserve",
+        "samples": 17,
+        "sha256": "7967c06b26dd61a7f04ab12ddc014eab10031355086458b9a554c7806065e5a3",
+        "packets": [
+          [
+            0,
+            "-1/8",
+            "0",
+            "1/16",
+            10791,
+            "c0146eb595c755e4a9d27de249bb5aad95648d0c93ac6286b4cc1d39ea305b5f"
+          ],
+          [
+            0,
+            "-1/16",
+            "3/16",
+            "1/16",
+            735,
+            "c4c78de2a4918708b95be83beab82f023d2294ff2fc121c9c08e0853e6ebaba3"
+          ],
+          [
+            1,
+            "-8/375",
+            "-8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "0",
+            "1/16",
+            "1/16",
+            191,
+            "a9cdee0996a185a439afe2fd8822ee72940bc38ca86fdfeb928498412a940a2b"
+          ],
+          [
+            1,
+            "0",
+            "0",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/375",
+            "8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "16/375",
+            "16/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1/16",
+            "1/8",
+            "1/16",
+            100,
+            "5f81df8891efccb345f2b7e1d8007b91a31b811ff4a91a3b4324b5db3ee2f5ac"
+          ],
+          [
+            1,
+            "8/125",
+            "8/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "32/375",
+            "32/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/75",
+            "8/75",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1/8",
+            "3/8",
+            "1/16",
+            421,
+            "af98b7d343a1374b36663210c411685177be84fc4b773de0d089996f11ad78b3"
+          ],
+          [
+            1,
+            "16/125",
+            "16/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "56/375",
+            "56/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "64/375",
+            "64/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "3/16",
+            "1/4",
+            "1/16",
+            152,
+            "bc1621f9cf75010ab96a8eb89c179026fb3512501221122fc1a045cf627c2881"
+          ],
+          [
+            1,
+            "24/125",
+            "24/125",
+            "1/125",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ]
+        ]
+      },
+      {
+        "kind": "stz2",
+        "operation": "compact",
+        "samples": 17,
+        "sha256": "49f953911c8339ca9817e826d86381fbf8bc92f162839848954439df80d64bfe",
+        "packets": [
+          [
+            0,
+            "-1/8",
+            "0",
+            "1/16",
+            10791,
+            "c0146eb595c755e4a9d27de249bb5aad95648d0c93ac6286b4cc1d39ea305b5f"
+          ],
+          [
+            0,
+            "-1/16",
+            "3/16",
+            "1/16",
+            735,
+            "c4c78de2a4918708b95be83beab82f023d2294ff2fc121c9c08e0853e6ebaba3"
+          ],
+          [
+            1,
+            "-8/375",
+            "-8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "0",
+            "1/16",
+            "1/16",
+            191,
+            "a9cdee0996a185a439afe2fd8822ee72940bc38ca86fdfeb928498412a940a2b"
+          ],
+          [
+            1,
+            "0",
+            "0",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/375",
+            "8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "16/375",
+            "16/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1/16",
+            "1/8",
+            "1/16",
+            100,
+            "5f81df8891efccb345f2b7e1d8007b91a31b811ff4a91a3b4324b5db3ee2f5ac"
+          ],
+          [
+            1,
+            "8/125",
+            "8/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "32/375",
+            "32/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/75",
+            "8/75",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1/8",
+            "3/8",
+            "1/16",
+            421,
+            "af98b7d343a1374b36663210c411685177be84fc4b773de0d089996f11ad78b3"
+          ],
+          [
+            1,
+            "16/125",
+            "16/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "56/375",
+            "56/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "64/375",
+            "64/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "3/16",
+            "1/4",
+            "1/16",
+            152,
+            "bc1621f9cf75010ab96a8eb89c179026fb3512501221122fc1a045cf627c2881"
+          ],
+          [
+            1,
+            "24/125",
+            "24/125",
+            "1/125",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ]
+        ]
+      },
+      {
+        "kind": "stz2",
+        "operation": "remove-audio",
+        "samples": 6,
+        "sha256": "4fb2a2652aeec27c253c30a841c308cccab69098c8214eb9910f3e38d0b07f3f",
+        "packets": [
+          [
+            0,
+            "-1/8",
+            "0",
+            "1/16",
+            10791,
+            "c0146eb595c755e4a9d27de249bb5aad95648d0c93ac6286b4cc1d39ea305b5f"
+          ],
+          [
+            0,
+            "-1/16",
+            "3/16",
+            "1/16",
+            735,
+            "c4c78de2a4918708b95be83beab82f023d2294ff2fc121c9c08e0853e6ebaba3"
+          ],
+          [
+            0,
+            "0",
+            "1/16",
+            "1/16",
+            191,
+            "a9cdee0996a185a439afe2fd8822ee72940bc38ca86fdfeb928498412a940a2b"
+          ],
+          [
+            0,
+            "1/16",
+            "1/8",
+            "1/16",
+            100,
+            "5f81df8891efccb345f2b7e1d8007b91a31b811ff4a91a3b4324b5db3ee2f5ac"
+          ],
+          [
+            0,
+            "1/8",
+            "3/8",
+            "1/16",
+            421,
+            "af98b7d343a1374b36663210c411685177be84fc4b773de0d089996f11ad78b3"
+          ],
+          [
+            0,
+            "3/16",
+            "1/4",
+            "1/16",
+            152,
+            "bc1621f9cf75010ab96a8eb89c179026fb3512501221122fc1a045cf627c2881"
+          ]
+        ]
+      },
+      {
+        "kind": "stz2",
+        "operation": "import-audio",
+        "samples": 59,
+        "sha256": "8240318d54d02125648b6f5f5762eff2aae610a0febb3ccb9f020868f2e228aa",
+        "packets": [
+          [
+            0,
+            "-1/8",
+            "0",
+            "1/16",
+            10791,
+            "c0146eb595c755e4a9d27de249bb5aad95648d0c93ac6286b4cc1d39ea305b5f"
+          ],
+          [
+            0,
+            "-1/16",
+            "3/16",
+            "1/16",
+            735,
+            "c4c78de2a4918708b95be83beab82f023d2294ff2fc121c9c08e0853e6ebaba3"
+          ],
+          [
+            0,
+            "0",
+            "1/16",
+            "1/16",
+            191,
+            "a9cdee0996a185a439afe2fd8822ee72940bc38ca86fdfeb928498412a940a2b"
+          ],
+          [
+            0,
+            "1/16",
+            "1/8",
+            "1/16",
+            100,
+            "5f81df8891efccb345f2b7e1d8007b91a31b811ff4a91a3b4324b5db3ee2f5ac"
+          ],
+          [
+            0,
+            "1/8",
+            "3/8",
+            "1/16",
+            421,
+            "af98b7d343a1374b36663210c411685177be84fc4b773de0d089996f11ad78b3"
+          ],
+          [
+            0,
+            "3/16",
+            "1/4",
+            "1/16",
+            152,
+            "bc1621f9cf75010ab96a8eb89c179026fb3512501221122fc1a045cf627c2881"
+          ],
+          [
+            0,
+            "1/4",
+            "5/16",
+            "1/16",
+            96,
+            "7f85ffc5612b7b7dfde789292feeec37c1e04da26f6581427310d7d3338aa183"
+          ],
+          [
+            0,
+            "5/16",
+            "9/16",
+            "1/16",
+            325,
+            "b5ece96b2707e4c3b480676384aa753edbecc7f8071c88dde790ec953aa391dc"
+          ],
+          [
+            0,
+            "3/8",
+            "7/16",
+            "1/16",
+            128,
+            "e56d9507d9cb710fe4dfe3f221407ff1f2e74cfb7d603d2b69f8697de2b6eacb"
+          ],
+          [
+            0,
+            "7/16",
+            "1/2",
+            "1/16",
+            75,
+            "d25bd4be779bb36bdedc3edf988244bf99a10a8270519db20416b76216d5efd1"
+          ],
+          [
+            0,
+            "1/2",
+            "3/4",
+            "1/16",
+            224,
+            "04554e4e69b757d80f1b58364571115ea512992e4419b48a44e669f03b3d3b41"
+          ],
+          [
+            0,
+            "9/16",
+            "5/8",
+            "1/16",
+            113,
+            "92392956a9471419e4dfd193955833e36ecc7947f12beb3a06d2434be9381e0d"
+          ],
+          [
+            0,
+            "5/8",
+            "11/16",
+            "1/16",
+            61,
+            "120a1ca2b3b1eb1262d1387790102a2d306166c8be3f14ef8df8706bddae25d1"
+          ],
+          [
+            0,
+            "11/16",
+            "15/16",
+            "1/16",
+            257,
+            "2e549368c965faca34982cc4606c83cfbc85ebd440f44b78ad4345a32e76fca1"
+          ],
+          [
+            0,
+            "3/4",
+            "13/16",
+            "1/16",
+            104,
+            "df0941f429f86458fffcf67330e412e9db78b775f5721dbdf5db160425acd404"
+          ],
+          [
+            0,
+            "13/16",
+            "7/8",
+            "1/16",
+            80,
+            "79e6d09eebf316e6dc8cd363b6975bf5ca3b45414cbbc7ad1ed3fa09dd6626f6"
+          ],
+          [
+            0,
+            "7/8",
+            "9/8",
+            "1/16",
+            199,
+            "22b8726d12406752f158272f3a27e865cbb2fb7a6eaa5b259a3723da9df8d68f"
+          ],
+          [
+            0,
+            "15/16",
+            "1",
+            "1/16",
+            112,
+            "57da5503755e0bf36a02690a1baf561b35f53cf4e84af34f52db93728b8e792b"
+          ],
+          [
+            1,
+            "-8/375",
+            "-8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1",
+            "17/16",
+            "1/16",
+            74,
+            "0e489e7b9a5f5e8ae0bd7dd1b10fd4316a9178418da26774739aa7222703bffb"
+          ],
+          [
+            1,
+            "0",
+            "0",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/375",
+            "8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "16/375",
+            "16/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "17/16",
+            "21/16",
+            "1/16",
+            236,
+            "8d6ee92ebb61c225de8d204279ff6d4e76f3491ec6431443c97cc841b6bda987"
+          ],
+          [
+            1,
+            "8/125",
+            "8/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "32/375",
+            "32/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/75",
+            "8/75",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "9/8",
+            "19/16",
+            "1/16",
+            118,
+            "c1934c0395d93eb037831a8bc7dbe6919017e6412af1bb155b14c7c1f8f7fcfe"
+          ],
+          [
+            1,
+            "16/125",
+            "16/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "56/375",
+            "56/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "64/375",
+            "64/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "19/16",
+            "5/4",
+            "1/16",
+            81,
+            "f425afd8475a8ef137f8d72ee70e4ab3122e630d1224ecbd3d071c688930f8d6"
+          ],
+          [
+            1,
+            "24/125",
+            "24/125",
+            "1/125",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "5/4",
+            "3/2",
+            "1/16",
+            221,
+            "bf9a847f019066ec79fd0ff342a0ce878eebd14ad8852ca73d02d5a1d58ecde2"
+          ],
+          [
+            0,
+            "21/16",
+            "11/8",
+            "1/16",
+            128,
+            "181f14b95badaa7507c2c09d16b641a069002a705c4fe9cc3f9ff4d12bbe4e00"
+          ],
+          [
+            0,
+            "11/8",
+            "23/16",
+            "1/16",
+            92,
+            "3934abbd53c2b99eba36f4b784c21f7a17c61dbbd35ac2d8b4a159a7f1a1f361"
+          ],
+          [
+            0,
+            "23/16",
+            "27/16",
+            "1/16",
+            291,
+            "ff1f5a5ebb6aadc584563b4f3741a484f4a3417e198db7b2576072ee4a454caf"
+          ],
+          [
+            0,
+            "3/2",
+            "25/16",
+            "1/16",
+            133,
+            "0a98102aa81c69cee612c107c059ea31710d6a41b72cd36a04e28f399f87d86f"
+          ],
+          [
+            0,
+            "25/16",
+            "13/8",
+            "1/16",
+            105,
+            "b91caaed15ca0b1551b4bf4d079138d8c58fc874ca529078aacc76f9dc812d81"
+          ],
+          [
+            0,
+            "13/8",
+            "15/8",
+            "1/16",
+            206,
+            "ba5e27a8cfaf388dfaf9b1eb3a0b5675779213a0c1134ee25432a29d789e6862"
+          ],
+          [
+            0,
+            "27/16",
+            "7/4",
+            "1/16",
+            142,
+            "b7ff9cbb47614c527284261fd6b3482771c9a34421731b75e85466991d38e1ac"
+          ],
+          [
+            0,
+            "7/4",
+            "29/16",
+            "1/16",
+            94,
+            "f0d3d60a29cbb889eb47b02f007928c586d62b3dfe8f2400089efceeb6d6580b"
+          ],
+          [
+            0,
+            "29/16",
+            "33/16",
+            "1/16",
+            261,
+            "c8b6d1e0caae32751161b279a503ed28f31d2d2ce8937960e5ae0b4c8dc219bb"
+          ],
+          [
+            0,
+            "15/8",
+            "31/16",
+            "1/16",
+            121,
+            "a1cad69bb4ec0433124413f51109f5536807196483986ec47506f52d50a524cb"
+          ],
+          [
+            0,
+            "31/16",
+            "2",
+            "1/16",
+            75,
+            "3500d9165ba37870d3c145f9e7bf5031d3d62c0915b238f199f5e132195a59fc"
+          ],
+          [
+            0,
+            "2",
+            "9/4",
+            "1/16",
+            166,
+            "387020dc1ebd6a66c68032835f98d3262d89e8b8d2aa50f762f69ed1994632cd"
+          ],
+          [
+            0,
+            "33/16",
+            "17/8",
+            "1/16",
+            103,
+            "9b6319eaa3f95f6bf90ce039d4bcc056861955b06aa2854734e9b7618ff1fd1b"
+          ],
+          [
+            0,
+            "17/8",
+            "35/16",
+            "1/16",
+            68,
+            "1f6d0a8373f525d2f3ac84e9f7b0978d2a7ed60b2a413dce9a106034642b9b77"
+          ],
+          [
+            0,
+            "35/16",
+            "39/16",
+            "1/16",
+            213,
+            "f382e93c2b9618653ab8803a9d3e98c49b404debb25d40f5d0ed7ddad93c0e00"
+          ],
+          [
+            0,
+            "9/4",
+            "37/16",
+            "1/16",
+            109,
+            "871051a2026340c8a640ae4b23eb861fac51c82a6c86a7fcf2a9813f758f4419"
+          ],
+          [
+            0,
+            "37/16",
+            "19/8",
+            "1/16",
+            72,
+            "41be48fe5124ee1dd33e60e9e3c3af1cedab22c9763d587bb9c31bb0f5263430"
+          ],
+          [
+            0,
+            "19/8",
+            "21/8",
+            "1/16",
+            176,
+            "42050b8b9ce6d5b8e19a484976848f796099d5fa674b7c27d62ca56f27445fb6"
+          ],
+          [
+            0,
+            "39/16",
+            "5/2",
+            "1/16",
+            114,
+            "109a75297d08e295399b87c6f2c79c0d7261d52fa6c8870ee4fc705d796eba52"
+          ],
+          [
+            0,
+            "5/2",
+            "41/16",
+            "1/16",
+            81,
+            "f5b2e209e79dd13dc44c57b83339f927164b5d3fcc5acbabfcd7e0c8c94aedf5"
+          ],
+          [
+            0,
+            "41/16",
+            "45/16",
+            "1/16",
+            206,
+            "3bb75464c905b1e1830994e38345f1f4347d9cea4f9e53ccc8d40c71286face4"
+          ],
+          [
+            0,
+            "21/8",
+            "43/16",
+            "1/16",
+            135,
+            "0027690a0d98292dc82bf8a50705d4fed21868d0a7e842bd4893b9d69b7aa6e6"
+          ],
+          [
+            0,
+            "43/16",
+            "11/4",
+            "1/16",
+            105,
+            "239d1ec86110c628ab5cc9da11af6855fddff72ddd27bc6ded0f920b5c968ffc"
+          ],
+          [
+            0,
+            "11/4",
+            "47/16",
+            "1/16",
+            153,
+            "90c082396b97aea493d1dbf3b973076765a78c61472e0f6f5c38944bd6803131"
+          ],
+          [
+            0,
+            "45/16",
+            "23/8",
+            "1/16",
+            114,
+            "29a8d298572457b03784774309b95942a3d4f5f6ef0f1f41397783ad383bc08a"
+          ]
+        ]
+      },
+      {
+        "kind": "legacy",
+        "operation": "preserve",
+        "samples": 17,
+        "sha256": "4561ea9f4fd1fb4c2ecf5a1cb765761b20b2f5d3741051731e4202a034683ef4",
+        "packets": [
+          [
+            0,
+            "-1/8",
+            "0",
+            "1/16",
+            10791,
+            "c0146eb595c755e4a9d27de249bb5aad95648d0c93ac6286b4cc1d39ea305b5f"
+          ],
+          [
+            0,
+            "-1/16",
+            "3/16",
+            "1/16",
+            735,
+            "c4c78de2a4918708b95be83beab82f023d2294ff2fc121c9c08e0853e6ebaba3"
+          ],
+          [
+            1,
+            "-8/375",
+            "-8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "0",
+            "1/16",
+            "1/16",
+            191,
+            "a9cdee0996a185a439afe2fd8822ee72940bc38ca86fdfeb928498412a940a2b"
+          ],
+          [
+            1,
+            "0",
+            "0",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/375",
+            "8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "16/375",
+            "16/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1/16",
+            "1/8",
+            "1/16",
+            100,
+            "5f81df8891efccb345f2b7e1d8007b91a31b811ff4a91a3b4324b5db3ee2f5ac"
+          ],
+          [
+            1,
+            "8/125",
+            "8/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "32/375",
+            "32/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/75",
+            "8/75",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1/8",
+            "3/8",
+            "1/16",
+            421,
+            "af98b7d343a1374b36663210c411685177be84fc4b773de0d089996f11ad78b3"
+          ],
+          [
+            1,
+            "16/125",
+            "16/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "56/375",
+            "56/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "64/375",
+            "64/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "3/16",
+            "1/4",
+            "1/16",
+            152,
+            "bc1621f9cf75010ab96a8eb89c179026fb3512501221122fc1a045cf627c2881"
+          ],
+          [
+            1,
+            "24/125",
+            "24/125",
+            "1/125",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ]
+        ]
+      },
+      {
+        "kind": "legacy",
+        "operation": "compact",
+        "samples": 17,
+        "sha256": "4561ea9f4fd1fb4c2ecf5a1cb765761b20b2f5d3741051731e4202a034683ef4",
+        "packets": [
+          [
+            0,
+            "-1/8",
+            "0",
+            "1/16",
+            10791,
+            "c0146eb595c755e4a9d27de249bb5aad95648d0c93ac6286b4cc1d39ea305b5f"
+          ],
+          [
+            0,
+            "-1/16",
+            "3/16",
+            "1/16",
+            735,
+            "c4c78de2a4918708b95be83beab82f023d2294ff2fc121c9c08e0853e6ebaba3"
+          ],
+          [
+            1,
+            "-8/375",
+            "-8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "0",
+            "1/16",
+            "1/16",
+            191,
+            "a9cdee0996a185a439afe2fd8822ee72940bc38ca86fdfeb928498412a940a2b"
+          ],
+          [
+            1,
+            "0",
+            "0",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/375",
+            "8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "16/375",
+            "16/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1/16",
+            "1/8",
+            "1/16",
+            100,
+            "5f81df8891efccb345f2b7e1d8007b91a31b811ff4a91a3b4324b5db3ee2f5ac"
+          ],
+          [
+            1,
+            "8/125",
+            "8/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "32/375",
+            "32/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/75",
+            "8/75",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1/8",
+            "3/8",
+            "1/16",
+            421,
+            "af98b7d343a1374b36663210c411685177be84fc4b773de0d089996f11ad78b3"
+          ],
+          [
+            1,
+            "16/125",
+            "16/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "56/375",
+            "56/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "64/375",
+            "64/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "3/16",
+            "1/4",
+            "1/16",
+            152,
+            "bc1621f9cf75010ab96a8eb89c179026fb3512501221122fc1a045cf627c2881"
+          ],
+          [
+            1,
+            "24/125",
+            "24/125",
+            "1/125",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ]
+        ]
+      },
+      {
+        "kind": "legacy",
+        "operation": "remove-audio",
+        "samples": 6,
+        "sha256": "1472ede16bf4bf6b40950a305bfc016ebfb1eb25b92e426ac2a588f47a9c075b",
+        "packets": [
+          [
+            0,
+            "-1/8",
+            "0",
+            "1/16",
+            10791,
+            "c0146eb595c755e4a9d27de249bb5aad95648d0c93ac6286b4cc1d39ea305b5f"
+          ],
+          [
+            0,
+            "-1/16",
+            "3/16",
+            "1/16",
+            735,
+            "c4c78de2a4918708b95be83beab82f023d2294ff2fc121c9c08e0853e6ebaba3"
+          ],
+          [
+            0,
+            "0",
+            "1/16",
+            "1/16",
+            191,
+            "a9cdee0996a185a439afe2fd8822ee72940bc38ca86fdfeb928498412a940a2b"
+          ],
+          [
+            0,
+            "1/16",
+            "1/8",
+            "1/16",
+            100,
+            "5f81df8891efccb345f2b7e1d8007b91a31b811ff4a91a3b4324b5db3ee2f5ac"
+          ],
+          [
+            0,
+            "1/8",
+            "3/8",
+            "1/16",
+            421,
+            "af98b7d343a1374b36663210c411685177be84fc4b773de0d089996f11ad78b3"
+          ],
+          [
+            0,
+            "3/16",
+            "1/4",
+            "1/16",
+            152,
+            "bc1621f9cf75010ab96a8eb89c179026fb3512501221122fc1a045cf627c2881"
+          ]
+        ]
+      },
+      {
+        "kind": "legacy",
+        "operation": "import-audio",
+        "samples": 59,
+        "sha256": "acf795448e244c3b13f1c8056e25a0802718f12ef595a28e59bc40116c56a2ee",
+        "packets": [
+          [
+            0,
+            "-1/8",
+            "0",
+            "1/16",
+            10791,
+            "c0146eb595c755e4a9d27de249bb5aad95648d0c93ac6286b4cc1d39ea305b5f"
+          ],
+          [
+            0,
+            "-1/16",
+            "3/16",
+            "1/16",
+            735,
+            "c4c78de2a4918708b95be83beab82f023d2294ff2fc121c9c08e0853e6ebaba3"
+          ],
+          [
+            0,
+            "0",
+            "1/16",
+            "1/16",
+            191,
+            "a9cdee0996a185a439afe2fd8822ee72940bc38ca86fdfeb928498412a940a2b"
+          ],
+          [
+            0,
+            "1/16",
+            "1/8",
+            "1/16",
+            100,
+            "5f81df8891efccb345f2b7e1d8007b91a31b811ff4a91a3b4324b5db3ee2f5ac"
+          ],
+          [
+            0,
+            "1/8",
+            "3/8",
+            "1/16",
+            421,
+            "af98b7d343a1374b36663210c411685177be84fc4b773de0d089996f11ad78b3"
+          ],
+          [
+            0,
+            "3/16",
+            "1/4",
+            "1/16",
+            152,
+            "bc1621f9cf75010ab96a8eb89c179026fb3512501221122fc1a045cf627c2881"
+          ],
+          [
+            0,
+            "1/4",
+            "5/16",
+            "1/16",
+            96,
+            "7f85ffc5612b7b7dfde789292feeec37c1e04da26f6581427310d7d3338aa183"
+          ],
+          [
+            0,
+            "5/16",
+            "9/16",
+            "1/16",
+            325,
+            "b5ece96b2707e4c3b480676384aa753edbecc7f8071c88dde790ec953aa391dc"
+          ],
+          [
+            0,
+            "3/8",
+            "7/16",
+            "1/16",
+            128,
+            "e56d9507d9cb710fe4dfe3f221407ff1f2e74cfb7d603d2b69f8697de2b6eacb"
+          ],
+          [
+            0,
+            "7/16",
+            "1/2",
+            "1/16",
+            75,
+            "d25bd4be779bb36bdedc3edf988244bf99a10a8270519db20416b76216d5efd1"
+          ],
+          [
+            0,
+            "1/2",
+            "3/4",
+            "1/16",
+            224,
+            "04554e4e69b757d80f1b58364571115ea512992e4419b48a44e669f03b3d3b41"
+          ],
+          [
+            0,
+            "9/16",
+            "5/8",
+            "1/16",
+            113,
+            "92392956a9471419e4dfd193955833e36ecc7947f12beb3a06d2434be9381e0d"
+          ],
+          [
+            0,
+            "5/8",
+            "11/16",
+            "1/16",
+            61,
+            "120a1ca2b3b1eb1262d1387790102a2d306166c8be3f14ef8df8706bddae25d1"
+          ],
+          [
+            0,
+            "11/16",
+            "15/16",
+            "1/16",
+            257,
+            "2e549368c965faca34982cc4606c83cfbc85ebd440f44b78ad4345a32e76fca1"
+          ],
+          [
+            0,
+            "3/4",
+            "13/16",
+            "1/16",
+            104,
+            "df0941f429f86458fffcf67330e412e9db78b775f5721dbdf5db160425acd404"
+          ],
+          [
+            0,
+            "13/16",
+            "7/8",
+            "1/16",
+            80,
+            "79e6d09eebf316e6dc8cd363b6975bf5ca3b45414cbbc7ad1ed3fa09dd6626f6"
+          ],
+          [
+            0,
+            "7/8",
+            "9/8",
+            "1/16",
+            199,
+            "22b8726d12406752f158272f3a27e865cbb2fb7a6eaa5b259a3723da9df8d68f"
+          ],
+          [
+            0,
+            "15/16",
+            "1",
+            "1/16",
+            112,
+            "57da5503755e0bf36a02690a1baf561b35f53cf4e84af34f52db93728b8e792b"
+          ],
+          [
+            1,
+            "-8/375",
+            "-8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "1",
+            "17/16",
+            "1/16",
+            74,
+            "0e489e7b9a5f5e8ae0bd7dd1b10fd4316a9178418da26774739aa7222703bffb"
+          ],
+          [
+            1,
+            "0",
+            "0",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/375",
+            "8/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "16/375",
+            "16/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "17/16",
+            "21/16",
+            "1/16",
+            236,
+            "8d6ee92ebb61c225de8d204279ff6d4e76f3491ec6431443c97cc841b6bda987"
+          ],
+          [
+            1,
+            "8/125",
+            "8/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "32/375",
+            "32/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "8/75",
+            "8/75",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "9/8",
+            "19/16",
+            "1/16",
+            118,
+            "c1934c0395d93eb037831a8bc7dbe6919017e6412af1bb155b14c7c1f8f7fcfe"
+          ],
+          [
+            1,
+            "16/125",
+            "16/125",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "56/375",
+            "56/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            1,
+            "64/375",
+            "64/375",
+            "8/375",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "19/16",
+            "5/4",
+            "1/16",
+            81,
+            "f425afd8475a8ef137f8d72ee70e4ab3122e630d1224ecbd3d071c688930f8d6"
+          ],
+          [
+            1,
+            "24/125",
+            "24/125",
+            "1/125",
+            6,
+            "8a487dc722403a9dffef435b459f5afa999401a7623878ad7ab41eeb8ea0609b"
+          ],
+          [
+            0,
+            "5/4",
+            "3/2",
+            "1/16",
+            221,
+            "bf9a847f019066ec79fd0ff342a0ce878eebd14ad8852ca73d02d5a1d58ecde2"
+          ],
+          [
+            0,
+            "21/16",
+            "11/8",
+            "1/16",
+            128,
+            "181f14b95badaa7507c2c09d16b641a069002a705c4fe9cc3f9ff4d12bbe4e00"
+          ],
+          [
+            0,
+            "11/8",
+            "23/16",
+            "1/16",
+            92,
+            "3934abbd53c2b99eba36f4b784c21f7a17c61dbbd35ac2d8b4a159a7f1a1f361"
+          ],
+          [
+            0,
+            "23/16",
+            "27/16",
+            "1/16",
+            291,
+            "ff1f5a5ebb6aadc584563b4f3741a484f4a3417e198db7b2576072ee4a454caf"
+          ],
+          [
+            0,
+            "3/2",
+            "25/16",
+            "1/16",
+            133,
+            "0a98102aa81c69cee612c107c059ea31710d6a41b72cd36a04e28f399f87d86f"
+          ],
+          [
+            0,
+            "25/16",
+            "13/8",
+            "1/16",
+            105,
+            "b91caaed15ca0b1551b4bf4d079138d8c58fc874ca529078aacc76f9dc812d81"
+          ],
+          [
+            0,
+            "13/8",
+            "15/8",
+            "1/16",
+            206,
+            "ba5e27a8cfaf388dfaf9b1eb3a0b5675779213a0c1134ee25432a29d789e6862"
+          ],
+          [
+            0,
+            "27/16",
+            "7/4",
+            "1/16",
+            142,
+            "b7ff9cbb47614c527284261fd6b3482771c9a34421731b75e85466991d38e1ac"
+          ],
+          [
+            0,
+            "7/4",
+            "29/16",
+            "1/16",
+            94,
+            "f0d3d60a29cbb889eb47b02f007928c586d62b3dfe8f2400089efceeb6d6580b"
+          ],
+          [
+            0,
+            "29/16",
+            "33/16",
+            "1/16",
+            261,
+            "c8b6d1e0caae32751161b279a503ed28f31d2d2ce8937960e5ae0b4c8dc219bb"
+          ],
+          [
+            0,
+            "15/8",
+            "31/16",
+            "1/16",
+            121,
+            "a1cad69bb4ec0433124413f51109f5536807196483986ec47506f52d50a524cb"
+          ],
+          [
+            0,
+            "31/16",
+            "2",
+            "1/16",
+            75,
+            "3500d9165ba37870d3c145f9e7bf5031d3d62c0915b238f199f5e132195a59fc"
+          ],
+          [
+            0,
+            "2",
+            "9/4",
+            "1/16",
+            166,
+            "387020dc1ebd6a66c68032835f98d3262d89e8b8d2aa50f762f69ed1994632cd"
+          ],
+          [
+            0,
+            "33/16",
+            "17/8",
+            "1/16",
+            103,
+            "9b6319eaa3f95f6bf90ce039d4bcc056861955b06aa2854734e9b7618ff1fd1b"
+          ],
+          [
+            0,
+            "17/8",
+            "35/16",
+            "1/16",
+            68,
+            "1f6d0a8373f525d2f3ac84e9f7b0978d2a7ed60b2a413dce9a106034642b9b77"
+          ],
+          [
+            0,
+            "35/16",
+            "39/16",
+            "1/16",
+            213,
+            "f382e93c2b9618653ab8803a9d3e98c49b404debb25d40f5d0ed7ddad93c0e00"
+          ],
+          [
+            0,
+            "9/4",
+            "37/16",
+            "1/16",
+            109,
+            "871051a2026340c8a640ae4b23eb861fac51c82a6c86a7fcf2a9813f758f4419"
+          ],
+          [
+            0,
+            "37/16",
+            "19/8",
+            "1/16",
+            72,
+            "41be48fe5124ee1dd33e60e9e3c3af1cedab22c9763d587bb9c31bb0f5263430"
+          ],
+          [
+            0,
+            "19/8",
+            "21/8",
+            "1/16",
+            176,
+            "42050b8b9ce6d5b8e19a484976848f796099d5fa674b7c27d62ca56f27445fb6"
+          ],
+          [
+            0,
+            "39/16",
+            "5/2",
+            "1/16",
+            114,
+            "109a75297d08e295399b87c6f2c79c0d7261d52fa6c8870ee4fc705d796eba52"
+          ],
+          [
+            0,
+            "5/2",
+            "41/16",
+            "1/16",
+            81,
+            "f5b2e209e79dd13dc44c57b83339f927164b5d3fcc5acbabfcd7e0c8c94aedf5"
+          ],
+          [
+            0,
+            "41/16",
+            "45/16",
+            "1/16",
+            206,
+            "3bb75464c905b1e1830994e38345f1f4347d9cea4f9e53ccc8d40c71286face4"
+          ],
+          [
+            0,
+            "21/8",
+            "43/16",
+            "1/16",
+            135,
+            "0027690a0d98292dc82bf8a50705d4fed21868d0a7e842bd4893b9d69b7aa6e6"
+          ],
+          [
+            0,
+            "43/16",
+            "11/4",
+            "1/16",
+            105,
+            "239d1ec86110c628ab5cc9da11af6855fddff72ddd27bc6ded0f920b5c968ffc"
+          ],
+          [
+            0,
+            "11/4",
+            "47/16",
+            "1/16",
+            153,
+            "90c082396b97aea493d1dbf3b973076765a78c61472e0f6f5c38944bd6803131"
+          ],
+          [
+            0,
+            "45/16",
+            "23/8",
+            "1/16",
+            114,
+            "29a8d298572457b03784774309b95942a3d4f5f6ef0f1f41397783ad383bc08a"
+          ]
+        ]
+      }
+    ],
+    "actual_discarded_unreferenced_media_bytes": 103,
+    "ffprobe_version": "ffprobe version 7.1.5-0+deb13u1 Copyright (c) 2007-2026 the FFmpeg developers"
+  },
+  "timed_metadata": {
+    "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+    "implementation_sha": "bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cases": [
+      {
+        "fixture": "plain",
+        "sha256": "57c7c8f18bd7632d335510603790096e45581aafa2e5f4a67c38fcea4ebf1a94",
+        "timestamp_us": 0,
+        "google": {
+          "index": 0,
+          "bytes": [
+            0,
+            0
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                0
+              ],
+              "duration": 1000,
+              "index": 0,
+              "scale": 1000,
+              "time": 0
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": true,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "plain",
+        "sha256": "57c7c8f18bd7632d335510603790096e45581aafa2e5f4a67c38fcea4ebf1a94",
+        "timestamp_us": 500000,
+        "google": {
+          "index": 0,
+          "bytes": [
+            0,
+            0
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                0
+              ],
+              "duration": 1000,
+              "index": 0,
+              "scale": 1000,
+              "time": 0
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": true,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "plain",
+        "sha256": "57c7c8f18bd7632d335510603790096e45581aafa2e5f4a67c38fcea4ebf1a94",
+        "timestamp_us": 1000000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                128,
+                3,
+                247
+              ],
+              "duration": 1000,
+              "index": 1,
+              "scale": 1000,
+              "time": 1000
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": true,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "plain",
+        "sha256": "57c7c8f18bd7632d335510603790096e45581aafa2e5f4a67c38fcea4ebf1a94",
+        "timestamp_us": 1500000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                128,
+                3,
+                247
+              ],
+              "duration": 1000,
+              "index": 1,
+              "scale": 1000,
+              "time": 1000
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": true,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "plain",
+        "sha256": "57c7c8f18bd7632d335510603790096e45581aafa2e5f4a67c38fcea4ebf1a94",
+        "timestamp_us": 2500000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "composition",
+        "sha256": "f2822a51a01939865b988a0e57a8a7539fb8a196fe2280287e9a2981d7cc4175",
+        "timestamp_us": 0,
+        "google": {
+          "index": 0,
+          "bytes": [
+            0,
+            0
+          ]
+        },
+        "rust": {
+          "samples": [],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "composition",
+        "sha256": "f2822a51a01939865b988a0e57a8a7539fb8a196fe2280287e9a2981d7cc4175",
+        "timestamp_us": 500000,
+        "google": {
+          "index": 0,
+          "bytes": [
+            0,
+            0
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                0
+              ],
+              "duration": 1000,
+              "index": 0,
+              "scale": 1000,
+              "time": 500
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": true,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "composition",
+        "sha256": "f2822a51a01939865b988a0e57a8a7539fb8a196fe2280287e9a2981d7cc4175",
+        "timestamp_us": 1000000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                0
+              ],
+              "duration": 1000,
+              "index": 0,
+              "scale": 1000,
+              "time": 500
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "composition",
+        "sha256": "f2822a51a01939865b988a0e57a8a7539fb8a196fe2280287e9a2981d7cc4175",
+        "timestamp_us": 1500000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                128,
+                3,
+                247
+              ],
+              "duration": 1000,
+              "index": 1,
+              "scale": 1000,
+              "time": 1500
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": true,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "composition",
+        "sha256": "f2822a51a01939865b988a0e57a8a7539fb8a196fe2280287e9a2981d7cc4175",
+        "timestamp_us": 2500000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edits",
+        "sha256": "a2c85f90afc9e1bcfe0d06a577527d28e5886acf94cb985d578fab2209e63f7a",
+        "timestamp_us": 0,
+        "google": {
+          "index": 0,
+          "bytes": [
+            0,
+            0
+          ]
+        },
+        "rust": {
+          "samples": [],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edits",
+        "sha256": "a2c85f90afc9e1bcfe0d06a577527d28e5886acf94cb985d578fab2209e63f7a",
+        "timestamp_us": 500000,
+        "google": {
+          "index": 0,
+          "bytes": [
+            0,
+            0
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                0
+              ],
+              "duration": 500,
+              "index": 0,
+              "scale": 1000,
+              "time": 500
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": true,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edits",
+        "sha256": "a2c85f90afc9e1bcfe0d06a577527d28e5886acf94cb985d578fab2209e63f7a",
+        "timestamp_us": 1000000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                128,
+                3,
+                247
+              ],
+              "duration": 500,
+              "index": 1,
+              "scale": 1000,
+              "time": 1000
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": true,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edits",
+        "sha256": "a2c85f90afc9e1bcfe0d06a577527d28e5886acf94cb985d578fab2209e63f7a",
+        "timestamp_us": 1500000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edits",
+        "sha256": "a2c85f90afc9e1bcfe0d06a577527d28e5886acf94cb985d578fab2209e63f7a",
+        "timestamp_us": 2500000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edited-composition",
+        "sha256": "ee65f8f043b8cfaa2e65c0a85532698cce8dfdc33ab676b54afd71de704ae4db",
+        "timestamp_us": 0,
+        "google": {
+          "index": 0,
+          "bytes": [
+            0,
+            0
+          ]
+        },
+        "rust": {
+          "samples": [],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edited-composition",
+        "sha256": "ee65f8f043b8cfaa2e65c0a85532698cce8dfdc33ab676b54afd71de704ae4db",
+        "timestamp_us": 500000,
+        "google": {
+          "index": 0,
+          "bytes": [
+            0,
+            0
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                0
+              ],
+              "duration": 1000,
+              "index": 0,
+              "scale": 1000,
+              "time": 500
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": true,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edited-composition",
+        "sha256": "ee65f8f043b8cfaa2e65c0a85532698cce8dfdc33ab676b54afd71de704ae4db",
+        "timestamp_us": 1000000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [
+            {
+              "bytes": [
+                0,
+                0
+              ],
+              "duration": 1000,
+              "index": 0,
+              "scale": 1000,
+              "time": 500
+            }
+          ],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edited-composition",
+        "sha256": "ee65f8f043b8cfaa2e65c0a85532698cce8dfdc33ab676b54afd71de704ae4db",
+        "timestamp_us": 1500000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      },
+      {
+        "fixture": "edited-composition",
+        "sha256": "ee65f8f043b8cfaa2e65c0a85532698cce8dfdc33ab676b54afd71de704ae4db",
+        "timestamp_us": 2500000,
+        "google": {
+          "index": 1,
+          "bytes": [
+            0,
+            128,
+            3,
+            247
+          ]
+        },
+        "rust": {
+          "samples": [],
+          "success": true
+        },
+        "same_source_sample": false,
+        "expected_half_open_interval_verified": true
+      }
+    ],
+    "scope": "Google Mp4BoxReader primitive actually used by MetadataEngine, not all facade/device behavior",
+    "differences": [
+      "Pinned Google selects by stts, omits ctts/edit mapping and clamps after the last sample.",
+      "Rust honors composition and exact unit-rate edits, returns no sample outside half-open intervals, and preserves raw packet bytes."
+    ]
+  },
+  "mp4": {
+    "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+    "implementation_sha": "bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7",
+    "working_tree_clean": true,
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "working_tree_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cases": [
+      {
+        "case": "avc-bframes",
+        "input_sha256": "e8e35dd0dbf98b8b95ab9561a2debc5e8bb5f6469f2dfb08c6329f9674a70a2e",
+        "support_query": {
+          "success": true,
+          "optimizationSupported": true,
+          "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n",
+          "inputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            }
+          ],
+          "outputTracks": null
+        },
+        "rust": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "rust_report": {
+          "discardedMediaBytes": 0,
+          "discardedPaddingBytes": 8,
+          "mappings": [
+            {
+              "new": 1,
+              "old": 1,
+              "source": 0
+            }
+          ],
+          "retainedUnknownMediaBytes": 0,
+          "sidecars": 0
+        },
+        "google": {
+          "success": true,
+          "optimizationSupported": true,
+          "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n",
+          "inputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            }
+          ],
+          "outputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            }
+          ]
+        },
+        "google_comparison": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "google_output_sha256": "39f9e143726e50286ceb47f077b2af0543821f7074ec6ffb4812f53a0fa0c32d"
+      },
+      {
+        "case": "avc-aac",
+        "input_sha256": "162276b6caac4a0118638b3729a80cac3eddf51b7de2a3d91435fe0ab5e6dbfe",
+        "support_query": {
+          "success": true,
+          "optimizationSupported": true,
+          "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n2\taudio\tMPEG-4 AAC LC, 3.021 secs, 128 kbps, 48000 Hz\n",
+          "inputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            },
+            {
+              "id": 2,
+              "handler": "soun",
+              "timescale": 48000,
+              "duration": "145024",
+              "samples": 142
+            }
+          ],
+          "outputTracks": null
+        },
+        "rust": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "rust_report": {
+          "discardedMediaBytes": 0,
+          "discardedPaddingBytes": 8,
+          "mappings": [
+            {
+              "new": 1,
+              "old": 1,
+              "source": 0
+            },
+            {
+              "new": 2,
+              "old": 2,
+              "source": 0
+            }
+          ],
+          "retainedUnknownMediaBytes": 0,
+          "sidecars": 0
+        },
+        "google": {
+          "success": true,
+          "optimizationSupported": true,
+          "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n2\taudio\tMPEG-4 AAC LC, 3.021 secs, 128 kbps, 48000 Hz\n",
+          "inputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            },
+            {
+              "id": 2,
+              "handler": "soun",
+              "timescale": 48000,
+              "duration": "145024",
+              "samples": 142
+            }
+          ],
+          "outputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            },
+            {
+              "id": 2,
+              "handler": "soun",
+              "timescale": 48000,
+              "duration": "145024",
+              "samples": 142
+            }
+          ]
+        },
+        "google_comparison": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "google_output_sha256": "ea1476cf2a067d48fa21a6cc1a4138b9029a21eebc00f15b3f7c8e0c812fd4f7"
+      },
+      {
+        "case": "apple-mebx",
+        "input_sha256": "cd732baffa15dc2f38cc981666c05fa4679a2c3aeb44ddd52b19a41d2470635d",
+        "support_query": {
+          "success": true,
+          "optimizationSupported": true,
+          "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n2\tmeta\n",
+          "inputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            },
+            {
+              "id": 2,
+              "handler": "meta",
+              "timescale": 600,
+              "duration": "1",
+              "samples": 1
+            }
+          ],
+          "outputTracks": null
+        },
+        "rust": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "rust_report": {
+          "discardedMediaBytes": 0,
+          "discardedPaddingBytes": 1273,
+          "mappings": [
+            {
+              "new": 1,
+              "old": 1,
+              "source": 0
+            },
+            {
+              "new": 2,
+              "old": 2,
+              "source": 0
+            }
+          ],
+          "retainedUnknownMediaBytes": 0,
+          "sidecars": 0
+        },
+        "google": {
+          "success": true,
+          "optimizationSupported": true,
+          "summary": "Track\tType\tInfo\n1\tvideo\tH264 High@3, 3.000 secs, 49 kbps, 720x480 @ 16.000000 fps\n",
+          "inputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            },
+            {
+              "id": 2,
+              "handler": "meta",
+              "timescale": 600,
+              "duration": "1",
+              "samples": 1
+            }
+          ],
+          "outputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            }
+          ]
+        },
+        "google_comparison": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "google_output_sha256": "ceeabedb35bdb59b803c7d67cf2207b1a6a38a5cd1eb62f18c2d9e9649500a44"
+      },
+      {
+        "case": "hvc1-real",
+        "input_sha256": "6555fc0d62242cff6c94d01c70d8b04eb70fdc88855a48eb2bca9e94d089cf12",
+        "support_query": {
+          "success": true,
+          "optimizationSupported": false,
+          "summary": "Track\tType\tInfo\n1\tvideo\thvc1, 3.000 secs, 26 kbps, 720x480 @ 16.000000 fps\n",
+          "inputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            }
+          ],
+          "outputTracks": null
+        },
+        "rust": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "rust_report": {
+          "discardedMediaBytes": 0,
+          "discardedPaddingBytes": 8,
+          "mappings": [
+            {
+              "new": 1,
+              "old": 1,
+              "source": 0
+            }
+          ],
+          "retainedUnknownMediaBytes": 0,
+          "sidecars": 0
+        },
+        "google_optimization": "explicit hvc1 public support-query rejection; optimization not invoked"
+      },
+      {
+        "case": "strip-existing-apple-metadata",
+        "google": {
+          "success": true,
+          "optimizationSupported": true,
+          "summary": "",
+          "inputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            },
+            {
+              "id": 2,
+              "handler": "meta",
+              "timescale": 600,
+              "duration": "1",
+              "samples": 1
+            }
+          ],
+          "outputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            }
+          ]
+        },
+        "google_comparison": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "rust": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "rust_report": {
+          "discardedMediaBytes": 0,
+          "discardedPaddingBytes": 1273,
+          "mappings": [
+            {
+              "new": 1,
+              "old": 1,
+              "source": 0
+            }
+          ],
+          "retainedUnknownMediaBytes": 9,
+          "sidecars": 0
+        }
+      },
+      {
+        "case": "copy-existing-video-track",
+        "google": {
+          "success": true,
+          "optimizationSupported": true,
+          "summary": "",
+          "inputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            }
+          ],
+          "outputTracks": [
+            {
+              "id": 1,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            },
+            {
+              "id": 2,
+              "handler": "vide",
+              "timescale": 16384,
+              "duration": "49152",
+              "samples": 48
+            }
+          ]
+        },
+        "google_comparison": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": false
+        },
+        "rust": {
+          "coded_packets_equal": true,
+          "rational_pts_dts_durations_equal": true
+        },
+        "rust_report": {
+          "discardedMediaBytes": 0,
+          "discardedPaddingBytes": 16,
+          "mappings": [
+            {
+              "new": 1,
+              "old": 1,
+              "source": 0
+            },
+            {
+              "new": 2,
+              "old": 1,
+              "source": 1
+            }
+          ],
+          "retainedUnknownMediaBytes": 0,
+          "sidecars": 1
+        }
+      }
+    ],
+    "limits": [
+      "Google builder primary-track path deletes metadata; Rust optimizer retains it. Removal requires explicit track selection.",
+      "Google MP4CopyTrack is audited as an internal primitive; this does not claim Google exposes arbitrary track import through its facade.",
+      "Fragmented/indexed/external/unknown reference layouts are rejected by the bounded Rust API.",
+      "No metadata track or Moments construction is performed."
+    ]
+  },
+  "consumer": {
+    "implementation_sha": "bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7",
+    "consumer_sha": "0688ea7d6270df52cc5968e2c36dd016f13bd31b",
+    "source_files": 9,
+    "original_files_sha256": {
+      "crates/xdremux-motion-photo/Cargo.toml": "8369d17fce23b79f5c1ef888d01a4a97bd60f97a3198ab85b30d2a8056d2cc60",
+      "crates/xdremux-motion-photo/examples/motion_photo_conformance.rs": "150c266654425f0043faf30374325ef5cea09c42ce77a6745a1be2d176bde227",
+      "crates/xdremux-motion-photo/examples/payload_conformance.rs": "3066823b8f31441dfc8e706e6e5e757d2d6119e668d541f966c04478b640e07a",
+      "crates/xdremux-motion-photo/src/geometry.rs": "48d615e87fde3e423ae1077892ce709429c16639bf67d54cb4af774ed9cca441",
+      "crates/xdremux-motion-photo/src/lib.rs": "6bf0e9fea3797e8a9c67ffaf31f923699ebeeabc0cec335285914ecbaf97eb7c",
+      "crates/xdremux-motion-photo/src/payload.rs": "d494e6799ba693ee58443a2a01a92659259a6dd7d767458564117d87dff742eb",
+      "crates/xdremux-motion-photo/src/publication.rs": "ec936502f43d16d996bc8f89a21d5a411b256c6a2387f7b5f8de2ca1be703e65",
+      "crates/xdremux-motion-photo/tests/liblivephoto_interop.rs": "aa3a154f0da02aa1bf79566f7439b2129b56f36dfc0a73c2a58ef225fb1b437b",
+      "crates/xdremux-motion-photo/tests/live_photo_heif_still_fixture.rs": "48c966f7d55e880921d9733e5844a9d00650741cc8bbf380b46e4042094cc22f",
+      "crates/xdremux-motion-photo/tests/live_photo_mov_fixture.rs": "77eb4c2552b57d1b6357799a132ae3c819b5ee469c154e0769ff939f6950967b"
+    },
+    "cargo_check_all_targets": "passed",
+    "unchanged_interop_test": "1 passed",
+    "consumer_repository_modified": false,
+    "full_product_build": false,
+    "derived_harness_overrides": "local liblivephoto path with original xdremux-compat feature; standalone workspace edition/lints"
+  },
+  "source_objects": {
+    "implementation_sha": "bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7",
+    "source_objects": {
+      "Cargo.toml": "31afd8e6a5e611174fc826613c4d91cb63bd8752",
+      "Cargo.lock": "151751aeb577d046e81683023f7eff2b80e78afb",
+      ".gitattributes": "4deb464f5a69b9bdba4c28addf5eb6ded69a424e",
+      ".github": "b9ca6d4b6784de0c67072b66446413f43676da57",
+      "crates": "dba1962da699e7d114770d2a8d6484a75d490a78",
+      "scripts": "1938f82cf8806b7b09f51d16a3cb97d4cd760d0f",
+      "native": "de3666bf0e1aa5cd6f065645fc45256bb7e078cc",
+      "java": "0519c98465e2f925fb9265013b6471d6ec59c05a",
+      "apple": "f980dba8226bb5f0b6899c57f9e53d81f44bff1f",
+      "android": "776bc53b4063bf51269d56f4777f9fa50526bf6e",
+      "web": "cdd730019e75bf73024189ae2c2a7947c7534e15",
+      "fixtures": "27cc796291050d3c048674bd0c0c3d508bc48c44",
+      "fuzz": "de0e9c8b99387538feb2689a33bafe890554775f"
+    },
+    "tracked_tree_clean": true
+  },
+  "source_compatibility": {
+    "implementation_sha": "bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7",
+    "source": "use liblivephoto::AacConfiguration;\nfn main(){let _=AacConfiguration{object_type:2,sample_rate:48000,channels:Some(2),raw:vec![0x11,0x90]};}\n",
+    "exit_code": 101,
+    "expected_diagnostic": "E0063: missing fields channel_configuration and program_config",
+    "diagnostic": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n     Locking 14 packages to highest compatible versions\n    Blocking waiting for file lock on package cache\n   Compiling serde_core v1.0.229\n   Compiling zmij v1.0.23\n   Compiling serde_json v1.0.154\n    Checking memchr v2.8.3\n    Checking itoa v1.0.18\n    Checking liblivephoto-format v0.1.0 (/workspace/LibLivePhoto/crates/liblivephoto-format)\n    Checking quick-xml v0.42.0\n    Checking liblivephoto v0.1.0 (/workspace/LibLivePhoto/crates/liblivephoto)\n    Checking legacy-aac-literal v0.0.0 (/tmp/llp-legacy-aac-bd6-vyelr4oc)\nerror[E0063]: missing fields `channel_configuration` and `program_config` in initializer of `AacConfiguration`\n --> src/main.rs:2:17\n  |\n2 | fn main(){let _=AacConfiguration{object_type:2,sample_rate:48000,channels:Some(2),raw:vec![0x11,0x90]};}\n  |                 ^^^^^^^^^^^^^^^^ missing `channel_configuration` and `program_config`\n\nFor more information about this error, try `rustc --explain E0063`.\nerror: could not compile `legacy-aac-literal` (bin \"legacy-aac-literal\") due to 1 previous error\n",
+    "scope": "Existing exhaustive literals require migration; read-side real consumer compilation tested separately."
+  },
+  "local_linux_release_sdk": {
+    "implementation_sha": "bd6f85b4a75201e6ed06154dbe6b70b5dd0a38f7",
+    "archive": "liblivephoto-linux-x86_64-sdk.zip",
+    "sha256": "b86ca91a52d665d2f4e4a9a2a2815b82cce55b6ab9116feaaa1e74a7969c43e6",
+    "files": 112,
+    "dependency_notices": 47
+  }
+}

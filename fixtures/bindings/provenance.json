@@ -1,0 +1,26 @@
+{
+  "license": "CC0-1.0",
+  "creator": "LibLivePhoto project",
+  "generator": "crates/liblivephoto/examples/binding_fixtures.rs",
+  "sourceVideo": "../../web/public/demo/provenance.json",
+  "photoTime": "1/1",
+  "scope": "Real own H.264 scene with synthetic complete AGTM golden payload for metadata-reader and binding tests; no Moments authoring API or private media",
+  "files": {
+    "agtm-motion.jpg": {
+      "bytes": 53630,
+      "sha256": "7bd22b5ca2d8762415e7aef988997e0398b62b6c44698fded34010afba563666"
+    },
+    "agtm-raw.bin": {
+      "bytes": 53,
+      "sha256": "a4e29174ff45c73ef3c5d4b3abdc3ffa0d4dd358e0d4ed47d3fb673bdd486a55"
+    },
+    "agtm-video.mp4": {
+      "bytes": 20074,
+      "sha256": "57b5dbe62e9eb2fcb6e9d7d09548b0b3a2d6635740dd243a5635643224f6bc13"
+    },
+    "collection.json": {
+      "bytes": 42775,
+      "sha256": "225b1aa04bebd0fee6bb46f936ae7c1a5c580c2299210fae63b477453b3c01df"
+    }
+  }
+}

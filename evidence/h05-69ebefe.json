@@ -1,0 +1,56 @@
+{
+  "implementation_sha": "69ebefec99a5b39356043003f68aa6dc2a873aac",
+  "execution_identity": "Executed source is identical to this committed code/test tree; commit occurred after successful local checks. No native or platform pass is inferred.",
+  "source_trees": {
+    "crates": "49b762aea8827fe822b797c56ef2fe6c15de01a3",
+    "fuzz": "d58f71076690e8fc33b83fa9fc88b5d03aa4b3f0"
+  },
+  "rules": [
+    "H05.colr-count",
+    "H05.colr-pair",
+    "H05.paired-nclx-unspecified"
+  ],
+  "public_apis": [
+    "validate_heif_color_information",
+    "MotionPhoto::heif_color_conformance"
+  ],
+  "tests": {
+    "command": "cargo test --locked --workspace --all-targets --all-features",
+    "passed": 176,
+    "ignored": 3,
+    "failed": 0,
+    "new_tests": 5
+  },
+  "clippy": {
+    "command": "cargo clippy --locked --workspace --all-targets --all-features -- -D warnings",
+    "result": "passed"
+  },
+  "source_authority": {
+    "file": "ISO_IEC_23008-12_2025_zh(1).md",
+    "clauses": "6.5.5.1-6.5.5.3",
+    "access": "authorized Library actual read of lines1097-1127",
+    "local_body_exists": false,
+    "body_redistributed": false
+  },
+  "scope": [
+    "All associations for supported image-item types, including multiple ipma boxes.",
+    "Single nclx is not subjected to paired primaries/transfer2 requirements.",
+    "Violation and Unsupported are distinct; no declaration is silently repaired.",
+    "Positive and negative still/color/coded-item/movie preservation checked."
+  ],
+  "limits": [
+    "ICC contents, generic BMFF color syntax, rendering and image/visual-track conversions are not certified.",
+    "Unknown item/color types, unrecognized layouts and repeated association of one colr remain unsupported.",
+    "Native/device gates for this new code await the final changed-code batch;541 Android failed before installation and executed no service scope."
+  ],
+  "logs": [
+    {
+      "path": "evidence/local/h05-rust.log",
+      "sha256": "b16cad4bfc9b82f6305409e1fbb04f271265235341324fcae4cd69315a276553"
+    },
+    {
+      "path": "evidence/local/h05-clippy.log",
+      "sha256": "37f386bb5b2bae24adfd6adea3e2e72bacadef5b287da286ee39e7a643c5031f"
+    }
+  ]
+}

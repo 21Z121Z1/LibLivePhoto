@@ -1,0 +1,1048 @@
+{
+  "google_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "library_sha": "b223a462468eb66c9545cbc4a6b9b4c160e7f03a",
+  "library_dirty": false,
+  "cases": [
+    {
+      "name": "motion_photo.MP.jpg",
+      "sha256": "0d357b3586ef1bb82b1211c4561af726b652887946345c6880fed27e99148e57",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 242966,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 242966,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 242966,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "recognized": true,
+        "resources": 5,
+        "still_mime": "image/jpeg",
+        "time_us": 500000,
+        "tracks": 9,
+        "video_length": 242966,
+        "video_mime": "video/mp4",
+        "xmp_length": 1005,
+        "rebuilt_basename": "rebuilt.jpg"
+      },
+      "differences": [],
+      "still_bytes_equal": true,
+      "video_bytes_equal": false,
+      "reference_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        }
+      ],
+      "rust_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mp4s"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        }
+      ],
+      "encoded_av_packets_and_exact_times_equal": true,
+      "file_extraction_encoded_av_packets_and_exact_times_equal": true,
+      "rebuilt_reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 242966,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 242966,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 242966,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "rebuilt_encoded_av_packets_and_exact_times_equal": true
+    },
+    {
+      "name": "motion_photo_single_video_track.MP.jpg",
+      "sha256": "6732f689e6f5437ad47644f12837ccd90324e7818d95ab699a0e32d5ec77ec00",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "recognized": true,
+        "resources": 5,
+        "still_mime": "image/jpeg",
+        "time_us": 500000,
+        "tracks": 5,
+        "video_length": 123086,
+        "video_mime": "video/mp4",
+        "xmp_length": 1079,
+        "rebuilt_basename": "rebuilt.jpg"
+      },
+      "differences": [],
+      "still_bytes_equal": true,
+      "video_bytes_equal": false,
+      "reference_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        }
+      ],
+      "rust_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        }
+      ],
+      "encoded_av_packets_and_exact_times_equal": true,
+      "file_extraction_encoded_av_packets_and_exact_times_equal": true,
+      "rebuilt_reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "rebuilt_encoded_av_packets_and_exact_times_equal": true
+    },
+    {
+      "name": "motion_photo_single_video_track.MP.heic",
+      "sha256": "2cdbd109017f70ccfbb118afbf555137f5e72ca8eabd8ec9ff20c89a2acb0e0d",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/heic",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/heic",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/heic",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "recognized": true,
+        "resources": 5,
+        "still_mime": "image/heic",
+        "time_us": 500000,
+        "tracks": 5,
+        "video_length": 123086,
+        "video_mime": "video/mp4",
+        "xmp_length": 1111,
+        "rebuilt_basename": "rebuilt.heic"
+      },
+      "differences": [],
+      "still_bytes_equal": false,
+      "video_bytes_equal": false,
+      "reference_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        }
+      ],
+      "rust_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        }
+      ],
+      "encoded_av_packets_and_exact_times_equal": true,
+      "file_extraction_encoded_av_packets_and_exact_times_equal": true,
+      "rebuilt_reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/heic",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/heic",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/heic",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "rebuilt_encoded_av_packets_and_exact_times_equal": true
+    },
+    {
+      "name": "motion_photo_agtm.MP.jpg",
+      "sha256": "96e50fa8660744ad1e7baf32b190274ae39155202e8063435fe1da57f3c1ef67",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 1228560,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 1228560,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 1228560,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": {
+          "hdrReferenceWhite": 203.0,
+          "hasAdaptiveToneMap": false,
+          "baselineHdrHeadroom": 0.0,
+          "useReferenceWhiteToneMapping": false
+        }
+      },
+      "implementation": {
+        "agtm": [
+          {
+            "baselineHdrHeadroom": null,
+            "hasAdaptiveToneMap": false,
+            "hdrReferenceWhite": 203.0,
+            "length": 2,
+            "sample_index": 0,
+            "track_id": 2
+          }
+        ],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "recognized": true,
+        "resources": 8,
+        "still_mime": "image/jpeg",
+        "time_us": 2000000,
+        "tracks": 2,
+        "video_length": 1228560,
+        "video_mime": "video/mp4",
+        "xmp_length": 1330,
+        "rebuilt_basename": "rebuilt.jpg"
+      },
+      "differences": [
+        "file:video_mime:image/jpeg->video/mp4",
+        "memory:video_mime:image/jpeg->video/mp4",
+        "range:video_mime:image/jpeg->video/mp4"
+      ],
+      "still_bytes_equal": true,
+      "video_bytes_equal": false,
+      "reference_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "hev1"
+        }
+      ],
+      "rust_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "hev1"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "it35"
+        }
+      ],
+      "encoded_av_packets_and_exact_times_equal": true,
+      "file_extraction_encoded_av_packets_and_exact_times_equal": true,
+      "rebuilt_reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 1228560,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 1228560,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 1228560,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": {
+          "hdrReferenceWhite": 203.0,
+          "hasAdaptiveToneMap": false,
+          "baselineHdrHeadroom": 0.0,
+          "useReferenceWhiteToneMapping": false
+        }
+      },
+      "rebuilt_encoded_av_packets_and_exact_times_equal": true
+    },
+    {
+      "name": "motion_photo_no_agtm.MP.jpg",
+      "sha256": "5c32bbd4b6569a80f8213da817ea70fc918e6be50160b08bc707d9a7cb7ff217",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 1228348,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 1228348,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 1228348,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "recognized": true,
+        "resources": 8,
+        "still_mime": "image/jpeg",
+        "time_us": 2000000,
+        "tracks": 1,
+        "video_length": 1228348,
+        "video_mime": "video/mp4",
+        "xmp_length": 1330,
+        "rebuilt_basename": "rebuilt.jpg"
+      },
+      "differences": [
+        "file:video_mime:image/jpeg->video/mp4",
+        "memory:video_mime:image/jpeg->video/mp4",
+        "range:video_mime:image/jpeg->video/mp4"
+      ],
+      "still_bytes_equal": true,
+      "video_bytes_equal": true,
+      "reference_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "hev1"
+        }
+      ],
+      "rust_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "hev1"
+        }
+      ],
+      "encoded_av_packets_and_exact_times_equal": true,
+      "file_extraction_encoded_av_packets_and_exact_times_equal": true,
+      "rebuilt_reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 1228348,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 1228348,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 1228348,
+          "time_us": 2000000,
+          "still_mime": "image/jpeg",
+          "video_mime": "image/jpeg"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "rebuilt_encoded_av_packets_and_exact_times_equal": true
+    },
+    {
+      "name": "honor-footer20.jpg",
+      "sha256": "449750b550710e3a2311549154dbd28118dc72a95cb1c82306249f5d7e44f558",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "recognized": true,
+        "resources": 3,
+        "still_mime": "image/jpeg",
+        "time_us": -1,
+        "tracks": 5,
+        "video_length": 123086,
+        "video_mime": "video/mp4",
+        "xmp_length": null,
+        "rebuilt_basename": "rebuilt.jpg"
+      },
+      "differences": [
+        "memory_extraction:reference_tail_offset_includes_vendor_footer"
+      ],
+      "still_bytes_equal": false,
+      "video_bytes_equal": false,
+      "reference_video_ffprobe_error": "LOCAL_CASE_DIRECTORY/case-05/reference-video.bin: Invalid data found when processing input",
+      "rust_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        }
+      ],
+      "file_extraction_encoded_av_packets_and_exact_times_equal": true,
+      "rebuilt_reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "rebuilt_encoded_av_packets_and_exact_times_equal": true
+    },
+    {
+      "name": "honor-footer40.jpg",
+      "sha256": "c20dae73b1d2a1dfe1643418d993d43757fc5a1dfed8dee317ad8c52795a226b",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "recognized": true,
+        "resources": 3,
+        "still_mime": "image/jpeg",
+        "time_us": 450000,
+        "tracks": 5,
+        "video_length": 123086,
+        "video_mime": "video/mp4",
+        "xmp_length": null,
+        "rebuilt_basename": "rebuilt.jpg"
+      },
+      "differences": [
+        "file:time_us:-1->450000",
+        "memory:time_us:-1->450000",
+        "range:time_us:-1->450000",
+        "memory_extraction:reference_tail_offset_includes_vendor_footer"
+      ],
+      "still_bytes_equal": false,
+      "video_bytes_equal": false,
+      "reference_video_ffprobe_error": "[mov,mp4,m4a,3gp,3g2,mj2 @ 0x56329d1d6180] moov atom not found\nLOCAL_CASE_DIRECTORY/case-06/reference-video.bin: Invalid data found when processing input",
+      "rust_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        }
+      ],
+      "file_extraction_encoded_av_packets_and_exact_times_equal": true,
+      "rebuilt_reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 450000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 450000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 450000,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "rebuilt_encoded_av_packets_and_exact_times_equal": true
+    },
+    {
+      "name": "honor-tlv.jpg",
+      "sha256": "ef7910aee7a9c17da0961fb2ccf286b5db56676b0984fdbd72b83b1d904bb93e",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "recognized": true,
+        "resources": 5,
+        "still_mime": "image/jpeg",
+        "time_us": -1,
+        "tracks": 5,
+        "video_length": 123086,
+        "video_mime": "video/mp4",
+        "xmp_length": null,
+        "rebuilt_basename": "rebuilt.jpg"
+      },
+      "differences": [
+        "memory_extraction:reference_tail_offset_includes_vendor_footer"
+      ],
+      "still_bytes_equal": false,
+      "video_bytes_equal": false,
+      "reference_video_ffprobe_error": "LOCAL_CASE_DIRECTORY/case-07/reference-video.bin: Invalid data found when processing input",
+      "rust_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        }
+      ],
+      "file_extraction_encoded_av_packets_and_exact_times_equal": true,
+      "rebuilt_reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "rebuilt_encoded_av_packets_and_exact_times_equal": true
+    },
+    {
+      "name": "rebuilt.avif",
+      "sha256": "acdf9efa2dfe063705b6b587647b014244ca77d5362807dce54eb7a22748f4a1",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/avif",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/avif",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/avif",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "recognized": true,
+        "resources": 5,
+        "still_mime": "image/avif",
+        "time_us": 500000,
+        "tracks": 5,
+        "video_length": 123086,
+        "video_mime": "video/mp4",
+        "xmp_length": 826,
+        "rebuilt_basename": "rebuilt.avif"
+      },
+      "differences": [],
+      "still_bytes_equal": false,
+      "video_bytes_equal": false,
+      "reference_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        }
+      ],
+      "rust_tracks": [
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "audio",
+          "codec_tag_string": "mp4a"
+        },
+        {
+          "codec_type": "video",
+          "codec_tag_string": "avc1"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        },
+        {
+          "codec_type": "data",
+          "codec_tag_string": "mett"
+        }
+      ],
+      "encoded_av_packets_and_exact_times_equal": true,
+      "file_extraction_encoded_av_packets_and_exact_times_equal": true,
+      "rebuilt_reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/avif",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/avif",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 123086,
+          "time_us": 500000,
+          "still_mime": "image/avif",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "rebuilt_encoded_av_packets_and_exact_times_equal": true
+    }
+  ],
+  "avif_still_decode_passed": true
+}

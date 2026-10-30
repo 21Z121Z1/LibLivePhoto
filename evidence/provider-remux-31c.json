@@ -1,0 +1,344 @@
+{
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "implementation_sha": "31c9f931aab2f5c0548e766b4e4d74e5fd34e826",
+  "working_tree_diff_sha256": "317207e2956337c5b223ffdd1e06738b7ada83f20e121f154f4ddfe3754effba",
+  "oplus": [
+    {
+      "name": "attributes",
+      "sha256": "569156f9f9851f31837c5ad40a14f73f7e30798520ced4a6da55702f2839b671",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "rebuilt": "/workspace/LibLivePhoto/evidence/local/oplus-remux-mpphax6p/attributes/rebuilt.jpg",
+        "recognized": true,
+        "resources": 4,
+        "still_mime": "image/jpeg",
+        "time_us": 812500,
+        "tracks": 1,
+        "video_length": 19670,
+        "video_mime": "video/mp4",
+        "xmp_length": 305
+      },
+      "file_video_bytes_equal": true,
+      "reference_short_footer_overstrip_60_bytes": false,
+      "memory_extraction_bytes_equal": true
+    },
+    {
+      "name": "checksum",
+      "sha256": "60347f30b5fa07f01ccdb47213461980346eb860b38fbd0a6e439e3351442b78",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "rebuilt": "/workspace/LibLivePhoto/evidence/local/oplus-remux-mpphax6p/checksum/rebuilt.jpg",
+        "recognized": true,
+        "resources": 5,
+        "still_mime": "image/jpeg",
+        "time_us": -1,
+        "tracks": 1,
+        "video_length": 19670,
+        "video_mime": "video/mp4",
+        "xmp_length": 227
+      },
+      "file_video_bytes_equal": true,
+      "reference_short_footer_overstrip_60_bytes": false,
+      "memory_extraction_bytes_equal": false
+    },
+    {
+      "name": "short",
+      "sha256": "e3b359a1ed028b5ebb4f81b93d51fc304210e5d69f40d9c94c4a2a330083f177",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 19610,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 19610,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 19610,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "rebuilt": "/workspace/LibLivePhoto/evidence/local/oplus-remux-mpphax6p/short/rebuilt.jpg",
+        "recognized": true,
+        "resources": 5,
+        "still_mime": "image/jpeg",
+        "time_us": -1,
+        "tracks": 1,
+        "video_length": 19670,
+        "video_mime": "video/mp4",
+        "xmp_length": 256
+      },
+      "file_video_bytes_equal": false,
+      "reference_short_footer_overstrip_60_bytes": true,
+      "memory_extraction_bytes_equal": false
+    },
+    {
+      "name": "directory-exclusive",
+      "sha256": "e967ce096b9099ede944c5277cb62d446a159f3af841fd8fbfde3e6edbc0c225",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "rebuilt": "/workspace/LibLivePhoto/evidence/local/oplus-remux-mpphax6p/directory-exclusive/rebuilt.jpg",
+        "recognized": true,
+        "resources": 7,
+        "still_mime": "image/jpeg",
+        "time_us": -1,
+        "tracks": 1,
+        "video_length": 19670,
+        "video_mime": "video/mp4",
+        "xmp_length": 227
+      },
+      "primary_and_auxiliary_not_confused": true
+    },
+    {
+      "name": "directory-inclusive",
+      "sha256": "39cfb967ebc3c255cd6ef9a06a85adf8318ba28c5ae5066f83c9e3eb2722bb19",
+      "reference": {
+        "file": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "memory": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "range": {
+          "recognized": true,
+          "video_length": 19670,
+          "time_us": -1,
+          "still_mime": "image/jpeg",
+          "video_mime": "video/mp4"
+        },
+        "check_memory_status": 0,
+        "extracted": true,
+        "file_extracted": true,
+        "metadata_memory_output_exists": false,
+        "agtm": null
+      },
+      "implementation": {
+        "agtm": [],
+        "agtm_error": null,
+        "build_error": null,
+        "media_facts_error": null,
+        "path_matches_memory": true,
+        "rebuilt": "/workspace/LibLivePhoto/evidence/local/oplus-remux-mpphax6p/directory-inclusive/rebuilt.jpg",
+        "recognized": true,
+        "resources": 7,
+        "still_mime": "image/jpeg",
+        "time_us": -1,
+        "tracks": 1,
+        "video_length": 19670,
+        "video_mime": "video/mp4",
+        "xmp_length": 227
+      },
+      "primary_and_auxiliary_not_confused": true
+    }
+  ],
+  "remux": [
+    {
+      "name": "motion.mp4",
+      "input_sha256": "e8e35dd0dbf98b8b95ab9561a2debc5e8bb5f6469f2dfb08c6329f9674a70a2e",
+      "output_sha256": "f8c31bba731307937ab925d4294531b40ef9dbb2fb54c66d1715f95dcbdb6cbd",
+      "encoded_packets_and_exact_timing_equal": true,
+      "report": {
+        "discardedMediaBytes": 0,
+        "discardedPaddingBytes": 8,
+        "mappings": [
+          {
+            "new": 1,
+            "old": 1,
+            "source": 0
+          }
+        ],
+        "retainedUnknownMediaBytes": 0,
+        "sidecars": 0
+      }
+    },
+    {
+      "name": "apple-paired.mov",
+      "input_sha256": "cd732baffa15dc2f38cc981666c05fa4679a2c3aeb44ddd52b19a41d2470635d",
+      "output_sha256": "717ab5af84b8bc08b654f3cbc43617fd880cc22dde9c142457ef1c4eca340790",
+      "encoded_packets_and_exact_timing_equal": true,
+      "report": {
+        "discardedMediaBytes": 0,
+        "discardedPaddingBytes": 1273,
+        "mappings": [
+          {
+            "new": 1,
+            "old": 1,
+            "source": 0
+          },
+          {
+            "new": 2,
+            "old": 2,
+            "source": 0
+          }
+        ],
+        "retainedUnknownMediaBytes": 0,
+        "sidecars": 0
+      }
+    },
+    {
+      "name": "same-input-two-video-import",
+      "encoded_packets_and_exact_timing_equal": true,
+      "report": {
+        "discardedMediaBytes": 0,
+        "discardedPaddingBytes": 16,
+        "mappings": [
+          {
+            "new": 1,
+            "old": 1,
+            "source": 0
+          },
+          {
+            "new": 2,
+            "old": 1,
+            "source": 1
+          }
+        ],
+        "retainedUnknownMediaBytes": 0,
+        "sidecars": 1
+      }
+    }
+  ],
+  "limits": [
+    "Google memory extractor may include JXRS footer; file extraction is compared separately.",
+    "No native vendor Gallery acceptance.",
+    "hvc1 structural test is separate from this real H.264 packet run."
+  ],
+  "tests_passed": 122,
+  "asan": {
+    "remux": 114702,
+    "container_headers": 984238,
+    "asset_input": 60084
+  },
+  "log_sha256": {
+    "differential.log": "31cfa5a1b5c0622187acdb45edb2bf62a12f56bbaf5ff2fbef681d3418903fac",
+    "tests.log": "9efbccfcf4b605582fc6a884ed2ba2dc0a44fcdb2c784303c05f36cf7f6bcd0a",
+    "fuzz-driver.log": "68c1c7183b48d33caf8a2dc01726b07f2ce279a982c60ae8a57a507c4a262046",
+    "fuzz/remux.log": "ce6426af45249385c469b5b3cd4103ab57ac703a436c7fafc4a1a32d52424fd1",
+    "fuzz/container_headers.log": "92cc4b2082b3ce13b173d23a9bb4cd6cafd96b0e4d6d8de0f19fa15fb5d82c12",
+    "fuzz/asset_input.log": "b41bed545f58e8cc0b91ac3dab50318b9680ebcfe412a63e222c1e5e81769f64"
+  }
+}

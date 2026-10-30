@@ -1,0 +1,140 @@
+{
+  "verification_source_sha": "933601db46aa6abcdc880daacd74373e5a0f7af5",
+  "verification_working_tree_clean": true,
+  "previous_verified_production_sha": "03d28dcafa5dc6c7a1163b2dbb673ee1cc2c605b",
+  "recorded_at_utc": "2026-10-19T23:53:27.555960+00:00",
+  "commands": [
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.433,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 0.105,
+      "log_sha256": "ee1d3fffa2022e962e63e0dbe4d35c9c198450a20c29fc09030f635dbb38bfcd"
+    },
+    {
+      "name": "default",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--workspace",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "seconds": 3.656,
+      "log_sha256": "5cd8676b3a39a95b02ef9846692bef5289deb9960ff3baa14de5cc3cd38a934c",
+      "passed": 244,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "name": "all-features",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features"
+      ],
+      "exit_code": 0,
+      "seconds": 3.64,
+      "log_sha256": "c3d291def8b65c5e9a5ffb32a646509c283b1e02e86e730410a50400290ead69",
+      "passed": 244,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "name": "originals",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "liblivephoto",
+        "--test",
+        "fixtures",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 20.458,
+      "log_sha256": "01c3ef5e73405ceff282b84808b9b6dc1a873bf934b4f0b3473c981b150801fe",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "new_authored_samsung_tests": {
+    "count": 2,
+    "ran_in_default_and_all_feature_tests": true,
+    "test_source_sha256": "f92e0d9852ae699aa1098e4c16ad73afbef69c3cea06320e5ae77448c2d7cf83",
+    "private_vendor_content_required": false
+  },
+  "production_configuration_fixture_objects_unchanged": {
+    "crates/liblivephoto/src": "2cc0eb48fbe01c45eee8baab3d7d56d78add6199",
+    "crates/liblivephoto-bridge/src": "e6ee40a1d12f8d18871b45200abd710bcb15f51f",
+    "crates/liblivephoto-cli/src": "7e44b91599ccc1c52c27a57285757c6cb75e364d",
+    "crates/liblivephoto-format/src": "bbf58a2e125cd672220bb012de386a9cf0a7d543",
+    "crates/liblivephoto-interface/src": "384b96f4d025b859eace63c6a2f09f49acad2b30",
+    "crates/liblivephoto-native/src": "539dd55d6245b8ae6d6056fb1cbaa3f38041924c",
+    "fixtures": "e62c1f6cdca57cc14123ccca916ed75ca80203dd",
+    ".github/workflows": "c8ba04512c5675aaae66947ea78d41af6c65e7a1",
+    "Cargo.toml": "31afd8e6a5e611174fc826613c4d91cb63bd8752",
+    "Cargo.lock": "151751aeb577d046e81683023f7eff2b80e78afb",
+    "web": "90f3c2859536ec390e3ab6fd36a7f2289f2855ce",
+    "scripts": "a2fd58d2386a85b5e4748e58aa8f3b2c8133016e"
+  },
+  "locked_contract_suites_unchanged": {
+    "syntax": {
+      "count": 42,
+      "manifest_sha256": "0fc2be1b1b309f03d638cd5655007e93d162061da706ceaf5b80ef1cf4970226"
+    },
+    "vendor": {
+      "count": 13,
+      "manifest_sha256": "f83b4f36ca42622c8eccaa437451e975b2f343b9a4571b8274d5809d46cbe15b"
+    },
+    "vendor-selection": {
+      "count": 20,
+      "manifest_sha256": "2ab5c19cc207d9c9d5445ee5cc3047d1bac4a3926b2973bcde8f339a68280600"
+    }
+  },
+  "other_platform_execution": "No new Android/iOS/Swift/WASM/Chrome/Windows/macOS execution in this research round. Existing eight-job03d28dc receipt applies to unchanged production sources; new tests ran on Linux only.",
+  "Google_differential": "Not rerun: production parsing/remux/input fixtures unchanged. Complete10-case03d28dc and pinned-reference receipts retained.",
+  "reference_sha": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "XDRemux_sha": "0688ea7d6270df52cc5968e2c36dd016f13bd31b",
+  "libheif_sha": "792bfda483e16aaf393f0b40bc8a051ccaf13b77",
+  "artifact_body_limits": "Acquisition/static package signatures verified without executing or redistributing vendor code; APK bodies and raw disassembly stay in ignored private research.",
+  "remaining_blockers": [
+    "Other OEM package acquisitions and field semantics remain unclosed",
+    "Official Samsung certificate/OTA trust and README/build.prop inconsistency unverified",
+    "Samsung request-flag assignment/device feature gates unverified",
+    "Physical Gallery/Photos/native rendering acceptance not run"
+  ],
+  "ci_runs_created_this_round": false,
+  "implementation_apis_changed": false
+}

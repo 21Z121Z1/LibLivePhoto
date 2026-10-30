@@ -1,0 +1,213 @@
+{
+  "starting_delivery_sha": "53a3499961fedaf2467b347f1e98170595e1edd6",
+  "pinned_google_reference": "12fb3cb8d1649a5621c55dcf99e416d32e4c4ab3",
+  "sources": [
+    {
+      "source": "ICC.1:2022, profile4.4.0.0",
+      "url": "https://archive.color.org/specification/ICC.1-2022-05.pdf",
+      "sections": [
+        "7.1",
+        "7.2 selected fixed-header fields",
+        "7.3",
+        "7.4",
+        "10.1 generic tag header"
+      ],
+      "license": "ICC copyright2022/all rights reserved; public normative reading only, no PDF/text body redistributed.",
+      "document_body_sha256": null,
+      "reason": "Container transfer proxy CONNECT403; official PDF parsed text was read through the existing web source tool. No container PDF body acquired."
+    },
+    {
+      "source": "Fraunhofer FDK AAC2.0.3",
+      "commit": "716f4394641d53f0d79c9ddac3fa93b03a49f278",
+      "file": "libMpegTPDec/src/tpdec_asc.cpp",
+      "url": "https://github.com/mstorsjo/fdk-aac/blob/716f4394641d53f0d79c9ddac3fa93b03a49f278/libMpegTPDec/src/tpdec_asc.cpp",
+      "license": "Fraunhofer FDK AAC bespoke license, as present in the file header. Static field/syntax facts only; not copied, translated, linked or executed.",
+      "functions": [
+        "CProgramConfig_Read",
+        "GASpecificConfig",
+        "AudioSpecificConfig extension parsing"
+      ],
+      "limit": "Primary implementation with explicit ISO13818-7 references, not a downloaded full AAC ISO normative text."
+    },
+    {
+      "source": "FFmpeg n7.1 MOV reader/writer",
+      "commit": "b08d7969c550a804a59511c7b83f2dd8cc0499b8",
+      "files": [
+        "libavformat/mov.c",
+        "libavformat/movenc.c"
+      ],
+      "url": "https://github.com/FFmpeg/FFmpeg/tree/b08d7969c550a804a59511c7b83f2dd8cc0499b8/libavformat",
+      "license": "Selected source file headers are LGPL2.1-or-later; static framing observations only, no source copied/translated/linked into library.",
+      "functions": [
+        "mov_read_wave",
+        "mov_write_wave_tag"
+      ],
+      "limit": "The explicit AAC wave subset is corroborated by primary reader/writer and independently generated real output. Apple QTFF body transfer/read remained unavailable; no full QTFF certification."
+    },
+    {
+      "source": "MPEG FileFormatConformance ISO14496-12 edition7/2022 syntax",
+      "commit": "767a5bcb9fa4841d1b3bb0ca112a6e7d4c6bf067",
+      "url": "https://github.com/MPEGGroup/FileFormatConformance/tree/767a5bcb9fa4841d1b3bb0ca112a6e7d4c6bf067/data/standard_features/14496-12",
+      "license": "BSD-3-Clause-Clear for the conformance framework; normative field facts only, no dependency/code import.",
+      "selected_box": "stz2",
+      "limit": "Committee-maintained machine-readable grammar and spec_info identity, not a downloaded complete ISO document."
+    },
+    {
+      "source": "Official ISO BMFF reference implementation",
+      "commit": "689ac096a8e485385089341785c10271cf0684a8",
+      "url": "https://github.com/MPEGGroup/isobmff/blob/689ac096a8e485385089341785c10271cf0684a8/IsoLib/libisomediafile/src/SampleSizeAtom.c",
+      "license": "ISO/IEC reference-software terms in file header; static corroboration only, not copied/translated/linked/executed."
+    }
+  ],
+  "private_cloud_text_hashes": [
+    {
+      "file": "cloud-read-fdk-asc.cpp",
+      "bytes": 100509,
+      "sha256": "3f7948766cc48319020de85deeace1f12676ed166fef55ae937b97732535c3ac",
+      "git_blob_sha1": "8f77017a9bbd46073a0aa912357bfb49d3863156",
+      "materialization": "Decoded text returned by authorized GitHub source-reading tool; private copy ends in LF."
+    },
+    {
+      "file": "cloud-read-ffmpeg-mov.c",
+      "bytes": 379143,
+      "sha256": "1ab120fcd828e26328e3a24f60a83a8d9b4773c5964edeb49c9184c578cbe9ab",
+      "git_blob_sha1": "a2333ac1fda96c20d079f27ad9a8b20deddd1e92",
+      "materialization": "Decoded text returned by authorized GitHub source-reading tool; private copy ends in LF."
+    },
+    {
+      "file": "cloud-read-ffmpeg-movenc.c",
+      "bytes": 330722,
+      "sha256": "8a8bcdc780383c08108031a0d0cdbb29eb6aa28188b3e447d6a9103c76a100f5",
+      "git_blob_sha1": "d20e45cf8107aa73fc57c51c4395950b4a168bc8",
+      "materialization": "Decoded text returned by authorized GitHub source-reading tool; private copy ends in LF."
+    },
+    {
+      "file": "cloud-read-mpeg-boxes.json",
+      "bytes": 79498,
+      "sha256": "8938428a476b0f9c187397ee44266710d69ca41e201728b8056d25a5034c0bd9",
+      "git_blob_sha1": "35d7cd315c775956f32b907cc0211b3e949fb455",
+      "materialization": "Decoded text returned by authorized GitHub source-reading tool; private copy ends in LF."
+    },
+    {
+      "file": "cloud-read-mpeg-reference-readme.md",
+      "bytes": 4912,
+      "sha256": "0c0bcdc2d1c08012fcc592e1e34a32819302acf552287bbafe922219a11886aa",
+      "git_blob_sha1": "3ae6dc87551325da96278ac94df417ec7fd5901e",
+      "materialization": "Decoded text returned by authorized GitHub source-reading tool; private copy ends in LF."
+    },
+    {
+      "file": "cloud-read-mpeg-reference-sizes.c",
+      "bytes": 9620,
+      "sha256": "75ccc0893e5ad61c2ed5117526f540d4fdb0066b8099f71043d1c68446852bfb",
+      "git_blob_sha1": "a6a770dea14a768b40a47d6d2d3e029929e3843a",
+      "materialization": "Decoded text returned by authorized GitHub source-reading tool; private copy ends in LF."
+    },
+    {
+      "file": "cloud-read-mpeg-spec-info.json",
+      "bytes": 107,
+      "sha256": "6d9a30a62b151b858ba239134313eb60aebfeb907a2d2715cd53a10b0e74393d",
+      "git_blob_sha1": "47c994069c0466845babe912d5e9f7fbecffb70d",
+      "materialization": "Decoded text returned by authorized GitHub source-reading tool; private copy ends in LF."
+    }
+  ],
+  "failed_container_transfers": [
+    {
+      "name": "icc44.pdf",
+      "url": "https://archive.color.org/specification/ICC.1-2022-05.pdf",
+      "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "name": "qtff.json",
+      "url": "https://developer.apple.com/tutorials/data/documentation/quicktime-file-format.json",
+      "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "name": "aac_asc.base64",
+      "url": "https://android.googlesource.com/platform/external/aac/+/android-9.0.0_r3/libMpegTPDec/src/tpdec_asc.cpp?format=TEXT",
+      "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "name": "mp4ra-references.html",
+      "url": "https://mp4ra.org/references",
+      "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "name": "mpeg-repo.json",
+      "url": "https://api.github.com/repos/MPEGGroup/isobmff/git/trees/master?recursive=1",
+      "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>"
+    }
+  ],
+  "production_dependencies_added": 0,
+  "tooling": {
+    "ffmpeg_and_ffprobe": "System7.1.5-0+deb13u1; configured --enable-gpl, GPL build used only on owned neutral/silent test data. No executable/library is redistributed or linked into LibLivePhoto.",
+    "reference_source_n7_1_is_actual_tool_build": false
+  },
+  "fixtures": {
+    "scope": "Owned neutral video copied without re-encoding plus newly encoded silence; ICC envelope vectors have opaque private tags, not full colour profiles.",
+    "command": [
+      "ffmpeg",
+      "-hide_banner",
+      "-v",
+      "error",
+      "-n",
+      "-i",
+      "/workspace/LibLivePhoto/web/public/demo/motion.mp4",
+      "-f",
+      "lavfi",
+      "-i",
+      "anullsrc=r=48000:cl=stereo",
+      "-map",
+      "0:v:0",
+      "-map",
+      "1:a:0",
+      "-t",
+      "0.2",
+      "-c:v",
+      "copy",
+      "-c:a",
+      "aac",
+      "-aac_pce",
+      "1",
+      "-flags:a",
+      "+bitexact",
+      "-fflags",
+      "+bitexact",
+      "-map_metadata",
+      "-1",
+      "-f",
+      "mov",
+      "/tmp/llp-syntax-reproduce-1h9u9727/new-only/aac-pce-wave.mov"
+    ],
+    "ffmpeg_version": [
+      "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "built with gcc 14 (Debian 14.2.0-19)",
+      "configuration: --prefix=/usr --extra-version=0+deb13u1 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-libmfx --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgme --enable-libgsm --enable-libharfbuzz --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-openal --enable-opencl --enable-opengl --disable-sndio --enable-libvpl --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-ladspa --enable-libbluray --enable-libcaca --enable-libdvdnav --enable-libdvdread --enable-libjack --enable-libpulse --enable-librabbitmq --enable-librist --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libx264 --enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-pocketsphinx --enable-librsvg --enable-libjxl --enable-shared"
+    ],
+    "source_video_sha256": "e8e35dd0dbf98b8b95ab9561a2debc5e8bb5f6469f2dfb08c6329f9674a70a2e",
+    "files": [
+      {
+        "file": "aac-pce-stz2.mov",
+        "bytes": 14053,
+        "sha256": "946835418c68809be128fe8260a8236efe23e7844d58b0fc8985fa42bb7f27d7"
+      },
+      {
+        "file": "aac-pce-wave.mov",
+        "bytes": 14043,
+        "sha256": "89f90349361802d11ec0fa115037c6039261eb7841f1eeaac743c13dabac6100"
+      },
+      {
+        "file": "icc-structure-v4.4.icc",
+        "bytes": 168,
+        "sha256": "8e70a0db1bfc1348283b377540f6432057eff249bcc1ee4a6cd1bbe1bd8b104d"
+      },
+      {
+        "file": "icc-unsupported-v4.3.icc",
+        "bytes": 168,
+        "sha256": "6850c9dd40a87f0f54cbac6f29667590ce3897eb0d647a18dbe7b6f0c80a38e1"
+      }
+    ],
+    "all_four_match_committed_vectors": true
+  },
+  "other_vendor_research": "No new APK/native/firmware or original Honor corpus acquired. Samsung time/AutoPlay, Oplus checksum/second-stream, vivo time/roles and Honor-original gaps remain; no vendor writer inferred.",
+  "access": "Five normal container HTTP transfers failed proxy CONNECT403 and were not retried or rerouted. Public cloud source-reading used its existing authorized app/web permissions; no proxy, credentials, access control or blocked package endpoint was altered."
+}

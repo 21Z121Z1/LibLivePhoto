@@ -1,0 +1,77 @@
+name: Apple adapter and local web
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apple:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
+      - run: cargo build --locked -p liblivephoto-native
+      - run: swift test --package-path apple
+        env:
+          LIBLIVEPHOTO_NATIVE_LIBRARY: ${{ github.workspace }}/target/debug/liblivephoto_native.dylib
+          LIBLIVEPHOTO_SYNTAX_FIXTURES: ${{ github.workspace }}/fixtures/syntax
+      - name: Compile iOS native adapters against the simulator SDK
+        working-directory: apple
+        run: xcodebuild -scheme LibLivePhotoApple -destination 'generic/platform=iOS Simulator' -derivedDataPath ../evidence/local/apple-build CODE_SIGNING_ALLOWED=NO build
+      - run: python3 scripts/package_apple.py
+      - run: python3 scripts/test_apple_simulator.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apple-sdk-build
+          path: |
+            evidence/local/apple-build/Logs
+            dist/apple/LibLivePhotoCore.xcframework
+            dist/apple/*receipt.json
+            dist/apple/simulator-acceptance/*.log
+            dist/apple/simulator-acceptance/*receipt.json
+  web:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: cargo install wasm-bindgen-cli --version 0.2.104 --locked
+      - run: npm ci --prefix web --ignore-scripts
+      - run: npm --prefix web test
+      - run: npm --prefix web run build
+      - name: Actual Node WASM syntax and preservation contracts
+        run: node --test web/tests/syntax.test.mjs web/tests/vendor.test.mjs
+      - run: cd web && npx playwright install --with-deps chromium
+      - name: Diagnose bundled browser readiness independently
+        working-directory: web
+        run: |
+          node server.mjs > /tmp/liblivephoto-web-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          node browser-support-probe.mjs
+      - name: Verify browser with H.264 decoder
+        run: google-chrome --version
+      - run: npm --prefix web run test:browser
+        env:
+          BROWSER_EXECUTABLE: /usr/bin/google-chrome
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-browser-evidence
+          path: web/test-results
