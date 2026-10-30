@@ -1,0 +1,35 @@
+name: Docs
+# Repo-relative link check for changes under **/*.md and docs/**.
+# main has no required status checks. A required check on a path-filtered
+# workflow stays pending for a docs-only pull request unless a job here uses
+# that workflow name and job name. One workflow file can supply only one name.
+on:
+  push:
+    paths:
+      - '**/*.md'
+      - 'docs/**'
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'docs/**'
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  links:
+    name: Repo-relative Markdown links
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checked-out head
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - name: Check repo-relative links and heading anchors
+        run: python3 scripts/check_markdown_links.py
