@@ -6,6 +6,12 @@ These notes used to live on the English and Chinese landing pages. They record o
 
 The landing page that held them is commit `af75e81` (`docs(readme): add a bilingual landing page for the preview`), merged to `main` as `8842459`. CI results below were cited for `main` commit `042a188efc2f9c10638a571c3fec57b5032d5870`.
 
+## Sources for the current README
+
+The compact format matrix is an entry point, not a new compatibility test. Its read, extract, and write scope follows `FORMAT_SUPPORT.md`, `crates/liblivephoto/src/conversion.rs` (`TargetProfile`), and `crates/liblivephoto-interface/src/lib.rs` (CLI operation dispatch and target names). The CLI examples follow `crates/liblivephoto-cli/src/main.rs` and `crates/liblivephoto-cli/tests/commands.rs`; demo time, filenames, and provenance come from `web/public/demo/provenance.json`.
+
+The 128 MiB shared-input limit is `liblivephoto_interface::MAX_INPUT`; the 32 MiB Android service limit is `MotionPhotoService.MAX_INPUT_BYTES`. There is no real-device Photos or vendor Gallery acceptance evidence for the table's rows. This README rewrite checked the sources and command syntax but did not rerun the Rust or platform test suites.
+
 ## Package identity
 
 `Cargo.toml` sets the package version to 0.1.0. After `cargo build --locked -p liblivephoto-cli`, `./target/debug/llp version` printed `"version": "0.1.0"` and `"success": true`. `git tag` listed no tags. A request for the crate name `liblivephoto` on the crates.io API returned HTTP 404, so that pass found no installable package under that name.

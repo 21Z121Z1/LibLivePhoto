@@ -2,94 +2,77 @@
 
 [English](README.md)
 
-一个 Rust 库，加上命令 `llp`，用来读取、检查和生成 Motion Photo 与 Live Photo。
+用一个 Rust 库和 `llp` 命令行工具，读取、拆解、生成和检查 Apple 实况照片、Android 动态照片及 Samsung SEF 文件。
 
-各家手机会把静图和短视频嵌进自己的容器。这个库负责把文件拆开，格式允许时交还原来的字节，并写到少数几种说得清的目标上。C ABI、Java JNI、Android AAR、Swift 包和 WASM 演示都是实验性外壳，底下仍是同一套操作。
+## 为什么做这个项目
 
-需要 Rust 1.88 或更高版本（实测过，仓库里还没声明最低版本）。
+实况照片本质上是一张静态照片和一段短视频，但不同厂商的封装和元数据并不相通。LibLivePhoto 可以查看文件里的资源、原样提取媒体数据，也能转换成已实现的目标格式，不会暗中重新编码画面。C/JNI、Android AAR、Swift 和 WASM 绑定目前仍是实验性功能。
+
+Rust 1.88+ (tested; not yet declared)
 
 ## 快速开始
 
-克隆仓库后，在根目录执行：
+在仓库根目录执行：
 
 ```sh
 cargo build --locked -p liblivephoto-cli
 ./target/debug/llp version
 ```
 
-工作区里的其他 crate 用路径依赖这个库：
+如果你的 Rust 项目和克隆下来的 `LibLivePhoto` 目录并列，在项目的 `Cargo.toml` 中加入：
 
 ```toml
-liblivephoto = { path = "crates/liblivephoto", version = "0.1.0" }
+[dependencies]
+liblivephoto = { path = "../LibLivePhoto/crates/liblivephoto" }
 ```
 
 ## 示例
 
-`web/public/demo` 里是脚本画出来的几何图。`provenance.json` 标明 CC0，也不含私人拍摄的素材。
+下面使用仓库自带的 [演示文件](web/public/demo/provenance.json)。素材由脚本生成，以 CC0 授权；命令均从仓库根目录运行。`--out` 指定的目录必须尚不存在，工具会自行创建。
 
-`llp` 会自己创建输出目录和里面的每个文件。目录已经在的话命令会失败，再跑一次之前先把旧目录删掉。
-
-### 看一张 Motion Photo
+### 查看动态照片的内容
 
 ```sh
-cargo run --locked -p liblivephoto --example inspect -- web/public/demo/motion-photo.jpg
+./target/debug/llp parse web/public/demo/motion-photo.jpg
 ```
 
-### 把视频抽出来
+### 提取其中的视频
 
 ```sh
-cargo run --locked -p liblivephoto-cli -- extract web/public/demo/motion-photo.jpg --video --out /tmp/llp-extract
+./target/debug/llp extract web/public/demo/motion-photo.jpg --video --out llp-demo-extracted
 ```
 
-### 做成一张 Motion Photo JPEG
+视频会保存为 `llp-demo-extracted/resource-1.mp4`。
 
-这些演示文件记下的照片时间是 `13/16`。
+### 生成动态照片并检查结构
 
 ```sh
-cargo run --locked -p liblivephoto-cli -- build web/public/demo/cover.jpg --movie web/public/demo/motion.mp4 --time 13/16 --target google-jpeg --out /tmp/llp-built
-cargo run --locked -p liblivephoto-cli -- check /tmp/llp-built/asset-0.jpg
+./target/debug/llp build web/public/demo/cover.jpg --movie web/public/demo/motion.mp4 --time 13/16 --target google-jpeg --out llp-demo-built
+./target/debug/llp check llp-demo-built/asset-0.jpg
 ```
 
-命令行上的目标名是 `preserve`、`google-jpeg`、`google-heif`、`google-avif`、`apple` 和 `samsung-jpeg-sef`。参数说明在 [CLI](CLI.md)。
+`13/16` 是演示素材的照片呈现时间。其他命令和参数见 [CLI 文档](CLI.md)。
 
-## 支持哪些格式
+## 格式支持
 
-相册肯不肯收，和文件上写着哪家厂商是两回事。完整契约见[格式支持](FORMAT_SUPPORT.md)。
+下表只概括代码已实现、测试样本已覆盖的操作，不代表所有机型和文件变体都兼容。各格式的具体条件见[格式支持说明](FORMAT_SUPPORT.md)。
 
-| 契约 | 这棵树里有什么 | 「照片」或厂商相册 |
-| --- | --- | --- |
-| Android JPEG 目录 | 真实样本上能往返，测试覆盖畸形文件 | 未验证 |
-| Android HEIF `mpvd` | 只追加元数据，并核对图像项和时间 | 未验证 |
-| Android AVIF `mpvd` | 合成契约和一份生成文件上只追加元数据 | 未验证 |
-| Apple JPEG 或 HEIF，再加 MOV | 核对配对、时间线和媒体，样本里有一对 iPhone 15 原片 | 未验证 |
-| 旧版 Google Micro Video | 合成测试上可转成 Android，或保留源副本 | 未验证 |
-| ColorOS 15 和 16 | 源副本和显式侧车；原片里有双路流 | 未验证 |
-| OpCamera 和 JXRS | 源副本，或在说清未映射资源的策略后写入标准目标 | 未验证 |
-| Samsung SEF 106 和 107 | 只有直接的 JPEG SEF 写入，而且照片时间必须未知 | 未验证 |
-| 小米 Android 风格 Live Photo | 一份原片，写成 Android 目标或侧车 | 未验证 |
-| vivo 单文件和 CameraAlbum 43 | 两份原片；Android 目标或侧车；没有原生页脚写入 | 未验证 |
-| CameraAlbum 55 | 只有合成契约，没有原生写入 | 未验证 |
-| vivo 媒体 UUID 流 | 影片字节原样留下，没有原生 UUID 写入 | 未验证 |
-| 小米人像或深度，vivo 双路或人像 | 没有原片语料，也没有专用写入 | 未验证 |
-| HarmonyOS Moving Photo | 本库不包含私有的磁盘契约 | 未验证 |
-| 荣耀 `LIVE_` 页脚和反向 TLV | 合成契约上可留源副本或侧车，没有荣耀写入器 | 未验证 |
+| 格式 | 读取 / 查看 | 提取 | 生成 / 转换 | 系统「照片」/ 厂商相册验收 |
+| --- | --- | --- | --- | --- |
+| Android 动态照片（JPEG） | 支持 | 支持 | `google-jpeg` | **未验证** |
+| Android 动态照片（HEIF `mpvd`） | 支持 | 支持 | `google-heif` | **未验证** |
+| Android 动态照片（AVIF `mpvd`） | 有限样本 | 有限样本 | `google-avif` | **未验证** |
+| Apple 实况照片（JPEG/HEIF + MOV） | 支持 | 支持 | `apple` 配对文件 | **未验证** |
+| Samsung SEF（JPEG，106/107） | 支持 | 支持；歧义记录需指定 | `samsung-jpeg-sef`，仅限照片时间未知 | **未验证** |
+| 旧版 Google MicroVideo | 合成样本 | 合成样本 | 转为 Android 格式或保留原文件 | **未验证** |
+| 部分 OPlus、小米、vivo、荣耀扩展 | 有限支持 | 有限支持 | 可转标准格式或输出侧车；无原生写入器 | **未验证** |
 
-## 限制
+## 目前的限制
 
-字节在不在、结构过不过、系统相册收不收，要分开看。抽取可以交还原来的资源字节。`llp check` 和没有阻碍项的构建计划只说明结构。上表里，系统相册一列全部是未验证。
+**原始字节得到保留、文件结构检查通过、系统相册能够导入，是三件不同的事。** 提取操作可以保留原始媒体字节；`llp check` 只检查已支持的结构规则，不等于 Apple「照片」或厂商相册已经验证可用。
 
-共享操作拒绝合计超过 128 MiB 的输入。Android 服务拒绝合计超过 32 MiB 的输入。
+命令行和共享接口的合计输入上限为 **128 MiB**，Android 服务为 **32 MiB**。目前不支持流式随机访问解析；分片影片及含 `sidx` 等不受支持顶层盒子的文件无法重封装。
 
-重封装只接受顶层盒子 `ftyp`、`moov`、`mdat`、`free`、`skip` 和 `wide`。别的顶层盒子，包括 `sidx`，会被拒绝。分片元数据样本和分片帧时间都不支持。
+写入目标包括原文件保留、Android JPEG/HEIF/AVIF、Apple 照片与 MOV 配对，以及照片时间未知时的 Samsung JPEG SEF。没有 OPlus、小米、vivo、荣耀的原生写入器，也不会转码图像像素。具体转换边界见[兼容性说明](COMPATIBILITY.md)。
 
-`TargetProfile` 能写 `PreserveSource`、Android JPEG / HEIF / AVIF、Samsung JPEG SEF 和 Apple 配对。没有 OPlus、小米、vivo 或荣耀的写入器。照片时间已知时，Samsung JPEG SEF 写入会拒绝。没有构造 Moments 的 API，写入器也不转码像素。
-
-绑定说明分别在 [Java](java/README.md)、[Android](android/README.md)、[Apple](apple/README.md) 和 [WASM 演示](web/README.md)。命令输出和 CI 记录在[验证记录](docs/VERIFICATION.zh-CN.md)。
-
-## 另见
-
-转换上的限制见[兼容性](COMPATIBILITY.md)。打包见[原生 SDK](NATIVE_SDK.md)。厂商记录和还没定的问题索引在[研究笔记](docs/research.zh-CN.md)。
-
-## 许可证
-
-Apache-2.0。见 [LICENSE](LICENSE)。
+实验性绑定说明：[Java/JNI](java/README.md) · [Android](android/README.md) · [Swift](apple/README.md) · [WASM](web/README.md)。构建与测试依据见[验证记录](docs/VERIFICATION.zh-CN.md)。项目采用 [Apache-2.0 许可证](LICENSE)。
