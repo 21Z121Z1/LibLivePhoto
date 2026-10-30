@@ -4,7 +4,7 @@
 
 These notes are not in this tree. The full former `evidence/` directory is on branch [`archive/evidence-20261030`](https://github.com/21Z121Z1/LibLivePhoto/tree/archive/evidence-20261030/evidence) at `2fb54887aba91c0fbb607120038b93afc7dca8f0`. How to regenerate a receipt is in [Verification](VERIFICATION.md).
 
-Pull request #3 adds this index with links into `evidence/`. Those paths are the files archived below. Keep this archive list if the two pull requests both land.
+Pull request #3 added this index with links into `evidence/`. Those paths are the files archived below.
 
 - [Vendor and platform evidence](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/VENDORS.md)
 - [Five-vendor research matrix, 2026-10-19](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/VENDOR_RESEARCH_20261019.md)

@@ -4,7 +4,7 @@
 
 这些笔记不在当前树里。原先的整个 `evidence/` 目录在分支 [`archive/evidence-20261030`](https://github.com/21Z121Z1/LibLivePhoto/tree/archive/evidence-20261030/evidence)，提交 `2fb54887aba91c0fbb607120038b93afc7dca8f0`。如何重新生成收据见[验证](VERIFICATION.zh-CN.md)。
 
-拉取请求 #3 也加入了这份索引，但链接指向树内的 `evidence/`。那些路径就是下面归档的文件。两份拉取请求都合并时，保留这份指向归档分支的列表。
+拉取请求 #3 加入的索引曾指向树内的 `evidence/`。那些路径就是下面归档的文件。
 
 链接的笔记是英文。
 
