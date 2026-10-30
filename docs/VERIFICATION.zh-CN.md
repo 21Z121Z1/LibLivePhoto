@@ -6,6 +6,12 @@
 
 当时的首页是提交 `af75e81`（`docs(readme): add a bilingual landing page for the preview`），经 `8842459` 合入 `main`。下面引用的 CI 属于 `main` 上的 `042a188efc2f9c10638a571c3fec57b5032d5870`。
 
+## 当前首页的依据
+
+首页的格式支持表只是概览，没有新增兼容性测试。读取、提取和写入的范围依据 `FORMAT_SUPPORT.md`、`crates/liblivephoto/src/conversion.rs` 中的 `TargetProfile`，以及 `crates/liblivephoto-interface/src/lib.rs` 中的命令分发和目标名称。示例命令对照了 `crates/liblivephoto-cli/src/main.rs` 和 `crates/liblivephoto-cli/tests/commands.rs`；素材文件名、时间和授权信息来自 `web/public/demo/provenance.json`。
+
+共享接口的 128 MiB 限额来自 `liblivephoto_interface::MAX_INPUT`，Android 服务的 32 MiB 限额来自 `MotionPhotoService.MAX_INPUT_BYTES`。格式表中的真实设备、Apple「照片」和厂商相册验收均无验证证据。本次 README 改写核对了源码与命令参数，但没有重新运行 Rust 或各平台测试。
+
 ## 包的身份
 
 `Cargo.toml` 里的包版本是 0.1.0。`cargo build --locked -p liblivephoto-cli` 之后，`./target/debug/llp version` 打印了 `"version": "0.1.0"` 和 `"success": true`。`git tag` 没有任何标签。向 crates.io API 查询 crate 名 `liblivephoto` 得到 HTTP 404，那次查询没有找到同名的可安装包。

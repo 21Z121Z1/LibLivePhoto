@@ -1,95 +1,86 @@
 # LibLivePhoto
 
-[中文](README.zh-CN.md)
+[简体中文](README.zh-CN.md)
 
-Read, check, and build Motion Photo and Live Photo files with one Rust library and the `llp` command.
+**LibLivePhoto** is a Rust library and `llp` CLI for working with Apple Live Photos, Android Motion Photos, and Samsung SEF files.
 
-Phone cameras store a still and a short video in vendor-specific containers. LibLivePhoto parses those files, returns the original bytes when the format allows it, and writes a few explicit targets. The C ABI, Java JNI client, Android AAR, Swift package, and WASM demo are experimental bindings over the same operations.
+These formats all combine a still image with a short video, but store them differently. LibLivePhoto can inspect their contents, extract the original media, and build supported output formats. The C/JNI, Android AAR, Swift, and WASM bindings are experimental.
 
-Rust 1.88+ (tested; not yet declared).
+Rust 1.88+ (tested; not yet declared)
 
 ## Quick start
 
-From a clone of this repository:
+Clone the repository and build the CLI:
 
 ```sh
+git clone https://github.com/21Z121Z1/LibLivePhoto.git
+cd LibLivePhoto
 cargo build --locked -p liblivephoto-cli
 ./target/debug/llp version
 ```
 
-A crate in this workspace depends on the library by path:
+To use the library in a Rust project next to the `LibLivePhoto` directory, add this to your project's `Cargo.toml`:
 
 ```toml
-liblivephoto = { path = "crates/liblivephoto", version = "0.1.0" }
+[dependencies]
+liblivephoto = { path = "../LibLivePhoto/crates/liblivephoto" }
 ```
 
 ## Examples
 
-The files in `web/public/demo` are generated geometry. `provenance.json` marks them CC0 and records that they contain no private camera media.
+Run these commands from the repository root. The [demo files](web/public/demo/provenance.json) contain generated media released under CC0.
 
-`llp` creates the output directory and every file inside it. An existing directory makes the command fail, so remove the previous one before running it again.
-
-### Inspect a Motion Photo
+### Inspect a file
 
 ```sh
-cargo run --locked -p liblivephoto --example inspect -- web/public/demo/motion-photo.jpg
+./target/debug/llp parse web/public/demo/motion-photo.jpg
 ```
+
+The report shows the format, resources, and photo time.
 
 ### Extract the video
 
 ```sh
-cargo run --locked -p liblivephoto-cli -- extract web/public/demo/motion-photo.jpg --video --out /tmp/llp-extract
+./target/debug/llp extract web/public/demo/motion-photo.jpg --video --out llp-demo-extracted
 ```
 
-### Build a Motion Photo JPEG
+This creates `llp-demo-extracted/resource-1.mp4`. The output directory must not already exist.
 
-`13/16` is the photo time stored for these demo files.
+### Build and check a Motion Photo
 
 ```sh
-cargo run --locked -p liblivephoto-cli -- build web/public/demo/cover.jpg --movie web/public/demo/motion.mp4 --time 13/16 --target google-jpeg --out /tmp/llp-built
-cargo run --locked -p liblivephoto-cli -- check /tmp/llp-built/asset-0.jpg
+./target/debug/llp build web/public/demo/cover.jpg --movie web/public/demo/motion.mp4 --time 13/16 --target google-jpeg --out llp-demo-built
+./target/debug/llp check llp-demo-built/asset-0.jpg
 ```
 
-CLI target names are `preserve`, `google-jpeg`, `google-heif`, `google-avif`, `apple`, and `samsung-jpeg-sef`. Flag details are in [CLI](CLI.md).
+`13/16` is the photo time in the demo. The check reads the generated `asset-0.jpg`.
 
-## Support
+## Format support
 
-Device acceptance is separate from the vendor name. The full contract table is [Format support](FORMAT_SUPPORT.md).
+The table covers implemented operations and tested file layouts. See [Format support](FORMAT_SUPPORT.md) for the details.
 
-| Contract | In this tree | Photos or Gallery |
-| --- | --- | --- |
-| Android JPEG directory | Round-trip on real fixtures, including malformed files | Unverified |
-| Android HEIF `mpvd` | Append-only metadata, with item and time checks | Unverified |
-| Android AVIF `mpvd` | Append-only metadata on synthetic contracts and one generated file | Unverified |
-| Apple JPEG or HEIF, plus a MOV | Pairing, timeline, and media checks, including one iPhone 15 pair | Unverified |
-| Legacy Google Micro Video | Android conversion and a source copy, on synthetic tests | Unverified |
-| ColorOS 15 and 16 | Source copy and explicit sidecars; originals include two streams | Unverified |
-| OpCamera and JXRS | Source copy, or a standard target when unmapped resources have an explicit policy | Unverified |
-| Samsung SEF 106 and 107 | Direct JPEG SEF writer, only when the photo time is unknown | Unverified |
-| Xiaomi Android-style Live Photo | One original fixture, written as an Android target or as sidecars | Unverified |
-| vivo single file and CameraAlbum 43 | Two original fixtures; Android target or sidecars; no native footer writer | Unverified |
-| CameraAlbum 55 | Synthetic contract only; no native writer | Unverified |
-| vivo media UUID streams | Original movie bytes kept; no native UUID writer | Unverified |
-| Xiaomi portrait or depth; vivo dual or portrait | No original corpus and no dedicated writer | Unverified |
-| HarmonyOS Moving Photo | No private on-disk contract in this library | Unverified |
-| Honor `LIVE_` footer and backward TLV | Source copy or sidecars on synthetic contracts; no Honor writer | Unverified |
+| Format | Read | Extract | Build / convert |
+| --- | --- | --- | --- |
+| Android Motion Photo JPEG | Yes | Yes | `google-jpeg` |
+| Android HEIF (`mpvd`) | Yes | Yes | `google-heif` |
+| Android AVIF (`mpvd`) | Limited samples | Limited samples | `google-avif` |
+| Apple Live Photo (JPEG/HEIF + MOV) | Yes | Yes | `apple` pair |
+| Samsung SEF JPEG (106/107) | Yes | Yes¹ | `samsung-jpeg-sef`² |
+| Legacy Google MicroVideo | Synthetic samples | Synthetic samples | Android format or source copy |
+| Selected OPlus, Xiaomi, vivo, and Honor extensions | Partial | Partial | Standard format or sidecars; no native writer |
+
+¹ Ambiguous Samsung records need explicit selection. ² Samsung writing requires an unknown photo time.
+
+**Apple Photos and vendor Gallery acceptance: unverified for every format above.**
 
 ## Limitations
 
-Original bytes, a structural check, and acceptance by Photos or Gallery are three different results. Extraction can return the original resource bytes. `llp check`, and a build plan with no blockers, speak only to structure. Photos and Gallery stay unverified on every row above.
+Extraction can preserve the original media bytes. `llp check` verifies supported file structures. Neither result proves that a device will accept the file.
 
-Shared operations reject combined input above 128 MiB. Android services reject aggregate input above 32 MiB.
+The CLI and shared interface accept up to **128 MiB** of combined input; Android services accept up to **32 MiB**. Parsing is not streaming. Remuxing does not support fragmented movies or top-level boxes such as `sidx`.
 
-Remux accepts only the top-level boxes `ftyp`, `moov`, `mdat`, `free`, `skip`, and `wide`. Any other top-level box, including `sidx`, is rejected. Fragmented metadata samples and fragmented frame timing are unsupported.
+Writers support source preservation, Android JPEG/HEIF/AVIF, Apple still+MOV pairs, and Samsung JPEG SEF. There is no native OPlus, Xiaomi, vivo, or Honor writer. Writers do not transcode media.
 
-`TargetProfile` writes `PreserveSource`, Android JPEG, HEIF, and AVIF, Samsung JPEG SEF, and an Apple pair. It has no OPlus, Xiaomi, vivo, or Honor writer. The Samsung JPEG SEF writer refuses a known photo time. There is no Moments construction API, and writers do not transcode pixels.
+More details: [CLI](CLI.md) · [Compatibility](COMPATIBILITY.md) · [Native SDK](NATIVE_SDK.md) · [Java/JNI](java/README.md) · [Android](android/README.md) · [Swift](apple/README.md) · [WASM](web/README.md).
 
-Binding notes are in [Java](java/README.md), [Android](android/README.md), [Apple](apple/README.md), and the [WASM demo](web/README.md). Command output and CI records are in [Verification](docs/VERIFICATION.md).
-
-## Further reading
-
-Conversion limits are in [Compatibility](COMPATIBILITY.md). Packaging is in [Native SDK](NATIVE_SDK.md). Vendor ledgers and open questions are indexed in [Research notes](docs/research.md).
-
-## License
-
-Apache-2.0. See [LICENSE](LICENSE).
+Build and test records are in [Verification](docs/VERIFICATION.md). License: [Apache-2.0](LICENSE).
