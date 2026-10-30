@@ -6,7 +6,7 @@
 
 这些格式都把一张照片和一段短视频组合在一起，保存方式却各不相同。LibLivePhoto 可以查看文件内容、提取原始媒体资源，也能生成已支持的目标格式。C/JNI、Android AAR、Swift 和 WASM 绑定仍处于实验阶段。
 
-Rust 1.88+ (tested; not yet declared)
+Rust 1.88 及以上（实测过，仓库尚未声明最低版本）
 
 ## 快速开始
 
