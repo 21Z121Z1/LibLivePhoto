@@ -99,11 +99,13 @@ jobs:
         run: python scripts/test_packaged_sdk.py dist/*-sdk.zip
       - name: Inspect independent packet reader
         if: matrix.os == 'ubuntu-latest'
+        timeout-minutes: 5
         shell: bash
         run: |
           if ! command -v ffprobe; then
-            sudo apt-get update
-            sudo apt-get install -y --no-install-recommends ffmpeg
+            apt_options=(-o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o DPkg::Lock::Timeout=60)
+            sudo apt-get "${apt_options[@]}" update
+            sudo apt-get "${apt_options[@]}" install -y --no-install-recommends ffmpeg
           fi
           ffprobe -version
       - name: Reproducible CLI syntax and independent packet/index/time contracts

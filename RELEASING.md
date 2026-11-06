@@ -52,6 +52,8 @@ tests keep their original opt-in requirements.
 
 All four CI workflows must pass on the exact candidate SHA: format-library
 verification (including Rust 1.88 and crate contents), Apple/web, Android, and docs.
+The Linux independent-reader setup has a five-minute deadline. If a package
+mirror times out, inspect that failed step before rerunning the job.
 The maintainer has completed device verification; retain the actual coverage in
 the [compatibility record](COMPATIBILITY.md#device-verification).
 
