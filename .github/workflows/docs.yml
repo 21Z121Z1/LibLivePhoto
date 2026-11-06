@@ -8,10 +8,14 @@ on:
     paths:
       - '**/*.md'
       - 'docs/**'
+      - 'scripts/check_translations.py'
+      - 'scripts/check_markdown_links.py'
   pull_request:
     paths:
       - '**/*.md'
       - 'docs/**'
+      - 'scripts/check_translations.py'
+      - 'scripts/check_markdown_links.py'
 permissions:
   contents: read
 concurrency:
@@ -33,3 +37,5 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
       - name: Check repo-relative links and heading anchors
         run: python3 scripts/check_markdown_links.py
+      - name: Check paired documentation and identical code examples
+        run: python3 scripts/check_translations.py

@@ -1,5 +1,7 @@
 # Thin Apple adapter
 
+[简体中文](README.zh-CN.md)
+
 Swift Package for macOS 13+ / iOS 16+, using public PhotoKit/PhotosUI/AVFoundation.
 Run `swift test --package-path apple` on macOS. Compile iOS in Xcode or run the
 simulator-SDK build from `.github/workflows/apple-web.yml`. Linux cannot validate

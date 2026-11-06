@@ -40,9 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-Version 0.1.0 is being prepared. Registry installation commands and the release
-procedure are in [Releasing](RELEASING.md). Use the source build above until the
-version appears on crates.io.
+Versioned source and SDK downloads are available from [GitHub Releases](https://github.com/21Z121Z1/LibLivePhoto/releases). Registry installation commands and actual registry availability are separate; see [Releasing](RELEASING.md). The source build above works without a LibLivePhoto registry upload.
 
 ## Examples
 

@@ -9,7 +9,8 @@ from unittest.mock import patch
 import subprocess
 import zipfile
 
-from prepare_release import WORKFLOWS, require_new_release, select_runs, verify_identity, verify_sdk
+from prepare_release import WORKFLOWS, release_notes, require_new_release, select_runs, verify_identity, verify_sdk, wait_for_ci
+from publish_release import validate_candidate
 
 SHA = 'a' * 40
 
@@ -63,6 +64,40 @@ class ReleaseChecks(unittest.TestCase):
                 else:
                     with self.assertRaises(RuntimeError):
                         verify_sdk(path, SHA, '0.1.0')
+
+    def test_wait_only_retries_pending_ci_and_respects_deadline(self):
+        runs = self.runs()
+        pending = [{**r, 'status': 'in_progress', 'conclusion': None} for r in runs]
+        responses = [{'total_count': 4, 'workflow_runs': r} for r in [pending, runs]]
+        with patch('prepare_release.gh_json', side_effect=responses), patch('prepare_release.time.sleep') as sleep:
+            self.assertEqual(len(wait_for_ci('owner/repo', SHA, 30)), 4)
+            sleep.assert_called_once()
+        failed = [{**runs[0], 'conclusion': 'failure'}]
+        with patch('prepare_release.gh_json', return_value={'total_count': 1, 'workflow_runs': failed}), patch('prepare_release.time.sleep') as sleep:
+            with self.assertRaises(RuntimeError):
+                wait_for_ci('owner/repo', SHA, 30)
+            sleep.assert_not_called()
+        with patch('prepare_release.gh_json', return_value={'total_count': 0, 'workflow_runs': []}):
+            with self.assertRaises(TimeoutError):
+                wait_for_ci('owner/repo', SHA, 0)
+
+    def test_first_publisher_refuses_stale_dirty_wrong_repo_and_version(self):
+        source = {'version': '0.1.0', 'implementation_sha': SHA, 'working_tree_clean': True}
+        validate_candidate(source, source, '21Z121Z1/LibLivePhoto', SHA, 'refs/heads/main')
+        for change in ({'version': '0.2.0'}, {'implementation_sha': 'b'*40}, {'working_tree_clean': False}):
+            with self.assertRaises(RuntimeError):
+                validate_candidate({**source, **change}, source, '21Z121Z1/LibLivePhoto', SHA, 'refs/heads/main')
+        for repo, ref in [('owner/repo', 'refs/heads/main'), ('21Z121Z1/LibLivePhoto', 'refs/heads/feature')]:
+            with self.assertRaises(RuntimeError):
+                validate_candidate(source, source, repo, SHA, ref)
+
+    def test_release_notes_include_both_languages_and_tag_scoped_links(self):
+        body = release_notes('21Z121Z1/LibLivePhoto', '0.1.0', SHA)
+        for value in ['## English', '## 简体中文', 'First ordinary release', '首个普通版本',
+                      '/blob/v0.1.0/COMPATIBILITY.md#device-verification',
+                      '/blob/v0.1.0/COMPATIBILITY.zh-CN.md#实机验证']:
+            self.assertIn(value, body)
+        self.assertNotIn('](../', body)
 
 
 if __name__ == '__main__':

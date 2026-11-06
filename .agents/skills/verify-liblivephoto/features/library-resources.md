@@ -1,5 +1,7 @@
 # Library resource bytes
 
+[简体中文](library-resources.zh-CN.md)
+
 ## Sub-features
 
 The library extracts immutable resources to a caller-owned writer. Ordered extents, exact time, explicit parts or Apple pairing, and source cursor preservation retain their existing core contracts.

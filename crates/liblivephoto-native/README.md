@@ -1,5 +1,7 @@
 # liblivephoto-native
 
+[简体中文](README.zh-CN.md)
+
 Experimental C and JNI boundary for the LibLivePhoto operation interface.
 Rust 1.88 or later. It builds `livephoto_native` as a shared/static library;
 the portable parsers remain in safe Rust.

@@ -1,5 +1,7 @@
 # liblivephoto-bridge
 
+[简体中文](README.zh-CN.md)
+
 Experimental owned inspection and exact-time boundary for native and WASM
 clients of LibLivePhoto. Rust 1.88 or later. It keeps parser, pairing and timing
 rules in the Rust core and returns owned inspection manifests.

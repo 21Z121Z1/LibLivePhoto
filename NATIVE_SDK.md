@@ -1,5 +1,7 @@
 # Native SDK integration
 
+[简体中文](NATIVE_SDK.zh-CN.md)
+
 The shared operation implementation backs CLI, C ABI, Java/JNI, Swift and Android
 services. JSON requests use `liblivephoto-interface`; LLP1 responses own exact
 JSON and original output bytes. No wrapper silently publishes files, uploads,
@@ -27,9 +29,11 @@ libraries, C header, Java 8 jar, docs, source identity, file hashes and each loc
 dependency's notices. CI tests extracted packages on Linux x86_64, macOS arm64
 and Windows x86_64. The external Java consumer compiles against only the packaged
 jar and loads the extracted release library. The scripts only build artifacts;
-the [release workflow](RELEASING.md) prepares a separate GitHub Release draft.
+the [release workflows](RELEASING.md) separately prepare and publish versioned assets.
 
-For C, include `native/include/liblivephoto.h`. Rust owns response handles: copy
+For C, use `include/liblivephoto.h` from the SDK, or `native/include/liblivephoto.h`
+from a source checkout. Repository-relative build commands and source paths in
+these guides refer to the tagged source checkout; SDK binaries are under `bin/` and `lib/`. Rust owns response handles: copy
 data before freeing, use the matching free once. Valid pointers are the caller's
 responsibility; null/length/budgets are checked. Core/format/interface continue to
 forbid unsafe code; pointer operations are isolated in the native boundary.
@@ -87,8 +91,9 @@ all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
 at every applicable native, mobile and actual browser entry. See the
 [handoff](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/HANDOFF_ROUND4_20261019.md),
 [terminal receipt](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/platform-bd6f85b.json) and
-[remaining boundaries](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/REMAINING_WORK.md). Native Gallery/Photos and
-full ICC/AAC/rendering/device compatibility are still unverified or partial.
+[remaining boundaries](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/REMAINING_WORK.md). That historical receipt left native Gallery/Photos and full ICC/AAC/rendering/device
+compatibility unverified or partial. The current maintainer-reported device status is
+recorded in [Compatibility](COMPATIBILITY.md#device-verification).
 
 The shared operation protocol now has a minimal WASM export generated into
 `web/dist/operation-pkg` (browser) and `operation-node` (Node):

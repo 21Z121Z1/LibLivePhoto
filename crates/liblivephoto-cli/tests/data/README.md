@@ -1,5 +1,7 @@
 # Packaged test data
 
+[简体中文](README.zh-CN.md)
+
 These are byte-identical copies of the repository fixtures needed by this crate.
 They allow the published source package to run its tests and examples without a
 repository checkout. `scripts/verify_crates.py` checks every mirrored file before

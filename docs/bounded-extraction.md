@@ -1,5 +1,7 @@
 # Complete response checks before resource copies
 
+[简体中文](bounded-extraction.zh-CN.md)
+
 The shared interface now rejects an oversized `resourceIds` selection before copying any selected payload into an output vector. CLI consumers receive the same rejection through `process`, even when they do not serialize LLP1.
 
 The old path copied one resource at a time and checked the response only in `into_envelope`. Distinct SharedData IDs can refer to the same extent, so a bounded source can expand into many separate outputs. The private `CheckedExtraction` borrows the complete selection, asks the core reader for each exact extracted length with `io::sink()`, and checks the complete response before its consuming materializer copies bytes. Core remains responsible for membership, range validation, and extent order.

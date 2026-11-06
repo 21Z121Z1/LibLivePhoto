@@ -75,6 +75,8 @@ def main():
         archive.writestr('R.txt', '')
         archive.writestr('proguard.txt', '-keep class org.liblivephoto.NativeEngine { native <methods>; }\n')
         archive.write(ROOT/'LICENSE', 'META-INF/LICENSE')
+        for name in ['README.md', 'README.zh-CN.md']:
+            archive.write(ROOT/'android'/name, 'docs/'+name)
         archive.write(ROOT/'fixtures/native-dependencies.json', 'META-INF/native-dependencies.json')
         license_files,licenses=dependency_notices()
         for name,path in license_files.items():archive.write(path, 'META-INF/'+name)

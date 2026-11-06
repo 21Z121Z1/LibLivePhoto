@@ -60,7 +60,8 @@ def main():
     files.update({f'lib/{lib}':target/lib,f'lib/{static}':target/static,f'bin/{cli}':target/cli,
            'java/liblivephoto-java.jar':ROOT/'java/build/liblivephoto-java.jar',
            'include/liblivephoto.h':ROOT/'native/include/liblivephoto.h',
-           'LICENSE':ROOT/'LICENSE','CLI.md':ROOT/'CLI.md','java/README.md':ROOT/'java/README.md'})
+           'LICENSE':ROOT/'LICENSE',
+           **{name:ROOT/name for name in ['CLI.md','CLI.zh-CN.md','NATIVE_SDK.md','NATIVE_SDK.zh-CN.md','java/README.md','java/README.zh-CN.md']}})
     out=ROOT/'dist';out.mkdir(exist_ok=True)
     name=f'liblivephoto-{os_name}-{arch}-sdk.zip';archive=out/name
     receipt={**source_identity(),

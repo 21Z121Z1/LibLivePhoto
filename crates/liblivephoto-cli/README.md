@@ -1,5 +1,7 @@
 # llp
 
+[简体中文](README.zh-CN.md)
+
 Command-line interface for LibLivePhoto. Rust 1.88 or later.
 
 After this version is published to crates.io:

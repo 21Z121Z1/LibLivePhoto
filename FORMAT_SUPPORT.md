@@ -1,5 +1,7 @@
 # Format support
 
+[简体中文](FORMAT_SUPPORT.zh-CN.md)
+
 Statuses refer to the contracts below. A vendor name does not establish device support.
 The maintainer has completed device verification; the tables retain their
 automated-evidence scope. See the [device record](COMPATIBILITY.md#device-verification)
@@ -55,5 +57,6 @@ all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
 at every applicable native, mobile and actual browser entry. See the
 [handoff](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/HANDOFF_ROUND4_20261019.md),
 [terminal receipt](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/platform-bd6f85b.json) and
-[remaining boundaries](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/REMAINING_WORK.md). Native Gallery/Photos and
-full ICC/AAC/rendering/device compatibility are still unverified or partial.
+[remaining boundaries](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/REMAINING_WORK.md). That historical receipt left native Gallery/Photos and full ICC/AAC/rendering/device
+compatibility unverified or partial. The current maintainer-reported device status is
+recorded in [Compatibility](COMPATIBILITY.md#device-verification).

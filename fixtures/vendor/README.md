@@ -1,5 +1,7 @@
 # Vendor declaration contracts
 
+[简体中文](README.zh-CN.md)
+
 Thirteen transport cases use the repository's existing owned neutral
 `web/public/demo/motion.mp4` and `fixtures/bindings/vivo-stream-motion.jpg`.
 Samsung wrappers are independently authored from the documented SEF framing;

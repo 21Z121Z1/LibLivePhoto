@@ -1,5 +1,7 @@
 # liblivephoto-format
 
+[简体中文](README.zh-CN.md)
+
 Bounds-checked JPEG, EXIF/TIFF, HEIF and ISO BMFF primitives used by LibLivePhoto.
 Rust 1.88 or later; no platform SDK or codec dependency.
 

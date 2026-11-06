@@ -1,5 +1,7 @@
 # Technical writing
 
+[简体中文](STYLE.zh-CN.md)
+
 Use ASD-STE100 Issue 9 principles for English technical documentation.
 Use one approved term for each concept. Define a term before its first use.
 State requirements with **must**. State recommendations with **should**.

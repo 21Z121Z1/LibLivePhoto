@@ -1,15 +1,18 @@
 # Changelog
 
-## 0.1.0 — release preparation
+[简体中文](CHANGELOG.zh-CN.md)
 
-First ordinary release of the Rust core and `llp` CLI. The release date and tag
-are assigned when publishing; this entry does not mean the registry upload is done.
+## 0.1.0 — 2026-11-06
+
+First ordinary release of the Rust core and `llp` CLI.
+GitHub SDK/source releases and crates.io uploads have separate availability.
 
 - Inspect, extract, structurally check and convert supported Apple Live Photo,
   Android Motion Photo and Samsung SEF layouts without transcoding media.
 - Preserve exact resource bytes and rational photo time under explicit conversion
   and unmapped-resource policies; expose bounded vendor metadata inspection.
 - Declare Rust 1.88 as the minimum supported toolchain.
+- Provide English and Simplified Chinese documentation and release notes.
 - Include the synthetic data required by the crate tests and examples, package
   READMEs and license texts, and verify consumers outside the source repository.
 - Provide host SDK archives with dependency notices, source identity and hashes.

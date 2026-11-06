@@ -1,12 +1,19 @@
 # Releasing LibLivePhoto
 
-0.1.0 is in preparation. No registry upload or public release is performed by PR
-checks. Rust core and `llp` are the supported release surface. The platform
-bindings remain experimental and are included as SDK assets.
+[简体中文](RELEASING.zh-CN.md)
 
-## Install a published version
+Rust core and `llp` are the supported 0.1 release surface. Platform bindings remain experimental. GitHub releases and registry uploads are separate operations; inspect the workflow summary for their actual outcomes.
 
-These commands become available after 0.1.0 appears on crates.io:
+## Install
+
+GitHub source builds do not require the LibLivePhoto crates to exist on crates.io:
+
+```sh
+cargo install --git https://github.com/21Z121Z1/LibLivePhoto.git --tag v0.1.0 --locked liblivephoto-cli
+llp version
+```
+
+After 0.1.0 is available on crates.io, applications can use:
 
 ```toml
 [dependencies]
@@ -18,80 +25,33 @@ cargo install --locked liblivephoto-cli --version 0.1.0
 llp version
 ```
 
-Before that, use the source build in the [README](README.md). Host SDK archives
-are attached to the versioned GitHub Release; verify the accompanying SHA-256
-file before use. Swift/Android integrations follow [Native SDK](NATIVE_SDK.md).
+Host SDK archives are attached to the versioned GitHub Release. Verify their SHA-256 files. Integration: [Native SDK](NATIVE_SDK.md).
 
 ## Verify the candidate
 
-Use Python 3.11+ and Cargo 1.90+ for workspace packaging. Consumers only need Rust
-1.88+. Cargo 1.90 is needed for multi-package publishing, not for the library API.
-Run these commands from a clean checkout of the intended commit:
+Use Python 3.11+ and Cargo 1.90+ for workspace packaging; consumers need Rust 1.88+. Cargo 1.90 is required for multi-package publishing. From a clean checkout:
 
 ```sh
 cargo +1.88.0 test --locked --workspace --all-targets --all-features
 cargo fmt --all --check
 cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
 python3 scripts/check_markdown_links.py
+python3 scripts/check_translations.py
 python3 scripts/verify_crates.py
 ```
 
-`verify_crates.py` runs `cargo publish --workspace --dry-run --locked`, then
-extracts all six `.crate` archives into a temporary workspace. It runs all their
-tests/examples, doctests, rustdoc with warnings denied, an external Rust conversion
-consumer and a CLI installation. Before the first upload, patches resolve local
-dependencies to those extracted archives. They never point to repository sources.
-This proves archive contents and consumption; the final registry upload/download
-is a separate check. `--allow-dirty` is available for local development only.
+`verify_crates.py` dry-runs workspace publishing, extracts all six archives and runs tests/examples, doctests, rustdoc, an external Rust converter and a CLI installation. Until registry upload, dependency patches point only to extracted archives. Registry installation is checked separately after upload. `--allow-dirty` is for local development.
 
-Required synthetic fixture copies live under each crate's `tests/data`, preserving
-the original repository-relative layout and provenance. The verifier compares
-them with their original files byte for byte. Update the copies whenever an
-original changes. Private originals are not included; existing external-corpus
-tests keep their original opt-in requirements.
+Required synthetic copies under `tests/data` are compared byte for byte with the repository sources. Original private photos remain excluded. The original-corpus tests retain their opt-in inputs. Package READMEs, CLI/SDK guides and release notes are supplied in English and Simplified Chinese; executable agent instructions and original third-party license texts keep their original language.
 
-All four CI workflows must pass on the exact candidate SHA: format-library
-verification (including Rust 1.88 and crate contents), Apple/web, Android, and docs.
-The Linux independent-reader setup has a five-minute deadline. If a package
-mirror times out, inspect that failed step before rerunning the job.
-The maintainer has completed device verification; retain the actual coverage in
-the [compatibility record](COMPATIBILITY.md#device-verification).
+All four main push workflows must succeed on the exact candidate SHA: format-library verification, Apple/web, Android and docs. Linux independent-reader setup has a five-minute deadline. Inspect failed mirror downloads before rerunning a job. The maintainer has completed device verification; published scope is recorded in [Compatibility](COMPATIBILITY.md#device-verification).
 
-## Prepare a GitHub Release draft
+## Publish the approved first version
 
-After the change is merged, dispatch **Prepare release draft** on `main` with the
-full SHA of the current `main` head and `version: 0.1.0`. It checks versions and
-the four successful push workflows for that SHA, downloads their existing
-artifacts, verifies their source receipts, and creates a draft containing:
+The one-time `Publish approved v0.1.0` workflow starts when its workflow file is merged into main, or by a main-branch manual dispatch. It waits for exact-main CI, verifies archive/source/version hashes, prepares the existing tested artifacts, then publishes the GitHub Release and matching tag. Its release body contains both language versions of `release-notes/v0.1.0`.
 
-- all six Rust source packages;
-- the three host SDK archives and SHA-256 files;
-- the iOS XCFramework archive and Android AAR, marked experimental;
-- a release manifest with the source SHA and asset hashes.
+The release includes six Rust source archives, three host SDK archives, the experimental iOS XCFramework and Android AAR, SHA-256 files and a source/asset manifest. The separate `Prepare release draft` workflow remains available for manual draft preparation.
 
-The workflow creates a draft only. It does not publish to crates.io or publish
-the GitHub Release. It refuses an existing release/tag rather than replacing it.
-Review the draft, compatibility scope and notices before publication.
+If the repository has a `CARGO_REGISTRY_TOKEN` secret, the publication job uploads the workspace to crates.io and verifies a new registry-only Rust consumer and installed CLI. No token is printed. If the secret is absent, the job explicitly records that crates.io upload was not attempted; GitHub source/SDK publication can still complete. Do not describe an absent registry upload as an installed registry release.
 
-## Publish and check installation
-
-With publishing credentials configured by the maintainer, run from the reviewed
-commit using Cargo 1.90+:
-
-```sh
-cargo publish --workspace --locked
-```
-
-Cargo orders the format, core, bridge, interface, CLI and native crates by their
-dependencies. Published versions cannot be overwritten. If an earlier attempt
-partly uploaded, inspect the registry and publish only the remaining packages;
-do not change a version's content and retry it.
-
-After upload, create a new Rust project outside the repository with the registry
-dependency shown above. Run its parse/extract example on a known fixture, and run
-the CLI installation command without `--path`, patches or source overrides.
-Confirm `llp version` reports 0.1.0. This verifies registry distribution separately
-from archive testing. Then publish the reviewed GitHub Release draft, creating
-the matching `v0.1.0` tag, and replace the preparation wording/date in the docs.
-
-0.1.x compatibility commitments are in [Changelog](CHANGELOG.md#compatibility-policy).
+Published crate versions cannot be overwritten. If a registry upload partly succeeds, inspect its versions and publish only the remaining packages from the same reviewed source. Existing releases/tags are not silently replaced. The 0.1.x policy is in [Changelog](CHANGELOG.md#compatibility-policy).

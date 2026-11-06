@@ -1,5 +1,7 @@
 # Compatibility and conversion
 
+[简体中文](COMPATIBILITY.zh-CN.md)
+
 ## Device verification
 
 The maintainer reported device verification complete on 2026-11-06. The detailed

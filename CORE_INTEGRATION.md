@@ -1,5 +1,7 @@
 # Core integration
 
+[简体中文](CORE_INTEGRATION.zh-CN.md)
+
 This phase extends the implementation at PR #1 commit
 `794ab552596db0f66095600d23cf7937a631b9ec`. It does not replace the existing
 resource model, Apple writer or plan/execute boundary. The [initial coverage matrix](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/GOOGLE_CORE_COVERAGE.md)
@@ -293,8 +295,9 @@ all three workflows/eight jobs, including 42 new syntax/byte/time/error vectors
 at every applicable native, mobile and actual browser entry. See the
 [handoff](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/HANDOFF_ROUND4_20261019.md),
 [terminal receipt](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/platform-bd6f85b.json) and
-[remaining boundaries](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/REMAINING_WORK.md). Native Gallery/Photos and
-full ICC/AAC/rendering/device compatibility are still unverified or partial.
+[remaining boundaries](https://github.com/21Z121Z1/LibLivePhoto/blob/archive/evidence-20261030/evidence/REMAINING_WORK.md). That historical receipt left native Gallery/Photos and full ICC/AAC/rendering/device
+compatibility unverified or partial. The current maintainer-reported device status is
+recorded in [Compatibility](COMPATIBILITY.md#device-verification).
 
 `AacConfiguration` gained public `channel_configuration` and `program_config`
 in round3. Existing methods/read-side fields and destructuring with `..` remain

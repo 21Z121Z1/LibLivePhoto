@@ -1,5 +1,7 @@
 # liblivephoto-interface
 
+[简体中文](README.zh-CN.md)
+
 Shared parse, extract, build, check and metadata operations behind `llp`, JNI,
 Swift and WASM. Rust 1.88 or later. This adapter crate is experimental.
 

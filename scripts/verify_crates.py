@@ -85,8 +85,11 @@ def main():
             metadata = tomllib.loads((directory / member / 'Cargo.toml').read_text())
             if metadata['package'].get('rust-version') != '1.88':
                 raise RuntimeError('missing supported Rust version in ' + member)
-            if not metadata['package'].get('description') or not (directory / member / 'README.md').is_file():
-                raise RuntimeError('missing package description or README in ' + member)
+            if not metadata['package'].get('description'):
+                raise RuntimeError('missing package description in ' + member)
+            for readme in ('README.md', 'README.zh-CN.md'):
+                if (directory / member / readme).read_bytes() != (ROOT / 'crates' / name / readme).read_bytes():
+                    raise RuntimeError('missing or changed package README: ' + member + '/' + readme)
             if (directory / member / 'LICENSE').read_bytes() != (ROOT / 'LICENSE').read_bytes():
                 raise RuntimeError('missing or changed package license in ' + member)
             members.append(member)

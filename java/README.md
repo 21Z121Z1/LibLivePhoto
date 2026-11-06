@@ -1,5 +1,7 @@
 # Maintained Java/JNI interface
 
+[简体中文](README.zh-CN.md)
+
 Build the isolated native boundary with `cargo build -p liblivephoto-native`, then
 run `python3 scripts/test_java.py` using a full JDK 21 (compiles `--release 8`).
 Java 8-compatible sources use only public APIs; Android currently targets API 26+

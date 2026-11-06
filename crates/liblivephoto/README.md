@@ -1,5 +1,7 @@
 # liblivephoto
 
+[简体中文](README.zh-CN.md)
+
 Rust library for inspecting, extracting and converting Apple Live Photos,
 Android Motion Photos and supported Samsung SEF layouts. Rust 1.88 or later.
 The library preserves encoded media; it does not transcode images or video.

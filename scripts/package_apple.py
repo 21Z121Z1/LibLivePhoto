@@ -25,6 +25,8 @@ def main():
     for name,path in license_files.items():
         dest=framework/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(path,dest)
     shutil.copyfile(ROOT/'LICENSE',framework/'LICENSE')
+    for name in ['README.md','README.zh-CN.md']:
+        shutil.copyfile(ROOT/'apple'/name,framework/name)
     (framework/'dependency-notices.json').write_text(json.dumps(licenses,indent=2)+'\n')
     receipt={**source_identity(),
              'targets':TARGETS,'target_sdks':sdks,'deployment_target':'16.0','xcode':subprocess.check_output(['xcodebuild','-version'],text=True).strip(),

@@ -40,8 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-0.1.0 正在准备发布。注册表安装命令与发布步骤见[发布说明](RELEASING.md)；
-在 crates.io 出现该版本之前，请使用上面的源码构建方式。
+版本化源码和 SDK 可从 [GitHub Releases](https://github.com/21Z121Z1/LibLivePhoto/releases) 获取。注册表安装命令与实际可用状态单独记录，见[发布说明](RELEASING.zh-CN.md)。上面的源码构建不依赖 LibLivePhoto 已上传注册表。
 
 ## 示例
 
@@ -74,7 +73,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## 格式支持
 
-下表仅列出已经实现、并有样本测试覆盖的操作。各格式的具体条件见[格式支持说明](FORMAT_SUPPORT.md)。
+下表仅列出已经实现、并有样本测试覆盖的操作。各格式的具体条件见[格式支持说明](FORMAT_SUPPORT.zh-CN.md)。
 
 | 格式 | 读取 | 提取 | 生成 / 转换 |
 | --- | --- | --- | --- |
@@ -89,7 +88,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ¹ Samsung 记录有歧义时，必须明确选择。² Samsung 写入要求照片时间未知。
 
 维护者已完成实机验证。此表描述已实现的布局和自动化覆盖；具体设备、系统和操作组合
-尚未逐项录入公开的[兼容性记录](COMPATIBILITY.md#device-verification)。
+尚未逐项录入公开的[兼容性记录](COMPATIBILITY.zh-CN.md#实机验证)。
 
 ## 目前的限制
 
@@ -99,7 +98,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 写入器支持保留原文件、生成 Android JPEG/HEIF/AVIF、Apple 照片与 MOV 配对文件，以及 Samsung JPEG SEF。没有 OPlus、小米、vivo、荣耀的原生写入器，也不会重新编码媒体内容。
 
-更多说明：[CLI](CLI.md) · [兼容性](COMPATIBILITY.md) · [原生 SDK](NATIVE_SDK.md) · [Java/JNI](java/README.md) · [Android](android/README.md) · [Swift](apple/README.md) · [WASM](web/README.md)。
+更多说明：[CLI](CLI.zh-CN.md) · [兼容性](COMPATIBILITY.zh-CN.md) · [原生 SDK](NATIVE_SDK.zh-CN.md) · [Java/JNI](java/README.zh-CN.md) · [Android](android/README.zh-CN.md) · [Swift](apple/README.zh-CN.md) · [WASM](web/README.zh-CN.md)。
 
 构建与测试记录见[验证记录](docs/VERIFICATION.zh-CN.md)。0.1.x 兼容性约定和发布检查
-见[更新记录](CHANGELOG.md)与[发布说明](RELEASING.md)。项目采用 [Apache-2.0 许可证](LICENSE)。
+见[更新记录](CHANGELOG.zh-CN.md)与[发布说明](RELEASING.zh-CN.md)。项目采用 [Apache-2.0 许可证](LICENSE)。
