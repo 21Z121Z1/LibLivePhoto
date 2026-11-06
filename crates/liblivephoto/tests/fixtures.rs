@@ -59,7 +59,7 @@ fn real_corpus_parses_validates_extracts_and_preserves_all_source_bytes() {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/cache"));
     let manifest: serde_json::Value =
-        serde_json::from_str(include_str!("../../../fixtures/manifest.json")).unwrap();
+        serde_json::from_str(include_str!("data/fixtures/manifest.json")).unwrap();
     let rows = manifest["fixtures"].as_array().unwrap();
     assert_eq!(rows.len(), 14);
     for row in rows {

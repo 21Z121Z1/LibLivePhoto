@@ -1,6 +1,9 @@
 # Format support
 
 Statuses refer to the contracts below. A vendor name does not establish device support.
+The maintainer has completed device verification; the tables retain their
+automated-evidence scope. See the [device record](COMPATIBILITY.md#device-verification)
+for the distinction between that completion and per-format published coverage.
 
 | Contract | Read | Write | Structural validation | Original consumer |
 | --- | --- | --- | --- | --- |

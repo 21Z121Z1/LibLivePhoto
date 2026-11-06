@@ -22,11 +22,12 @@ python3 scripts/package_native.py
 python3 scripts/test_packaged_sdk.py dist/liblivephoto-<os>-<arch>-sdk.zip
 ```
 
-Requires full JDK 21 and Rust. Archives include the release CLI, shared/static
+Requires Python 3.11+, full JDK 21 and Rust. Archives include the release CLI, shared/static
 libraries, C header, Java 8 jar, docs, source identity, file hashes and each locked
 dependency's notices. CI tests extracted packages on Linux x86_64, macOS arm64
 and Windows x86_64. The external Java consumer compiles against only the packaged
-jar and loads the extracted release library. No release or registry is published.
+jar and loads the extracted release library. The scripts only build artifacts;
+the [release workflow](RELEASING.md) prepares a separate GitHub Release draft.
 
 For C, include `native/include/liblivephoto.h`. Rust owns response handles: copy
 data before freeing, use the matching free once. Valid pointers are the caller's

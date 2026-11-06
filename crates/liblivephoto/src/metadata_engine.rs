@@ -839,7 +839,7 @@ mod tests {
     }
     #[test]
     fn opcamera_xmp_in_real_heic_is_a_declaration_without_a_fabricated_movie() {
-        let still = include_bytes!("../../../web/public/acceptance/still.heic");
+        let still = include_bytes!("../tests/data/web/public/acceptance/still.heic");
         let declaration = r#"<rdf:Description xmlns:o="http://ns.oplus.com/photo/1.0/camera/" o:OLivePhotoVersion="2" o:VideoLength="19000" o:PrimaryPresentationTimestampUs="812500"/>"#;
         let image = crate::heif_io::replace_xmp(still, declaration).unwrap();
         let collection = MetadataEngine::new()

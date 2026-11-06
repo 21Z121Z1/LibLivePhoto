@@ -5,10 +5,12 @@ This produces an artifact; it does not create a release or publish a package.
 """
 import argparse,hashlib,json,os,platform,subprocess,sys,zipfile
 from pathlib import Path
+import tomllib
 ROOT=Path(__file__).resolve().parents[1]
 def run(args):subprocess.run(list(map(str,args)),cwd=ROOT,check=True)
 def source_identity():
     return {'implementation_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+            'version':tomllib.loads((ROOT/'crates/liblivephoto/Cargo.toml').read_text())['package']['version'],
             'working_tree_clean':not bool(subprocess.check_output(['git','status','--porcelain','--untracked-files=normal'],cwd=ROOT,text=True).strip()),
             'tracked_diff_sha256':hashlib.sha256(subprocess.check_output(['git','diff','HEAD','--binary'],cwd=ROOT)).hexdigest()}
 def dependency_notices():

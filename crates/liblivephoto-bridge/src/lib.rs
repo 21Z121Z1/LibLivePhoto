@@ -208,7 +208,7 @@ mod wasm {
     }
 }
 #[cfg(test)]
-#[path = "../../liblivephoto/tests/common/mod.rs"]
+#[path = "../tests/common/mod.rs"]
 mod test_data;
 #[cfg(test)]
 mod tests {

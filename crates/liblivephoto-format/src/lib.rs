@@ -1,4 +1,5 @@
 #![forbid(unsafe_code)]
+#![doc = include_str!("../README.md")]
 //! Shared format primitives. This crate has no product or platform dependencies.
 pub mod cursor;
 pub mod error;

@@ -1,5 +1,9 @@
 # 验证记录
 
+当前发布检查与工具链约定见[发布说明](../RELEASING.md)，manifest 已声明 Rust 1.88。
+维护者已完成实机验证，范围说明见[兼容性记录](../COMPATIBILITY.md#device-verification)。
+下面的命令记录保留其原始提交和执行时点。
+
 [English](VERIFICATION.md)
 
 这些内容原先写在中英文首页上。它们是某一次写文档时留下的实测，不是长期承诺。这次为了好读而改首页，没有把下面的命令再跑一遍。

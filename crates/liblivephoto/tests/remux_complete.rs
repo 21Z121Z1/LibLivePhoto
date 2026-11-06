@@ -72,15 +72,15 @@ fn hvc1_is_supported_without_decoding_while_fragmented_and_unknown_layouts_fail(
 }
 #[test]
 fn real_h264_b_frames_and_apple_metadata_survive_optimization() {
-    let movie = include_bytes!("../../../web/public/demo/motion.mp4");
+    let movie = include_bytes!("data/web/public/demo/motion.mp4");
     let optimized = optimize(movie, OptimizeOptions::default()).unwrap();
     assert_eq!(
         video_frame_times(movie, 1, 1000).unwrap(),
         video_frame_times(&optimized.bytes, 1, 1000).unwrap()
     );
-    let apple = include_bytes!("../../../web/public/demo/apple-paired.mov");
+    let apple = include_bytes!("data/web/public/demo/apple-paired.mov");
     let optimized = optimize(apple, OptimizeOptions::default()).unwrap();
-    let still = include_bytes!("../../../web/public/demo/apple-still.jpg");
+    let still = include_bytes!("data/web/public/demo/apple-still.jpg");
     let photo = MotionPhoto::parse(
         Input::ApplePair {
             still,

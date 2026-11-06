@@ -2,6 +2,9 @@
 name = "liblivephoto-format"
 version = "0.1.0"
 edition.workspace = true
+rust-version.workspace = true
+readme = "README.md"
+include = ["Cargo.toml", "README.md", "LICENSE", "src/**", "tests/**", "examples/**"]
 license.workspace = true
 repository.workspace = true
 description = "Portable JPEG, EXIF, TIFF, HEIF and ISO BMFF format primitives"

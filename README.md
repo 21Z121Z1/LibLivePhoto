@@ -6,7 +6,8 @@
 
 These formats all combine a still image with a short video, but store them differently. LibLivePhoto can inspect their contents, extract the original media, and build supported output formats. The C/JNI, Android AAR, Swift, and WASM bindings are experimental.
 
-Rust 1.88+ (tested; not yet declared)
+Rust 1.88+. Rust core and `llp` are the supported 0.1 release surface; the
+`xdremux-compat` feature and platform bindings remain experimental.
 
 ## Quick start
 
@@ -25,6 +26,23 @@ To use the library in a Rust project next to the `LibLivePhoto` directory, add t
 [dependencies]
 liblivephoto = { path = "../LibLivePhoto/crates/liblivephoto" }
 ```
+
+```rust,no_run
+use liblivephoto::{Input, MotionPhoto, ParseOptions};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let bytes = std::fs::read("input.jpg")?;
+    let photo = MotionPhoto::parse(Input::SingleFile(&bytes), ParseOptions::compatible())?;
+    photo.validate()?;
+    let mut video = std::fs::File::create_new("video.mp4")?;
+    photo.extract(photo.motion_video(), &mut video)?;
+    Ok(())
+}
+```
+
+Version 0.1.0 is being prepared. Registry installation commands and the release
+procedure are in [Releasing](RELEASING.md). Use the source build above until the
+version appears on crates.io.
 
 ## Examples
 
@@ -71,7 +89,9 @@ The table covers implemented operations and tested file layouts. See [Format sup
 
 ¹ Ambiguous Samsung records need explicit selection. ² Samsung writing requires an unknown photo time.
 
-**Apple Photos and vendor Gallery acceptance: unverified for every format above.**
+The maintainer has completed device verification. This table describes implemented
+layouts and automated coverage; the device/OS/operation combinations have not yet
+been itemized in the public [compatibility record](COMPATIBILITY.md#device-verification).
 
 ## Limitations
 
@@ -83,4 +103,6 @@ Writers support source preservation, Android JPEG/HEIF/AVIF, Apple still+MOV pai
 
 More details: [CLI](CLI.md) · [Compatibility](COMPATIBILITY.md) · [Native SDK](NATIVE_SDK.md) · [Java/JNI](java/README.md) · [Android](android/README.md) · [Swift](apple/README.md) · [WASM](web/README.md).
 
-Build and test records are in [Verification](docs/VERIFICATION.md). License: [Apache-2.0](LICENSE).
+Build and test records are in [Verification](docs/VERIFICATION.md).
+See [Changes](CHANGELOG.md) and [Releasing](RELEASING.md) for the 0.1.x compatibility
+policy and release checks. License: [Apache-2.0](LICENSE).

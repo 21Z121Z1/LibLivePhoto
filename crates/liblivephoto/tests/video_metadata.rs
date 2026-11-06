@@ -178,7 +178,7 @@ fn scoring_samples_use_declared_mime_and_actual_sample_association() {
             .unwrap()
             .is_empty()
     );
-    let apple = include_bytes!("../../../web/public/demo/apple-paired.mov");
+    let apple = include_bytes!("data/web/public/demo/apple-paired.mov");
     assert!(
         extract_video_metadata(apple, PhotoTimeExpectation::Unchecked)
             .unwrap()
