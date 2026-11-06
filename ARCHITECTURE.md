@@ -1,5 +1,7 @@
 # Architecture
 
+[简体中文](ARCHITECTURE.zh-CN.md)
+
 `liblivephoto-format` owns bounded cursors, errors, FourCC, JPEG segments, raw EXIF
 and BMFF structures. It has no dependencies. XDRemux can re-export this boundary
 for codec modules that use the same primitives. Do not duplicate these parsers.

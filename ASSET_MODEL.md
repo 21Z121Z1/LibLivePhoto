@@ -1,5 +1,7 @@
 # Asset model
 
+[简体中文](ASSET_MODEL.zh-CN.md)
+
 `MotionAsset` separates layout, format, dialect and provenance. Sources contain
 bytes. Resources refer to sources. Containers refer to resources. Tracks belong
 to containers. A track ID is the `tkhd` identifier; its index is its order.

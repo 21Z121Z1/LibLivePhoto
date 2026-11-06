@@ -1,5 +1,7 @@
 # Terminology
 
+[简体中文](TERMINOLOGY.zh-CN.md)
+
 | Term | Definition |
 | --- | --- |
 | Asset | Resources with declared or observed identity, time or semantic relationships. |

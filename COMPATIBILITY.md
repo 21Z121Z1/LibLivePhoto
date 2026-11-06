@@ -1,5 +1,21 @@
 # Compatibility and conversion
 
+[简体中文](COMPATIBILITY.zh-CN.md)
+
+## Device verification
+
+The maintainer reported device verification complete on 2026-11-06. The detailed
+device, OS/Gallery and per-operation matrix has not been published. This completion
+does not assign a result to an unspecified device or every table row.
+
+The tables below describe automated evidence. Their consumer fields reflect the
+published per-format record, not a requirement to repeat the maintainer's tests.
+Runtime reports retain `Unverified`: the library cannot infer device acceptance
+from a file's structural checks. Add the existing device results here when the
+specific coverage is available; do not infer it from CI.
+
+## Conversion policy
+
 Read, write, validation and target-consumer status are separate fields.
 Runtime reports use `Unverified` for target consumers. A successful parser or
 writer does not establish Camera, Gallery, Photos, editing or device acceptance.

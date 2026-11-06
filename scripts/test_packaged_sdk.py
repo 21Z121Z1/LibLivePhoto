@@ -15,6 +15,8 @@ def main():
                 if path.is_absolute() or '..' in path.parts:raise RuntimeError('unsafe archive path')
             zipped.extractall(directory)
         manifest=json.loads((directory/'manifest.json').read_text())
+        for name in ['CLI.md','CLI.zh-CN.md','NATIVE_SDK.md','NATIVE_SDK.zh-CN.md','java/README.md','java/README.zh-CN.md']:
+            assert (directory/name).read_bytes()==(ROOT/name).read_bytes(),name
         for name,digest in manifest['files'].items():assert hashlib.sha256((directory/name).read_bytes()).hexdigest()==digest,name
         windows=platform.system()=='Windows';cli=directory/'bin'/('llp.exe' if windows else 'llp')
         if not windows:cli.chmod(0o700)

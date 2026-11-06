@@ -1,13 +1,13 @@
 use liblivephoto_interface::*;
 use serde_json::json;
-#[path = "../../liblivephoto/tests/common/mod.rs"]
+#[path = "common/mod.rs"]
 mod common;
 
 #[test]
 fn explicit_samsung_selection_does_not_parse_or_rewrite_an_ambiguous_asset() {
-    let source = include_bytes!("../../../fixtures/vendor-selection/distinct-ambiguous.jpg");
-    let a = include_bytes!("../../../fixtures/vendor-selection/movie-a.mp4");
-    let b = include_bytes!("../../../fixtures/vendor-selection/movie-b.mp4");
+    let source = include_bytes!("data/fixtures/vendor-selection/distinct-ambiguous.jpg");
+    let a = include_bytes!("data/fixtures/vendor-selection/movie-a.mp4");
+    let b = include_bytes!("data/fixtures/vendor-selection/movie-b.mp4");
     assert!(!process(r#"{"action":"extract"}"#, source, &[]).success);
     for (index, expected) in [
         ("0", a.as_slice()),
@@ -106,8 +106,8 @@ fn conformance_profiles_report_rule_kinds_and_reject_ambiguous_associations() {
 }
 #[test]
 fn protocol_returns_exact_bytes_and_explicit_plan_failures() {
-    let still = include_bytes!("../../../web/public/demo/cover.jpg");
-    let movie = include_bytes!("../../../web/public/demo/motion.mp4");
+    let still = include_bytes!("data/web/public/demo/cover.jpg");
+    let movie = include_bytes!("data/web/public/demo/motion.mp4");
     let built=process(&json!({"action":"build","inputKind":"parts","time":{"value":"13","timescale":16},"target":"google-jpeg"}).to_string(),still,movie);
     assert!(built.success);
     let bytes = &built.files[0].bytes;
@@ -132,7 +132,7 @@ fn protocol_returns_exact_bytes_and_explicit_plan_failures() {
 }
 #[test]
 fn request_type_errors_and_metadata_only_inputs_are_clear() {
-    let still = include_bytes!("../../../web/public/demo/cover.jpg");
+    let still = include_bytes!("data/web/public/demo/cover.jpg");
     let bad = process(
         r#"{"action":"parse","disableThirdParty":"true"}"#,
         still,
@@ -147,8 +147,8 @@ fn request_type_errors_and_metadata_only_inputs_are_clear() {
 }
 #[test]
 fn physical_movie_brand_and_absent_optional_xmp_are_reported() {
-    let movie = include_bytes!("../../../web/public/demo/apple-paired.mov");
-    let still = include_bytes!("../../../web/public/demo/cover.jpg");
+    let movie = include_bytes!("data/web/public/demo/apple-paired.mov");
+    let still = include_bytes!("data/web/public/demo/cover.jpg");
     let optimized = process(r#"{"action":"optimize"}"#, movie, &[]);
     assert!(optimized.success);
     assert_eq!(optimized.files[0].mime, "video/quicktime");
@@ -164,9 +164,9 @@ fn physical_movie_brand_and_absent_optional_xmp_are_reported() {
 }
 #[test]
 fn agtm_binding_returns_complete_raw_metadata_and_source_classification_stays_unverified() {
-    let movie = include_bytes!("../../../fixtures/bindings/agtm-video.mp4");
-    let image = include_bytes!("../../../fixtures/bindings/agtm-motion.jpg");
-    let raw = include_bytes!("../../../fixtures/bindings/agtm-raw.bin");
+    let movie = include_bytes!("data/fixtures/bindings/agtm-video.mp4");
+    let image = include_bytes!("data/fixtures/bindings/agtm-motion.jpg");
+    let raw = include_bytes!("data/fixtures/bindings/agtm-raw.bin");
     let video_result = process(
         r#"{"action":"agtm","videoInput":true,"time":{"value":"1","timescale":1}}"#,
         movie,
@@ -187,7 +187,7 @@ fn agtm_binding_returns_complete_raw_metadata_and_source_classification_stays_un
     }
     let classification = process(
         r#"{"action":"classify-metadata"}"#,
-        include_bytes!("../../../fixtures/bindings/collection.json"),
+        include_bytes!("data/fixtures/bindings/collection.json"),
         &[],
     );
     assert!(classification.success);
@@ -196,7 +196,7 @@ fn agtm_binding_returns_complete_raw_metadata_and_source_classification_stays_un
 }
 #[test]
 fn raw_metadata_blocks_are_exact_source_bytes_including_complete_large_trailers() {
-    let mut large = include_bytes!("../../../web/public/demo/cover.jpg").to_vec();
+    let mut large = include_bytes!("data/web/public/demo/cover.jpg").to_vec();
     large.extend(vec![0x55; 1024 * 1024]);
     let complete = process(r#"{"action":"extract-metadata"}"#, &large, &[]);
     assert!(complete.success);
@@ -212,7 +212,7 @@ fn raw_metadata_blocks_are_exact_source_bytes_including_complete_large_trailers(
             .unwrap()["rawComplete"],
         false
     );
-    let image = include_bytes!("../../../fixtures/bindings/agtm-motion.jpg");
+    let image = include_bytes!("data/fixtures/bindings/agtm-motion.jpg");
     let result = process(r#"{"action":"extract-metadata"}"#, image, &[]);
     assert!(result.success);
     let collection = liblivephoto::MetadataEngine::new()

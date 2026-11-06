@@ -4,12 +4,12 @@ use serde_json::json;
 #[test]
 fn ordinary_still_motion_and_serialized_collections_are_distinct() {
     let engine = MetadataEngine::new();
-    let still = include_bytes!("../../../web/public/demo/cover.jpg");
+    let still = include_bytes!("data/web/public/demo/cover.jpg");
     let plain = engine.parse(still, &HandlerOptions::default()).unwrap();
     assert!(!plain.verified_motion);
     assert!(!plain.declares_motion(&HandlerOptions::default()));
     assert!(plain.blocks.iter().any(|b| b.kind == "JFIF"));
-    let input = include_bytes!("../../../web/public/demo/motion-photo.jpg");
+    let input = include_bytes!("data/web/public/demo/motion-photo.jpg");
     let motion = engine.parse(input, &HandlerOptions::default()).unwrap();
     assert!(motion.verified_motion);
     assert!(motion.declares_motion(&HandlerOptions::default()));
@@ -156,7 +156,7 @@ fn provider_relative_ranges_cannot_panic_the_engine() {
 
 #[test]
 fn collection_json_limits_tree_complexity_without_counting_string_contents() {
-    let source = include_bytes!("../../../web/public/demo/motion-photo.jpg");
+    let source = include_bytes!("data/web/public/demo/motion-photo.jpg");
     let collection = MetadataEngine::new()
         .parse(source, &HandlerOptions::default())
         .unwrap();
@@ -215,7 +215,7 @@ fn custom_registration_and_filters_apply_to_decoding_and_core_parsing() {
         &disabled
     )
     .is_err());
-    let google = include_bytes!("../../../web/public/demo/motion-photo.jpg");
+    let google = include_bytes!("data/web/public/demo/motion-photo.jpg");
     assert!(MotionPhoto::parse_with_handlers(
         Input::SingleFile(google),
         ParseOptions::compatible(),
@@ -270,7 +270,7 @@ fn range_and_borrowed_fd_use_the_same_relative_collection_without_moving_cursor(
         .read(true)
         .open(&path)
         .unwrap();
-    let bytes = include_bytes!("../../../web/public/demo/motion-photo.jpg");
+    let bytes = include_bytes!("data/web/public/demo/motion-photo.jpg");
     file.write_all(b"prefix-prefix").unwrap();
     file.write_all(bytes).unwrap();
     file.write_all(b"suffix").unwrap();

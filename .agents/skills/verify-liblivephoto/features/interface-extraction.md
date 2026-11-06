@@ -1,5 +1,7 @@
 # Shared operation response
 
+[简体中文](interface-extraction.zh-CN.md)
+
 ## Sub-features
 
 Explicit `resourceIds` retain order and unknown SharedData bytes. Duplicate or missing IDs fail the whole request. Default extraction returns still, movie, and optional XMP. LLP1 accounts for metadata, names, MIME, IDs, framing, and every selected output payload.

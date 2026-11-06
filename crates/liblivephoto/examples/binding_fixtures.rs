@@ -30,13 +30,13 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     }
     let metadata = common::metadata_movie(b"it35", &[5, 0xb5, 0, 0x90, 0, 1], &[(&agtm, 2000)], 0);
     let movie = remux::import_tracks(
-        include_bytes!("../../../web/public/demo/motion.mp4"),
+        include_bytes!("../tests/data/web/public/demo/motion.mp4"),
         &metadata,
         &[2],
         remux::OptimizeOptions::default(),
     )?
     .bytes;
-    let still = include_bytes!("../../../web/public/demo/cover.jpg");
+    let still = include_bytes!("../tests/data/web/public/demo/cover.jpg");
     let photo = MotionPhoto::parse(
         Input::Parts {
             still,
@@ -57,7 +57,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         br#"{"version":2202,"com.android.camera.imageTime":31,"com.android.camera.livephoto":"synthetic-camera-id-00000000","opaque":1.234567890123456789e100}"#,
         b"synthetic-camera-id-00000000", false)].concat();
     let vivo_movie = [
-        include_bytes!("../../../web/public/demo/motion.mp4").to_vec(),
+        include_bytes!("../tests/data/web/public/demo/motion.mp4").to_vec(),
         common::vivo_stream_box(&[
             (0xdec0de01, 255, b"\0\xffopaque"),
             (0xdec0de01, 10, b"second"),

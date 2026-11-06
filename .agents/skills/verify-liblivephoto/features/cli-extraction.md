@@ -1,5 +1,7 @@
 # CLI publication
 
+[简体中文](cli-extraction.zh-CN.md)
+
 ## Sub-features
 
 The CLI builds a Motion Photo from still and movie parts, checks it, extracts the original movie, and refuses an existing output directory.

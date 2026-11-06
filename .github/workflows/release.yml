@@ -1,0 +1,50 @@
+name: Prepare release draft
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Full SHA of the current main head with successful CI
+        required: true
+        type: string
+      version:
+        description: Ordinary release version without v
+        required: true
+        default: '0.1.0'
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: release-draft-${{ inputs.version }}
+  cancel-in-progress: false
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      RELEASE_SHA: ${{ inputs.commit }}
+      RELEASE_VERSION: ${{ inputs.version }}
+      GH_REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Require a main dispatch and validated inputs
+        shell: bash
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit }}
+          persist-credentials: false
+      - name: Verify exact-main CI and prepare existing tested artifacts
+        run: python3 scripts/prepare_release.py --sha "$RELEASE_SHA" --version "$RELEASE_VERSION" --repo "$GH_REPO"
+      - name: Create draft only
+        shell: bash
+        run: |
+          gh release create "v$RELEASE_VERSION" \
+            --target "$RELEASE_SHA" --title "v$RELEASE_VERSION" --draft \
+            --notes-file "dist/release/$RELEASE_VERSION/notes.md" \
+            "dist/release/$RELEASE_VERSION/assets/"*

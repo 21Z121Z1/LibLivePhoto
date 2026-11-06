@@ -1,5 +1,7 @@
 # Explicit record selection and source range contracts
 
+[简体中文](README.zh-CN.md)
+
 The existing13 vendor cases and42 syntax cases are unchanged. This separate20
 case suite adds9 successful original-byte selections,10 explicit refusals and
 one vivo footer-alias/source-coordinate check. The fixtures are owned neutral

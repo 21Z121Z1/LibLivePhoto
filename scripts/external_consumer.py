@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Build and execute a minimal consumer outside both source workspaces."""
+import argparse
 import json
 from pathlib import Path
 import subprocess
 import tempfile
+import tomllib
 
 ROOT=Path(__file__).resolve().parent.parent
 SOURCE='''use liblivephoto::{Input,MotionPhoto,ParseOptions};
@@ -32,16 +34,30 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
 '''
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--packages', type=Path, help='use only extracted .crate packages')
+    args = parser.parse_args()
+    packages = {}
+    if args.packages:
+        for manifest in args.packages.glob('*/Cargo.toml'):
+            package = tomllib.loads(manifest.read_text())['package']
+            packages[package['name']] = (manifest.parent.resolve(), package['version'])
+    core = packages['liblivephoto'][0] if packages else ROOT/'crates/liblivephoto'
     with tempfile.TemporaryDirectory(prefix="liblivephoto-consumer-") as tmp:
         base=Path(tmp);consumer=base/"consumer";consumer.mkdir();(consumer/"src").mkdir()
-        library=json.dumps((ROOT/"crates/liblivephoto").as_posix())
-        manifest='[package]\nname="external-consumer"\nversion="0.0.0"\nedition="2021"\n[workspace]\n[dependencies]\nliblivephoto={path='+library+'}\n'
+        library=json.dumps(core.as_posix())
+        dependency = json.dumps('='+packages['liblivephoto'][1]) if packages else '{path='+library+'}'
+        manifest='[package]\nname="external-consumer"\nversion="0.0.0"\nedition="2021"\n[workspace]\n[dependencies]\nliblivephoto='+dependency+'\n'
+        if packages:
+            manifest += '\n[patch.crates-io]\n' + '\n'.join(
+                name+'={path='+json.dumps(path.as_posix())+'}' for name,(path,_) in packages.items())+'\n'
         (consumer/"Cargo.toml").write_text(manifest);(consumer/"src/main.rs").write_text(SOURCE)
         (consumer/"src/bin").mkdir()
-        (consumer/"src/bin/convert.rs").write_text((ROOT/"crates/liblivephoto/examples/convert.rs").read_text())
+        (consumer/"src/bin/convert.rs").write_text((core/"examples/convert.rs").read_text())
         seeds=base/"seeds"
-        subprocess.run(["cargo","run","--quiet","-p","liblivephoto","--example","fuzz_seeds","--",str(seeds)],cwd=ROOT,check=True)
-        subprocess.run(["cargo","run","--quiet","--manifest-path",str(consumer/"Cargo.toml"),"--bin","external-consumer","--",str(seeds/"asset_input/single-track"),str(ROOT/'fixtures/syntax/aac-direct.mp4'),str(ROOT/'fixtures/syntax/aac-pce-wave.mov')],cwd=consumer,check=True)
+        subprocess.run(["cargo","run","--locked","--quiet","--manifest-path",str(core/'Cargo.toml'),"--example","fuzz_seeds","--",str(seeds)],cwd=core,check=True)
+        data=core/'tests/data/fixtures/syntax' if packages else ROOT/'fixtures/syntax'
+        subprocess.run(["cargo","run","--quiet","--manifest-path",str(consumer/"Cargo.toml"),"--bin","external-consumer","--",str(seeds/"asset_input/single-track"),str(data/'aac-direct.mp4'),str(data/'aac-pce-wave.mov')],cwd=consumer,check=True)
         def convert(*args):
             subprocess.run(["cargo","run","--quiet","--manifest-path",str(consumer/"Cargo.toml"),"--bin","convert","--",*map(str,args)],cwd=consumer,check=True,stdout=subprocess.DEVNULL)
         first=base/"apple"; android=base/"android"; returned=base/"returned"

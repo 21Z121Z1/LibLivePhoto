@@ -1,5 +1,10 @@
 # Verification
 
+Current release checks and toolchain policy are in [Releasing](../RELEASING.md).
+Rust 1.88 is now declared in the manifests. The maintainer has completed device
+verification; see [Compatibility](../COMPATIBILITY.md#device-verification).
+The dated command records below describe their original commits.
+
 [中文](VERIFICATION.zh-CN.md)
 
 These notes used to live on the English and Chinese landing pages. They record one documentation pass. They are not a support promise, and this readability rewrite did not run the commands again.

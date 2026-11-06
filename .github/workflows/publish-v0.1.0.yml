@@ -1,0 +1,47 @@
+name: Publish approved v0.1.0
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-v0.1.0.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: release-v0.1.0
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Require the approved repository and main branch
+        shell: bash
+        run: |
+          test "$GITHUB_REPOSITORY" = 21Z121Z1/LibLivePhoto
+          test "$GITHUB_REF" = refs/heads/main
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@1.90.0
+      - name: Wait for exact-main CI and prepare its tested archives
+        run: python3 scripts/prepare_release.py --sha "$GITHUB_SHA" --version 0.1.0 --repo "$GH_REPO" --wait-seconds 2400
+      - name: Publish the approved first version and verify uploaded bytes
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: python3 scripts/publish_release.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v0.1.0-release-evidence
+          path: |
+            dist/release/0.1.0/notes.md
+            dist/release/0.1.0/assets/
+            dist/release/0.1.0/registry-verification.json

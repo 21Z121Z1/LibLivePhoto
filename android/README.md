@@ -1,5 +1,7 @@
 # Android bound services (API 26+)
 
+[简体中文](README.zh-CN.md)
+
 The AAR packages the maintained Java API, Rust JNI library (`arm64-v8a` and
 `x86_64`), AIDL and four non-exported services. `MetadataParserService` runs in an
 isolated process; builder, checker and extractor use separate application
@@ -61,8 +63,8 @@ The build receipt is separate from installed-APK runtime evidence. Emulator
 service success does not verify vendor Gallery support, camera capture or
 physical-device HDR rendering. No device access or permission bypass is used.
 
-Runtime acceptance runs four independent instrumentations (`core`, `metadata`,
-`lifecycle`, `concurrency`). All four must pass. Each retains a 240-second whole
+Runtime acceptance runs six independent instrumentations (`core`, `metadata`,
+`lifecycle`, `concurrency`, `syntax`, `vendor`). All six must pass. Each retains a 240-second whole
 case deadline, 40-second operation deadline and 20-second ready-future wait; service
 connections are established sequentially. This avoids one aggregate deadline
 expiring across eight complete parse/lifetime iterations on a software emulator.
@@ -77,7 +79,7 @@ timeouts and malformed/error output cannot mean "package absent". It never
 restarts ADB or changes system permissions. Each run writes a separate
 `android/build/acceptance-*/` directory with command stdout/stderr/exit status,
 bounded logcat, scope logs and a receipt, including pre-install failures.
-Success requires all 65 assertions and removal of the confirmed owned test APK.
+Success requires all 156 assertions and removal of the confirmed owned test APK.
 `python3 scripts/test_android_harness.py` injects harness failures without a
 device; its success is not Android runtime acceptance.
 Failed ADB commands and bounded post-failure service/logcat snapshots also appear

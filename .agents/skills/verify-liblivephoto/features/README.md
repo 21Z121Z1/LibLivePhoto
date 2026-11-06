@@ -1,5 +1,7 @@
 # Extraction feature map
 
+[简体中文](README.zh-CN.md)
+
 This map covers the library, interface, and CLI behavior touched by the bounded resource-extraction change.
 
 | Feature | Proof |

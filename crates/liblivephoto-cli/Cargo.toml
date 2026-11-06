@@ -2,8 +2,12 @@
 name = "liblivephoto-cli"
 version = "0.1.0"
 edition.workspace = true
+rust-version.workspace = true
+readme = "README.md"
+include = ["Cargo.toml", "README*.md", "LICENSE", "src/**", "tests/**", "examples/**"]
 license.workspace = true
 repository.workspace = true
+description = "Inspect, extract, build and check Live Photos and Motion Photos"
 [[bin]]
 name = "llp"
 path = "src/main.rs"

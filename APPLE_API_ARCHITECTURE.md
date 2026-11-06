@@ -1,5 +1,7 @@
 # Apple public API architecture and local demonstration
 
+[简体中文](APPLE_API_ARCHITECTURE.zh-CN.md)
+
 The existing Rust **Core / Formats / Remux** remains the authority for byte
 ranges, pairing, exact integer time, orientation/color facts, validation and
 lossless composition. No Apple parser has been rewritten in Swift or JavaScript.

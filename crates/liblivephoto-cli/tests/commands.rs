@@ -32,7 +32,7 @@ fn s(p: &Path) -> &str {
 }
 fn demo(name: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../web/public/demo")
+        .join("tests/data/web/public/demo")
         .join(name)
 }
 #[test]

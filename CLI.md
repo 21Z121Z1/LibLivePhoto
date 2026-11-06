@@ -1,5 +1,7 @@
 # Maintained CLI
 
+[简体中文](CLI.zh-CN.md)
+
 Build/install with `cargo build --release -p liblivephoto-cli` or
 `cargo install --path crates/liblivephoto-cli --locked`. The binary is `llp`.
 Run `llp --help` for the complete options and per-operation input contract.

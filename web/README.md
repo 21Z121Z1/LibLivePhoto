@@ -1,5 +1,7 @@
 # Local Live Photo lab
 
+[简体中文](README.zh-CN.md)
+
 Real Rust/WASM parsing, resource extraction and exact sample timing. No uploads,
 remote SDK, telemetry, transcode or deployment. The server is loopback-only.
 

@@ -1,7 +1,7 @@
 use liblivephoto::{Input, MotionPhoto, ParseOptions, RelationshipKind, ResourceRole};
 use liblivephoto_interface::{process, OperationFile, OperationResult};
 use serde_json::json;
-#[path = "../../liblivephoto/tests/common/mod.rs"]
+#[path = "common/mod.rs"]
 mod common;
 
 #[test]
@@ -65,7 +65,7 @@ fn default_jpeg_and_heif_extraction_keep_still_movie_and_xmp_order() {
     let movie = common::movie(1000, 1);
     for (still, target) in [
         (
-            include_bytes!("../../../web/public/demo/cover.jpg").to_vec(),
+            include_bytes!("data/web/public/demo/cover.jpg").to_vec(),
             "google-jpeg",
         ),
         (common::heif(b"heic"), "google-heif"),

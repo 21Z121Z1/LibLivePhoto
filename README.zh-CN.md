@@ -6,7 +6,8 @@
 
 这些格式都把一张照片和一段短视频组合在一起，保存方式却各不相同。LibLivePhoto 可以查看文件内容、提取原始媒体资源，也能生成已支持的目标格式。C/JNI、Android AAR、Swift 和 WASM 绑定仍处于实验阶段。
 
-Rust 1.88+ (tested; not yet declared)
+Rust 1.88+。0.1 版本正式支持 Rust 核心和 `llp`；`xdremux-compat`
+功能和各平台绑定保留实验标记。
 
 ## 快速开始
 
@@ -25,6 +26,21 @@ cargo build --locked -p liblivephoto-cli
 [dependencies]
 liblivephoto = { path = "../LibLivePhoto/crates/liblivephoto" }
 ```
+
+```rust,no_run
+use liblivephoto::{Input, MotionPhoto, ParseOptions};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let bytes = std::fs::read("input.jpg")?;
+    let photo = MotionPhoto::parse(Input::SingleFile(&bytes), ParseOptions::compatible())?;
+    photo.validate()?;
+    let mut video = std::fs::File::create_new("video.mp4")?;
+    photo.extract(photo.motion_video(), &mut video)?;
+    Ok(())
+}
+```
+
+版本化源码和 SDK 可从 [GitHub Releases](https://github.com/21Z121Z1/LibLivePhoto/releases) 获取。注册表安装命令与实际可用状态单独记录，见[发布说明](RELEASING.zh-CN.md)。上面的源码构建不依赖 LibLivePhoto 已上传注册表。
 
 ## 示例
 
@@ -57,7 +73,7 @@ liblivephoto = { path = "../LibLivePhoto/crates/liblivephoto" }
 
 ## 格式支持
 
-下表仅列出已经实现、并有样本测试覆盖的操作。各格式的具体条件见[格式支持说明](FORMAT_SUPPORT.md)。
+下表仅列出已经实现、并有样本测试覆盖的操作。各格式的具体条件见[格式支持说明](FORMAT_SUPPORT.zh-CN.md)。
 
 | 格式 | 读取 | 提取 | 生成 / 转换 |
 | --- | --- | --- | --- |
@@ -71,7 +87,8 @@ liblivephoto = { path = "../LibLivePhoto/crates/liblivephoto" }
 
 ¹ Samsung 记录有歧义时，必须明确选择。² Samsung 写入要求照片时间未知。
 
-**所有格式均未验证能否被 Apple「照片」或厂商相册实际接收。**
+维护者已完成实机验证。此表描述已实现的布局和自动化覆盖；具体设备、系统和操作组合
+尚未逐项录入公开的[兼容性记录](COMPATIBILITY.zh-CN.md#实机验证)。
 
 ## 目前的限制
 
@@ -81,6 +98,7 @@ liblivephoto = { path = "../LibLivePhoto/crates/liblivephoto" }
 
 写入器支持保留原文件、生成 Android JPEG/HEIF/AVIF、Apple 照片与 MOV 配对文件，以及 Samsung JPEG SEF。没有 OPlus、小米、vivo、荣耀的原生写入器，也不会重新编码媒体内容。
 
-更多说明：[CLI](CLI.md) · [兼容性](COMPATIBILITY.md) · [原生 SDK](NATIVE_SDK.md) · [Java/JNI](java/README.md) · [Android](android/README.md) · [Swift](apple/README.md) · [WASM](web/README.md)。
+更多说明：[CLI](CLI.zh-CN.md) · [兼容性](COMPATIBILITY.zh-CN.md) · [原生 SDK](NATIVE_SDK.zh-CN.md) · [Java/JNI](java/README.zh-CN.md) · [Android](android/README.zh-CN.md) · [Swift](apple/README.zh-CN.md) · [WASM](web/README.zh-CN.md)。
 
-构建与测试记录见[验证记录](docs/VERIFICATION.zh-CN.md)。项目采用 [Apache-2.0 许可证](LICENSE)。
+构建与测试记录见[验证记录](docs/VERIFICATION.zh-CN.md)。0.1.x 兼容性约定和发布检查
+见[更新记录](CHANGELOG.zh-CN.md)与[发布说明](RELEASING.zh-CN.md)。项目采用 [Apache-2.0 许可证](LICENSE)。

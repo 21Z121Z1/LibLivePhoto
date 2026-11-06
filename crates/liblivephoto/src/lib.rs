@@ -1,4 +1,5 @@
 #![forbid(unsafe_code)]
+#![doc = include_str!("../README.md")]
 //! Parse, inspect, validate and remux related still and motion resources.
 mod agtm;
 mod agtm_decode;

@@ -1,3 +1,6 @@
+
+[简体中文](PROVENANCE.zh-CN.md)
+
 The registry package `jni-sys-macros 0.4.1` declares MIT OR Apache-2.0 but omits
 the workspace license files. Its included `.cargo_vcs_info.json` pins upstream
 `jni-rs/jni-sys` commit `64d77b7a5f119d7b55b4e2c169a4668067ff59e6`, path

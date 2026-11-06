@@ -1,5 +1,7 @@
 # Fixture policy
 
+[简体中文](README.zh-CN.md)
+
 The manifest references immutable fixtures in the user's public XDRemux repository.
 That repository publishes the source bytes under its fixture acceptance contract.
 This repository does not redistribute those photographs or their personal metadata.
