@@ -384,13 +384,13 @@ pub(crate) fn android_description(
     video_mime: &str,
     time: Option<MediaTime>,
     items: &[(String, String, u64)],
+    padding: u64,
 ) -> Result<String> {
     let us = time
         .map(|t| t.rescale_exact(1_000_000).ok_or(Error::InvalidPresentation))
         .transpose()?
         .map_or(-1, |t| t.value);
     let esc = |s: &str| quick_xml::escape::escape(s).into_owned();
-    let padding = if mime == "image/jpeg" { 0 } else { 8 };
     let mut d=format!("<rdf:Description xmlns:rdf=\"{RDF}\" xmlns:Camera=\"{CAMERA}\" xmlns:Container=\"{CONTAINER}\" xmlns:Item=\"http://ns.google.com/photos/1.0/container/item/\" Camera:MotionPhoto=\"1\" Camera:MotionPhotoVersion=\"1\" Camera:MotionPhotoPresentationTimestampUs=\"{us}\"><Container:Directory><rdf:Seq><rdf:li rdf:parseType=\"Resource\"><Container:Item Item:Mime=\"{}\" Item:Semantic=\"Primary\" Item:Length=\"0\" Item:Padding=\"{padding}\"/></rdf:li>",esc(mime));
     for (mime, semantic, len) in items {
         d.push_str(&format!("<rdf:li rdf:parseType=\"Resource\"><Container:Item Item:Mime=\"{}\" Item:Semantic=\"{}\" Item:Length=\"{len}\"/></rdf:li>",esc(mime),esc(semantic)));

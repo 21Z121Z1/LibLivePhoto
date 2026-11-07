@@ -185,6 +185,7 @@ impl XmpDocument {
             movie_mime,
             time,
             &[],
+            if still_mime == "image/jpeg" { 0 } else { 8 },
         )?;
         Self::parse(format!("<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">{description}</rdf:RDF></x:xmpmeta>").as_bytes())
     }

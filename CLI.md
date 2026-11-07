@@ -20,6 +20,7 @@ llp parse motion.jpg
 llp check motion.jpg
 llp metadata ordinary.heic
 llp build still.jpg --movie video.mp4 --time 13/16 --target google-jpeg --out new-built
+llp build still.heic --movie video.mp4 --time 13/16 --target google-heif --relabel-video-brand mp42 --out new-heic
 llp extract motion.jpg --still --video --xmp --out new-extracted
 llp agtm motion.jpg --time 13/16 --out new-agtm
 llp agtm movie.mp4 --video-input --time 13/16 --out new-agtm-from-video
@@ -30,6 +31,13 @@ llp remove-tracks movie.mp4 --tracks 3 --out new-removed
 llp conformance still.avif --options-json '{"profile":"heif-color-2025"}'
 llp conformance movie.mp4 --tracks 1,2 --options-json '{"profile":"google-video-container-1.0"}'
 ```
+
+Google JPEG, HEIC, and AVIF builds publish one container named `assetMP.jpg`,
+`assetMP.heic`, or `assetMP.avif`. The `MP` suffix matches the Motion Photo 1.0
+filename recommendation. `--relabel-video-brand mp42` changes only the embedded
+video `ftyp` major brand, in place. It does not remux, transcode, or drop
+tracks. A major brand of `qt  ` is left unchanged. The flag applies only to the
+three Android targets.
 
 Default building from separate still/movie inputs explicitly declares a parts
 association. `parse` of two files validates an Apple pair unless `--parts` is set.

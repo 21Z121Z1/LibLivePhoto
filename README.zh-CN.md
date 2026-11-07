@@ -66,10 +66,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```sh
 ./target/debug/llp build web/public/demo/cover.jpg --movie web/public/demo/motion.mp4 --time 13/16 --target google-jpeg --out llp-demo-built
-./target/debug/llp check llp-demo-built/asset-0.jpg
+./target/debug/llp check llp-demo-built/assetMP.jpg
 ```
 
-`13/16` 是演示素材的照片呈现时间。检查命令读取刚生成的 `asset-0.jpg`。
+`13/16` 是演示素材的照片呈现时间。检查命令读取刚生成的 `assetMP.jpg`。Google JPEG、HEIC 和 AVIF 构建使用这个 `MP` 后缀。这不证明 Google 相册可以播放。
 
 ## 格式支持
 

@@ -729,7 +729,21 @@ fn execute(
                     .as_str()
                     .map_or(PairingPolicy::Preserve, |s| PairingPolicy::Set(s.into())),
             };
-            let plan = photo.plan(target, policy);
+            let mut plan = photo.plan(target, policy);
+            if let Some(brand) = v["relabelVideoMajorBrand"].as_str() {
+                if brand != "mp42" {
+                    return Err("relabelVideoMajorBrand only supports mp42".into());
+                }
+                plan = plan
+                    .relabel_video_major_brand(*b"mp42")
+                    .map_err(|e| e.to_string())?;
+            }
+            let google_container = matches!(
+                target,
+                TargetProfile::AndroidJpeg
+                    | TargetProfile::AndroidHeif
+                    | TargetProfile::AndroidAvif
+            );
             let metadata = json!({"target":format!("{target:?}"),"canExecute":plan.can_execute(),"blockers":plan.compatibility().blockers,"consumerAcceptance":format!("{:?}",plan.compatibility().target_consumer),"resourceReport":plan.report().resources.iter().map(|r|json!({"resourceId":r.resource.map(|id|id.0),"disposition":format!("{:?}",r.disposition),"reason":r.reason})).collect::<Vec<_>>(),"pairIdentifier":plan.report().pairing.identifier});
             if !plan.can_execute() {
                 return Ok(OperationResult {
@@ -749,14 +763,18 @@ fn execute(
                     .into_iter()
                     .enumerate()
                     .map(|(index, f)| OperationFile {
-                        name: format!(
-                            "{}-{index}.{}",
-                            f.sidecar_for.map_or_else(
-                                || "asset".to_string(),
-                                |id| format!("sidecar-{}", id.0)
-                            ),
-                            ext(&f.mime)
-                        ),
+                        name: if google_container && f.sidecar_for.is_none() {
+                            format!("assetMP.{}", ext(&f.mime))
+                        } else {
+                            format!(
+                                "{}-{index}.{}",
+                                f.sidecar_for.map_or_else(
+                                    || "asset".to_string(),
+                                    |id| format!("sidecar-{}", id.0)
+                                ),
+                                ext(&f.mime)
+                            )
+                        },
                         mime: f.mime,
                         resource_id: f.sidecar_for.map(|id| id.0),
                         bytes: f.bytes,

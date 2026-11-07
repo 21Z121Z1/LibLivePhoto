@@ -12,6 +12,7 @@ llp parse motion.jpg
 llp check motion.jpg
 llp metadata ordinary.heic
 llp build still.jpg --movie video.mp4 --time 13/16 --target google-jpeg --out new-built
+llp build still.heic --movie video.mp4 --time 13/16 --target google-heif --relabel-video-brand mp42 --out new-heic
 llp extract motion.jpg --still --video --xmp --out new-extracted
 llp agtm motion.jpg --time 13/16 --out new-agtm
 llp agtm movie.mp4 --video-input --time 13/16 --out new-agtm-from-video
@@ -22,6 +23,8 @@ llp remove-tracks movie.mp4 --tracks 3 --out new-removed
 llp conformance still.avif --options-json '{"profile":"heif-color-2025"}'
 llp conformance movie.mp4 --tracks 1,2 --options-json '{"profile":"google-video-container-1.0"}'
 ```
+
+Google JPEG、HEIC 和 AVIF 构建各输出一个容器，文件名是 `assetMP.jpg`、`assetMP.heic` 或 `assetMP.avif`。`MP` 后缀对应 Motion Photo 1.0 的文件名建议。`--relabel-video-brand mp42` 只就地改写内嵌视频 `ftyp` 的主品牌，不重新封装、不转码、不删除轨道。主品牌已是 `qt  ` 时保持不变。该选项只用于三个 Android 目标。
 
 从独立静图和视频构建时，默认明确声明组成部分关联。使用 `parse` 解析两个文件时会验证 Apple 配对，除非设置 `--parts`。Apple 标识符不匹配时不会静默重新关联。精确时间使用整数分数；目标要求微秒表示时拒绝 1/3 秒。使用 `--dry-run` 在生成文件前检查构建计划。不隐式转码容器或编解码格式，不支持的目标、元数据或资源会返回诊断。
 

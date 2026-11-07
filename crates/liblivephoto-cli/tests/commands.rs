@@ -87,7 +87,7 @@ fn real_cli_build_check_extract_round_trip_and_refuse_overwrite() {
         "{}",
         String::from_utf8_lossy(&built.stderr)
     );
-    let photo = out.join("asset-0.jpg");
+    let photo = out.join("assetMP.jpg");
     assert!(photo.exists());
     let checked = run(&["check", s(&photo)]);
     assert!(

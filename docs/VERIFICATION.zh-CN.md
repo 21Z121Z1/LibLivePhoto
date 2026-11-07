@@ -42,7 +42,7 @@ cargo run --locked -p liblivephoto-cli -- build web/public/demo/cover.jpg --movi
 cargo run --locked -p liblivephoto-cli -- check /tmp/llp-built/asset-0.jpg
 ```
 
-构建报告里有 `"canExecute": true`、`"target": "AndroidJpeg"` 和 `"consumerAcceptance": "Unverified"`。视频处置是 `Preserved`。静图处置是 `Rewritten`，因为写入器会换掉容器元数据。随后 `llp check` 对 `ResourceRanges`、`StillContainer`、`MotionContainer` 和 `Tracks` 报告 `"valid": true`。
+构建报告里有 `"canExecute": true`、`"target": "AndroidJpeg"` 和 `"consumerAcceptance": "Unverified"`。视频处置是 `Preserved`。静图处置是 `Rewritten`，因为写入器会换掉容器元数据。随后 `llp check` 对 `ResourceRanges`、`StillContainer`、`MotionContainer` 和 `Tracks` 报告 `"valid": true`。当前 Google 目标构建输出 `assetMP.jpg`，不再使用 `asset-0.jpg`。
 
 Samsung SEF 转换示例以退出码 1 结束：
 

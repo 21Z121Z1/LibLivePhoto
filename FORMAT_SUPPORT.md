@@ -26,6 +26,8 @@ for the distinction between that completion and per-format published coverage.
 | Honor JPEG `LIVE_` 20/40-byte footer and backward TLV | Synthetic contracts and same-input reference comparisons | Source copy or explicit sidecars; no native Honor writer | Bounded records, time, ambiguity and malformed cases | Unverified; no original Honor corpus |
 | Other Huawei/Honor private dialects | No matching original corpus | No dedicated writer | Not claimed | Unverified |
 
+Google Photos playback is not a row in this table. The writer follows Motion Photo 1.0 container rules for JPEG, HEIC, and AVIF. A static read of one Photos APK shows a narrower HEIC locator and no traced AVIF motion path. See [Compatibility](COMPATIBILITY.md).
+
 Fixtures do not cover all firmware, modes, codecs or metadata encodings. Strict mode
 requires the implemented standard contract or explicit Apple pairing. Compatible
 mode can use a valid SEF directory when the Android directory is not usable.

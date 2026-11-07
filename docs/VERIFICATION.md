@@ -43,7 +43,7 @@ cargo run --locked -p liblivephoto-cli -- build web/public/demo/cover.jpg --movi
 cargo run --locked -p liblivephoto-cli -- check /tmp/llp-built/asset-0.jpg
 ```
 
-The build report had `"canExecute": true`, `"target": "AndroidJpeg"`, and `"consumerAcceptance": "Unverified"`. The video disposition was `Preserved`. The still disposition was `Rewritten`, because the writer replaces container metadata. `llp check` then reported `"valid": true` for `ResourceRanges`, `StillContainer`, `MotionContainer`, and `Tracks`.
+The build report had `"canExecute": true`, `"target": "AndroidJpeg"`, and `"consumerAcceptance": "Unverified"`. The video disposition was `Preserved`. The still disposition was `Rewritten`, because the writer replaces container metadata. `llp check` then reported `"valid": true` for `ResourceRanges`, `StillContainer`, `MotionContainer`, and `Tracks`. Current google-target builds publish `assetMP.jpg` instead of `asset-0.jpg`.
 
 The Samsung SEF convert example exited 1:
 

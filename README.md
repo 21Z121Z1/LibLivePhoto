@@ -66,10 +66,10 @@ This creates `llp-demo-extracted/resource-1.mp4`. The output directory must not 
 
 ```sh
 ./target/debug/llp build web/public/demo/cover.jpg --movie web/public/demo/motion.mp4 --time 13/16 --target google-jpeg --out llp-demo-built
-./target/debug/llp check llp-demo-built/asset-0.jpg
+./target/debug/llp check llp-demo-built/assetMP.jpg
 ```
 
-`13/16` is the photo time in the demo. The check reads the generated `asset-0.jpg`.
+`13/16` is the photo time in the demo. The check reads the generated `assetMP.jpg`. Google JPEG, HEIC, and AVIF builds use that `MP` suffix. It does not prove Google Photos playback.
 
 ## Format support
 

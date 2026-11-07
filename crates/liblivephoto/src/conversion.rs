@@ -120,6 +120,8 @@ pub struct ConversionPlan<'p, 'a> {
     report: ConversionReport,
     compatibility: CompatibilityReport,
     unmapped: Vec<ResourceId>,
+    /// In-place `ftyp` major-brand replacement. Samples and compatible brands stay.
+    video_major_brand: Option<[u8; 4]>,
 }
 type Result<T> = std::result::Result<T, Error>;
 
@@ -409,6 +411,7 @@ impl<'a> MotionPhoto<'a> {
             policy,
             report,
             unmapped,
+            video_major_brand: None,
             compatibility: CompatibilityReport {
                 read: SupportState::Implemented,
                 write: if blockers.is_empty() {
@@ -434,6 +437,29 @@ impl ConversionPlan<'_, '_> {
     pub fn can_execute(&self) -> bool {
         self.compatibility.blockers.is_empty()
     }
+
+    /// Replace the embedded video's `ftyp` major brand with `mp42` without
+    /// moving samples or editing the compatible-brand list. `qt  ` is left
+    /// unchanged because the Photos HEIC locator already accepts it. This does
+    /// not remux, transcode audio, or drop auxiliary tracks.
+    pub fn relabel_video_major_brand(mut self, brand: [u8; 4]) -> Result<Self> {
+        if brand != *b"mp42" {
+            return Err(Error::UnsupportedLayout(
+                "in-place video relabel only supports major brand mp42",
+            ));
+        }
+        if !matches!(
+            self.target,
+            TargetProfile::AndroidJpeg | TargetProfile::AndroidHeif | TargetProfile::AndroidAvif
+        ) {
+            return Err(Error::ConversionBlocked(vec![
+                "mp42 major-brand relabel applies only to Android Motion Photo targets".into(),
+            ]));
+        }
+        self.video_major_brand = Some(brand);
+        Ok(self)
+    }
+
     pub fn execute(&self) -> Result<ComposedAsset> {
         if !self.can_execute() {
             return Err(Error::ConversionBlocked(
@@ -523,15 +549,19 @@ impl ConversionPlan<'_, '_> {
                 })
                 .collect::<Vec<_>>();
             let video = self.photo.motion_video_bytes()?;
+            let (video, relabeled) = prepared_video(video, self.video_major_brand)?;
+            let video_mime = crate::motion_video::container_mime(&video)?.to_string();
             let description = crate::jpeg_write::android_description(
                 video.len(),
                 "image/jpeg",
-                &self.photo.motion_video().mime,
+                &video_mime,
                 self.photo.presentation_time(),
                 &items,
+                0,
             )?;
             let still = crate::jpeg_write::write_xmp(self.photo.still_bytes()?, &description)?;
-            let bytes = [still, video.to_vec()].concat();
+            let bytes = [still, video.clone()].concat();
+            note_relabel(&mut report, self.photo.motion_video().id, relabeled);
             let parsed = MotionPhoto::parse(Input::SingleFile(&bytes), ParseOptions::strict())?;
             if parsed.motion_video_bytes()? != video {
                 return Err(Error::InvalidResource);
@@ -545,10 +575,14 @@ impl ConversionPlan<'_, '_> {
             report
                 .evidence
                 .push(PreservationEvidence::EncodedStillPayloadsEqual);
-            report.evidence.extend([
-                PreservationEvidence::VideoContainerBytesEqual,
-                PreservationEvidence::ExactPresentationEqual,
-            ]);
+            if !relabeled {
+                report
+                    .evidence
+                    .push(PreservationEvidence::VideoContainerBytesEqual);
+            }
+            report
+                .evidence
+                .push(PreservationEvidence::ExactPresentationEqual);
             files.push(OutputFile {
                 role: ResourceRole::PrimaryStill,
                 mime: "image/jpeg".into(),
@@ -559,34 +593,46 @@ impl ConversionPlan<'_, '_> {
             self.target,
             TargetProfile::AndroidHeif | TargetProfile::AndroidAvif
         ) {
-            let video = self.photo.motion_video_bytes()?;
+            let (video, relabeled) =
+                prepared_video(self.photo.motion_video_bytes()?, self.video_major_brand)?;
+            let video_mime = crate::motion_video::container_mime(&video)?.to_string();
             let still_mime = if self.target == TargetProfile::AndroidAvif {
                 "image/avif"
             } else {
                 "image/heic"
             };
+            let mpvd = liblivephoto_format::isobmff::make_box(
+                liblivephoto_format::FourCC::new(*b"mpvd"),
+                &video,
+            )
+            .map_err(|_| Error::InvalidResource)?;
+            let padding = mpvd_header_len(video.len())?;
+            if mpvd_header_len_of(&mpvd)? != padding {
+                return Err(Error::InvalidResource);
+            }
             let description = crate::jpeg_write::android_description(
                 video.len(),
                 still_mime,
-                &self.photo.motion_video().mime,
+                &video_mime,
                 self.photo.presentation_time(),
                 &[],
+                padding,
             )?;
             let mut bytes = crate::heif_io::replace_xmp(self.photo.still_bytes()?, &description)?;
-            let mpvd = liblivephoto_format::isobmff::make_box(
-                liblivephoto_format::FourCC::new(*b"mpvd"),
-                video,
-            )
-            .map_err(|_| Error::InvalidResource)?;
             bytes.extend_from_slice(&mpvd);
+            note_relabel(&mut report, self.photo.motion_video().id, relabeled);
             let parsed = MotionPhoto::parse(Input::SingleFile(&bytes), ParseOptions::strict())?;
             if parsed.motion_video_bytes()? != video {
                 return Err(Error::InvalidResource);
             }
             check_time(self.photo.presentation_time(), parsed.presentation_time())?;
             check_heif_images(self.photo, &parsed)?;
+            if !relabeled {
+                report
+                    .evidence
+                    .push(PreservationEvidence::VideoContainerBytesEqual);
+            }
             report.evidence.extend([
-                PreservationEvidence::VideoContainerBytesEqual,
                 PreservationEvidence::ExactPresentationEqual,
                 PreservationEvidence::EncodedStillPayloadsEqual,
             ]);
@@ -717,6 +763,66 @@ impl ConversionPlan<'_, '_> {
     }
 }
 
+fn note_relabel(report: &mut ConversionReport, id: ResourceId, relabeled: bool) {
+    if relabeled {
+        report.resources.push(ResourceConversion {
+            resource: Some(id),
+            disposition: Disposition::Rewritten,
+            reason: "ftyp major brand relabeled to mp42 in place; compatible brands, samples, audio and auxiliary tracks are unchanged".into(),
+        });
+    }
+}
+
+/// Header length `make_box` will use for a payload of this size.
+pub(crate) fn mpvd_header_len(payload_len: usize) -> Result<u64> {
+    match payload_len.checked_add(8) {
+        Some(size) if size <= u32::MAX as usize => Ok(8),
+        Some(_) => {
+            payload_len.checked_add(16).ok_or(Error::InvalidResource)?;
+            Ok(16)
+        }
+        None => Err(Error::InvalidResource),
+    }
+}
+
+fn mpvd_header_len_of(mpvd: &[u8]) -> Result<u64> {
+    if mpvd.len() >= 16 && mpvd[..4] == [0, 0, 0, 1] {
+        Ok(16)
+    } else if mpvd.len() >= 8 {
+        Ok(8)
+    } else {
+        Err(Error::InvalidResource)
+    }
+}
+
+fn prepared_video(video: &[u8], brand: Option<[u8; 4]>) -> Result<(Vec<u8>, bool)> {
+    let Some(brand) = brand else {
+        return Ok((video.to_vec(), false));
+    };
+    if brand != *b"mp42" {
+        return Err(Error::UnsupportedLayout(
+            "in-place video relabel only supports major brand mp42",
+        ));
+    }
+    let header = if video.len() >= 16 && video[..4] == [0, 0, 0, 1] {
+        16
+    } else {
+        8
+    };
+    if video.len() < header + 8 || video.get(4..8) != Some(b"ftyp") {
+        return Err(Error::InvalidResource);
+    }
+    let major = video
+        .get(header..header + 4)
+        .ok_or(Error::InvalidResource)?;
+    if major == b"mp42" || major == b"qt  " {
+        return Ok((video.to_vec(), false));
+    }
+    let mut out = video.to_vec();
+    out[header..header + 4].copy_from_slice(&brand);
+    Ok((out, true))
+}
+
 fn check_heif_images(source: &MotionPhoto<'_>, target: &MotionPhoto<'_>) -> Result<()> {
     for item in source
         .resources()
@@ -749,5 +855,18 @@ fn check_time(source: Option<MediaTime>, target: Option<MediaTime>) -> Result<()
         Ok(())
     } else {
         Err(Error::InvalidPresentation)
+    }
+}
+
+#[cfg(test)]
+mod header_len {
+    use super::mpvd_header_len;
+
+    #[test]
+    fn payload_past_u32_uses_the_extended_mpvd_header() {
+        assert_eq!(mpvd_header_len(10).unwrap(), 8);
+        let fits = u32::MAX as usize - 8;
+        assert_eq!(mpvd_header_len(fits).unwrap(), 8);
+        assert_eq!(mpvd_header_len(fits + 1).unwrap(), 16);
     }
 }

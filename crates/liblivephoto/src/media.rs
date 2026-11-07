@@ -740,7 +740,13 @@ pub fn inspect_video_sample_descriptions(data: &[u8]) -> Result<Vec<SampleDescri
             };
             if let Some(start) = child_start {
                 let mut esds_seen = false;
-                for b in fmt(parse_boxes(data, entry.data_start + start..entry.data_end))? {
+                // A trailing non-box byte is a sample-entry limit, not an
+                // overlapping Motion Photo resource range.
+                let extensions = parse_boxes(data, entry.data_start + start..entry.data_end)
+                    .map_err(|_| {
+                        Error::UnsupportedLayout("sample entry extensions are not a box list")
+                    })?;
+                for b in extensions {
                     let p = &data[b.payload_range()];
                     property_bytes = property_bytes
                         .checked_add(p.len())
