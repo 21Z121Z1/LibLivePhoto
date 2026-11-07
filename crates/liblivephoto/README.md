@@ -22,7 +22,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 Apple pairs use `Input::ApplePair { still, movie }`. Exact photo time uses
 `MediaTime`, an integer value and timescale. Conversion uses `plan` followed by
 `execute`; unsupported layouts, inexact target times and unmapped resources are
-explicit errors. Inspect the plan before executing it.
+explicit errors. Inspect the plan before executing it. `pvt::package_pair`
+assembles an in-memory `.pvt` directory from a validated JPEG or HEIC pair and
+does not transcode or claim Photos import.
 
 The default Rust input budget is 256 MiB. The separate CLI/shared interface uses
 128 MiB. Parsing is not streaming. Native playback, editing and Gallery acceptance

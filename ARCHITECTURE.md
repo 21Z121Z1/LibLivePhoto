@@ -16,6 +16,9 @@ Inputs are borrowed bytes or bounded file reads. The parsed object owns immutabl
 source views. The model has no file publication, network access or platform handles.
 Conversion plans borrow the parsed object. A caller cannot clear plan blockers.
 Output is an in-memory resource set with preservation and disposition reports.
+`pvt` adds the Apple `.pvt` member names, the fixed XML complement plist, and a
+bounded directory read. Packaging does not remux a validated pair. Callers publish
+the directory.
 
 The library does not decode compressed pixels or video samples. It does not choose
 HDR processing, codec policy, stabilization policy, Vision inference or Gallery

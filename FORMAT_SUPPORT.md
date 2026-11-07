@@ -13,6 +13,7 @@ for the distinction between that completion and per-format published coverage.
 | Android HEIF `mpvd` | Real fixtures | Append-only metadata; item and time comparisons | Tests and malformed cases | Unverified |
 | Android AVIF `mpvd` | Synthetic contracts and one generated AVIF/reference comparison | Append-only metadata; unchanged encoded item/video/time | Reference reparse and independent still decode | Unverified |
 | Apple JPEG/HEIF + MOV pair | Original iPhone 15 pair and generated fixtures | Pairing metadata; exact timeline; media comparisons | Pairing and supported timed metadata | Unverified |
+| Apple `.pvt` directory | One still, one MOV, and the version-1 XML plist | Packages a validated JPEG/HEIC pair; an existing pair keeps its bytes | Member, plist, and pairing checks | Unverified; structure is not Photos import |
 | Legacy Google MicroVideo | Synthetic contract tests | Android conversion and source copy | Bounds and directory checks | Unverified |
 | OPlus ColorOS 15/16 extensions | Original fixtures, including dual streams | Source copy; explicit sidecar conversion | LPEX, topology and boundary tests | Unverified |
 | Oplus OpCamera/JXRS provider layouts | Synthetic same-input reference cases; HEIC declarations distinguished from video | Source copy or standard target with explicit unmapped-resource policy | Plain/short/checksum/JSON-directory framing and typed fields; checksum bytes retained without claiming verification | Unverified; original LPEX corpus does not establish these variants |

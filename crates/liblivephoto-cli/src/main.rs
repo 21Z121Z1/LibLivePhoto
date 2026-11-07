@@ -6,7 +6,7 @@ use std::{
     io::{self, Read, Seek, SeekFrom, Write},
     path::{Path, PathBuf},
 };
-const HELP:&str="LibLivePhoto CLI\n\nllp version\nllp parse|check|extract|metadata|extract-metadata|classify-metadata|agtm|xmp INPUT [options]\nllp build STILL --movie MOVIE --target google-jpeg|google-heif|google-avif|apple [options]\nllp conformance INPUT --options-json {PROFILE_JSON} [--tracks PRIMARY[,SECONDARY]]\nllp optimize|remove-tracks|track-summary MOVIE [options]\nllp import-tracks DEST --movie SOURCE --tracks IDS [options]\n\nOptions:\n  --out NEW_DIRECTORY   publish files and report without overwriting\n  --movie PATH          paired movie / import source\n  --parts               explicitly associate ordinary still and movie\n  --time VALUE/SCALE    exact integer photo/extraction time\n  --range OFFSET:LENGTH / --movie-range OFFSET:LENGTH\n  --strict              strict source parsing\n  --disable-3p / --enable-provider NAME (repeatable)\n  --target PROFILE / --pair-id ID\n  --sidecars / --allow-drop (explicit unmapped-resource policy)\n  --still / --video / --xmp (extract selected outputs; default all)\n  --resources IDS       extract explicit resource IDs\n  --blocks IDS          extract explicit metadata block indices\n  --tracks IDS          selected movie track IDs\n  --video-input         standalone-video AGTM input\n  --compact             explicitly discard unreferenced movie bytes\n  --dry-run             inspect build plan without generating files\n  --relabel-video-brand mp42\n                        in-place ftyp major brand for Android targets; does not remux\n  --options-json JSON   structured protocol options (flags override)\n\nUse - as INPUT for bounded stdin. All source extents refer to the selected\nsnapshot; inputRanges in the report disclose enclosing file ranges. No operation\nuploads data, transcodes pixels, silently removes tracks or overwrites originals.\n";
+const HELP:&str="LibLivePhoto CLI\n\nllp version\nllp parse|check|extract|metadata|extract-metadata|classify-metadata|agtm|xmp INPUT [options]\nllp build STILL --movie MOVIE --target google-jpeg|google-heif|google-avif|apple|apple-pvt [options]\nllp conformance INPUT --options-json {PROFILE_JSON} [--tracks PRIMARY[,SECONDARY]]\nllp optimize|remove-tracks|track-summary MOVIE [options]\nllp import-tracks DEST --movie SOURCE --tracks IDS [options]\n\nOptions:\n  --out NEW_DIRECTORY   publish files and report without overwriting\n  --movie PATH          paired movie / import source\n  --parts               explicitly associate ordinary still and movie\n  --time VALUE/SCALE    exact integer photo/extraction time\n  --range OFFSET:LENGTH / --movie-range OFFSET:LENGTH\n  --strict              strict source parsing\n  --disable-3p / --enable-provider NAME (repeatable)\n  --target PROFILE / --pair-id ID\n  --sidecars / --allow-drop (explicit unmapped-resource policy)\n  --still / --video / --xmp (extract selected outputs; default all)\n  --resources IDS       extract explicit resource IDs\n  --blocks IDS          extract explicit metadata block indices\n  --tracks IDS          selected movie track IDs\n  --video-input         standalone-video AGTM input\n  --compact             explicitly discard unreferenced movie bytes\n  --dry-run             inspect build plan without generating files\n  --relabel-video-brand mp42\n                        in-place ftyp major brand for Android targets; does not remux\n  --options-json JSON   structured protocol options (flags override)\n\napple-pvt writes a new directory whose name ends in .pvt. Members are\n{stem}.heic or {stem}.jpg, {stem}.mov, and metadata.plist. An existing Apple\npair is copied unchanged. A Motion Photo or --parts input needs --pair-id; the\nApple writer injects that identifier into the still MakerNote and the movie\ncontent identifier. The package omits report.json; JSON stays on stdout.\nparse and check accept a .pvt directory. The package is not Photos import.\n\nUse - as INPUT for bounded stdin. All source extents refer to the selected\nsnapshot; inputRanges in the report disclose enclosing file ranges. No operation\nuploads data, transcodes pixels, silently removes tracks or overwrites originals.\n";
 fn main() {
     let code = match run() {
         Ok(code) => code,
@@ -182,58 +182,142 @@ fn run() -> Result<i32, Box<dyn std::error::Error>> {
             request[key] = json!(selected.contains(&key));
         }
     }
-    if action == "build" && request.get("inputKind").is_none() {
-        request["inputKind"] = json!("parts");
+    let pvt_target = request.get("target").and_then(|value| value.as_str()) == Some("apple-pvt");
+    if action == "build" && request.get("inputKind").is_none() && !(pvt_target && movie.is_none()) {
+        request["inputKind"] = json!(if pvt_target { "apple" } else { "parts" });
     }
+    if pvt_target {
+        if request.get("unmapped").and_then(|value| value.as_str()) == Some("sidecars") {
+            return Err(
+                "PVT packages cannot include sidecars; use --allow-drop or target apple".into(),
+            );
+        }
+        if let Some(dir) = &out {
+            request["pvtStem"] = json!(pvt_stem(dir)?);
+        }
+    }
+    let mut loaded_package = None;
+    let mut packaged_movie = None;
     let primary = if action == "version" {
         Vec::new()
     } else {
-        read(
-            input.as_deref().ok_or("input required")?,
-            source_range,
-            MAX_INPUT,
-        )?
+        let path = input.as_deref().ok_or("input required")?;
+        if is_pvt_input(path)? {
+            if movie.is_some() || source_range.is_some() || movie_range.is_some() {
+                return Err("a PVT package is one directory input".into());
+            }
+            if request
+                .get("inputKind")
+                .and_then(|value| value.as_str())
+                .is_some_and(|kind| kind != "apple")
+            {
+                return Err("a PVT package is read as an Apple pair".into());
+            }
+            let loaded = liblivephoto::pvt::read_directory(Path::new(path), MAX_INPUT as u64)?;
+            request["inputKind"] = json!("apple");
+            loaded_package = Some((loaded.still_name, loaded.movie_name));
+            packaged_movie = Some(loaded.movie);
+            loaded.still
+        } else {
+            read(path, source_range, MAX_INPUT)?
+        }
     };
-    let movie = movie
-        .map(|p| read(&p, movie_range, MAX_INPUT - primary.len()))
-        .transpose()?
-        .unwrap_or_default();
+    let movie = if let Some(bytes) = packaged_movie {
+        bytes
+    } else {
+        movie
+            .map(|p| read(&p, movie_range, MAX_INPUT - primary.len()))
+            .transpose()?
+            .unwrap_or_default()
+    };
     let result = process(&request.to_string(), &primary, &movie);
     let failed = !result.success || (action == "check" && result.metadata["valid"] != true);
-    let report = json!({"success":result.success,"metadata":result.metadata,"files":result.files.iter().map(|f|json!({"name":f.name,"mime":f.mime,"bytes":f.bytes.len().to_string(),"resourceId":f.resource_id})).collect::<Vec<_>>(),"inputRanges":[{"offset":source_range.map_or(0,|v|v.0).to_string(),"length":primary.len().to_string()},{"offset":movie_range.map_or(0,|v|v.0).to_string(),"length":movie.len().to_string()}]});
+    let mut report = json!({"success":result.success,"metadata":result.metadata,"files":result.files.iter().map(|f|json!({"name":f.name,"mime":f.mime,"bytes":f.bytes.len().to_string(),"resourceId":f.resource_id})).collect::<Vec<_>>(),"inputRanges":[{"offset":source_range.map_or(0,|v|v.0).to_string(),"length":primary.len().to_string()},{"offset":movie_range.map_or(0,|v|v.0).to_string(),"length":movie.len().to_string()}]});
+    if let Some((still_name, movie_name)) = loaded_package {
+        report["pvt"] = json!({
+            "still": still_name,
+            "movie": movie_name,
+            "metadata": "metadata.plist",
+        });
+    }
     if !failed {
-        if let Some(dir) = out {
-            publish(&dir, &result, &report)?;
+        if let Some(dir) = &out {
+            if pvt_target {
+                if !result.files.is_empty() {
+                    publish_with(dir, &result, &report, false, |file, bytes| {
+                        file.write_all(bytes)
+                    })?;
+                }
+            } else {
+                publish(dir, &result, &report)?;
+            }
         } else if !result.files.is_empty() {
-            return Err(
-                "--out NEW_DIRECTORY is required to publish generated/extracted files".into(),
-            );
+            return Err(if pvt_target {
+                "--out must be a new directory ending in .pvt".into()
+            } else {
+                "--out NEW_DIRECTORY is required to publish generated/extracted files".into()
+            });
         }
     }
     println!("{}", serde_json::to_string_pretty(&report)?);
     Ok(if failed { 1 } else { 0 })
+}
+fn pvt_stem(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
+    if !path
+        .extension()
+        .is_some_and(|extension| extension.eq_ignore_ascii_case("pvt"))
+    {
+        return Err("--out for apple-pvt must be a new directory ending in .pvt".into());
+    }
+    let stem = path
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .ok_or("PVT output name must be UTF-8")?;
+    liblivephoto::pvt::validate_stem(stem)?;
+    Ok(stem.to_string())
+}
+fn is_pvt_input(path: &str) -> Result<bool, Box<dyn std::error::Error>> {
+    let path = Path::new(path);
+    if !path
+        .extension()
+        .is_some_and(|extension| extension.eq_ignore_ascii_case("pvt"))
+    {
+        return Ok(false);
+    }
+    let metadata = fs::symlink_metadata(path)?;
+    if metadata.is_dir() {
+        Ok(true)
+    } else {
+        Err("PVT input must be a directory package".into())
+    }
 }
 fn publish(
     dir: &Path,
     result: &OperationResult,
     report: &Value,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    publish_with(dir, result, report, |file, bytes| file.write_all(bytes))
+    publish_with(dir, result, report, true, |file, bytes| {
+        file.write_all(bytes)
+    })
 }
 fn publish_with(
     dir: &Path,
     result: &OperationResult,
     report: &Value,
+    include_report: bool,
     mut write: impl FnMut(&mut File, &[u8]) -> io::Result<()>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let report = serde_json::to_vec_pretty(report)?;
-    let mut names = std::collections::BTreeSet::from(["report.json"]);
+    let mut names = std::collections::BTreeSet::new();
+    if include_report {
+        names.insert("report.json");
+    }
     for file in &result.files {
         let mut components = Path::new(&file.name).components();
         if !matches!(
             (components.next(), components.next()),
             (Some(std::path::Component::Normal(_)), None)
-        ) || !names.insert(&file.name)
+        ) || !names.insert(file.name.as_str())
         {
             return Err("unsafe or duplicate generated output name".into());
         }
@@ -245,7 +329,7 @@ fn publish_with(
             .files
             .iter()
             .map(|f| (f.name.as_str(), f.bytes.as_slice()))
-            .chain(std::iter::once(("report.json", report.as_slice())))
+            .chain(include_report.then_some(("report.json", report.as_slice())))
         {
             let path = dir.join(name);
             let mut file = OpenOptions::new()
@@ -314,7 +398,7 @@ mod publication_tests {
     fn failed_second_write_removes_earlier_output_and_the_partial_file() {
         let dir = path();
         let mut calls = 0;
-        let error = publish_with(&dir, &result(), &json!({}), |file, bytes| {
+        let error = publish_with(&dir, &result(), &json!({}), true, |file, bytes| {
             calls += 1;
             if calls == 2 {
                 file.write_all(&bytes[..3])?;
@@ -329,7 +413,7 @@ mod publication_tests {
     #[test]
     fn rollback_preserves_unrelated_files_and_reports_cleanup_failure() {
         let dir = path();
-        let error = publish_with(&dir, &result(), &json!({}), |_, _| {
+        let error = publish_with(&dir, &result(), &json!({}), true, |_, _| {
             fs::write(dir.join("unrelated.txt"), b"keep")?;
             Err(io::Error::other("injected storage failure"))
         })

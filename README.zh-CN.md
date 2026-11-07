@@ -80,7 +80,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 | Android 动态照片 JPEG | 支持 | 支持 | `google-jpeg` |
 | Android HEIF（`mpvd`） | 支持 | 支持 | `google-heif` |
 | Android AVIF（`mpvd`） | 有限样本 | 有限样本 | `google-avif` |
-| Apple 实况照片（JPEG/HEIF + MOV） | 支持 | 支持 | `apple` 配对文件 |
+| Apple 实况照片（JPEG/HEIF + MOV） | 支持 | 支持 | `apple` 配对文件或 `apple-pvt` 目录 |
 | Samsung SEF JPEG（106/107） | 支持 | 支持¹ | `samsung-jpeg-sef`² |
 | 旧版 Google MicroVideo | 合成样本 | 合成样本 | 转为 Android 格式或保留原文件 |
 | 部分 OPlus、小米、vivo、荣耀扩展 | 有限支持 | 有限支持 | 标准格式或侧车文件；无原生写入器 |

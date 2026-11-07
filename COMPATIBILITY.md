@@ -115,6 +115,8 @@ through the library's reader, and publishes only into a new directory. It reject
 unmapped resources by default. Sidecars are separate files with resource IDs;
 `report.txt` describes their disposition. A new Apple pair requires a caller-owned
 unique pairing identifier. The example is not an atomic production publisher.
+`llp build --target apple-pvt` publishes that pair as a `.pvt` directory with the
+version-1 complement plist. The package structure is not Photos import.
 
 Device acceptance must record the source and output SHA-256, target profile and
 policy, device, OS, Camera and Gallery versions. Record recognition, playback,
