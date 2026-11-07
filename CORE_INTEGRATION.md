@@ -53,13 +53,20 @@ returns an error. Container metadata resources remain independently extractable.
 
 `AndroidAvif` requires an AVIF still. `AndroidHeif` retains the HEIC contract.
 Both rewrite metadata and append `mpvd`; neither decodes or re-encodes pixels.
+`ConversionPlan::relabel_video_major_brand` can replace an Android embedded
+video's `ftyp` major brand with `mp42` in place. It does not shift sample
+offsets, edit compatible brands, transcode, or drop tracks. `qt  ` stays
+unchanged. The default plan preserves the video bytes.
 An AVIF/HEIC/JPEG mismatch requires caller-controlled transcoding. The Apple
 writer gains no AVIF target. Android time still requires exact integer
 microseconds; 1/3 second remains blocked even under sidecar/drop policies.
 
 `sample_descriptions()` exposes track IDs, every sample-entry FourCC, raw codec
 and HDR properties, exact tkhd matrices, coded sample-entry dimensions, and
-audio version/sample-size declarations. `inspect_video_sample_descriptions`
+audio version/sample-size declarations. A sample-entry extension that is not a
+box list returns `UnsupportedLayout` (`sample entry extensions are not a box list`).
+That result is not an overlapping Motion Photo resource range.
+`inspect_video_sample_descriptions`
 provides these facts for standalone MP4/MOV inputs under cumulative budgets.
 AAC AudioSpecificConfig supplies object type, sample rate and channel count.
 Channel configuration zero is interpreted for the bounded AAC-LC PCE subset:

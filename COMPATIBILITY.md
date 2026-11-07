@@ -81,7 +81,23 @@ Gallery compatibility. The permitted types are defined by the official
 [Motion Photo 1.0 MIME table](https://developer.android.com/media/platform/motion-photo-format#item-mime-type-values).
 The Android targets currently validate container, resource and time structure.
 They do not establish the specification's video codec or AAC channel/sample-rate
-requirements. The `google-*` example names select these directory writers; they
+requirements. A static read of Google Photos 8.0.0.1011730683 (versionCode
+52642432) is not device playback. In that APK, JPEG motion detection reads an
+APP1 Adobe XMP packet; HEIC detection requires major brand `heic`, one
+`meta/iinf` `mime` item whose content type is `application/rdf+xml`, and a final
+top-level `mpvd`. Its HEIC video locator accepts major brands `mp42` and `qt  `
+only. The same APK's traced local scanner and player have no AVIF Motion Photo
+branch. `google-avif` follows the container rules and does not claim Photos
+playback. Default builds keep the video bytes. `relabel_video_major_brand` /
+`--relabel-video-brand mp42` is an in-place major-brand edit for the HEIC
+locator; it does not add `mp42` to the compatible-brand list and does not remove
+PCM or auxiliary tracks. A still whose major brand is not `heic` (for example
+`mif1`) is not relabeled. Legacy `MicroVideo=1` is removed when the Android XMP
+packet is rewritten, because that APK prefers the legacy offset over the
+directory. New HEIF/AVIF XMP items use `infe` version 2 when the item ID fits in
+16 bits. Primary `Padding` is the actual `mpvd` header length (8, or 16 when the
+box uses a 64-bit size). A sample-entry extension that is not a box list is
+reported as unsupported layout, not as overlapping Motion Photo ranges. The `google-*` example names select these directory writers; they
 do not certify full Google codec conformance or Google Photos acceptance. Callers
 can use `plan_with_capabilities` to enforce a caller-declared sample-entry, AAC
 object-type, channel and sample-rate contract. Unknown AAC configuration blocks

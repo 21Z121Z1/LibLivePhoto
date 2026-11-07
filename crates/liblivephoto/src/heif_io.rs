@@ -237,14 +237,27 @@ fn replace_metadata(data: &[u8], packet: &[u8], exif: bool) -> Result<Vec<u8>> {
         .map(|i| data[i.box_range.clone()].to_vec())
         .collect();
     if existing.is_none() {
-        let mut payload = id.to_be_bytes().to_vec();
+        // Photos' older HEIC XMP reader accepts infe versions 0–2 only.
+        // Version 2 uses a 16-bit item ID; keep version 3 when the ID does not fit.
+        // EXIF items stay on the existing version-3 layout.
+        let wide = exif || id > u32::from(u16::MAX);
+        let mut payload = if wide {
+            id.to_be_bytes().to_vec()
+        } else {
+            (id as u16).to_be_bytes().to_vec()
+        };
         payload.extend_from_slice(&[0, 0]);
         payload.extend_from_slice(if exif {
             b"Exif\0".as_slice()
         } else {
             b"mime\0application/rdf+xml\0\0"
         });
-        infe.push(fmt(make_full_box(FourCC::new(*b"infe"), 3, 0, &payload))?);
+        infe.push(fmt(make_full_box(
+            FourCC::new(*b"infe"),
+            if wide { 3 } else { 2 },
+            0,
+            &payload,
+        ))?);
     }
     locations.entries.retain(|e| e.item_id != id);
     locations.entries.push(IlocEntry {

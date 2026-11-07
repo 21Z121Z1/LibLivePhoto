@@ -20,9 +20,9 @@ Unix 的 `open_fd(BorrowedFd, offset, length, options)` 复制借用描述符，
 
 ## 目标选择与媒体要求
 
-`AndroidAvif` 要求 AVIF 静图，`AndroidHeif` 保留 HEIC 约定，两者改写元数据并追加 `mpvd`，都不解码或重新编码像素。AVIF/HEIC/JPEG 不匹配时需要调用方控制的转码，Apple 写入器不增加 AVIF 目标。Android 时间仍要求精确整数微秒，侧车/丢弃策略也不能允许 1/3 秒。
+`AndroidAvif` 要求 AVIF 静图，`AndroidHeif` 保留 HEIC 约定，两者改写元数据并追加 `mpvd`，都不解码或重新编码像素。`ConversionPlan::relabel_video_major_brand` 可以把 Android 内嵌视频的 `ftyp` 主品牌就地改成 `mp42`。它不移动样本偏移、不改兼容品牌、不转码、不删除轨道。`qt  ` 保持不变。默认计划保留视频字节。AVIF/HEIC/JPEG 不匹配时需要调用方控制的转码，Apple 写入器不增加 AVIF 目标。Android 时间仍要求精确整数微秒，侧车/丢弃策略也不能允许 1/3 秒。
 
-`sample_descriptions()` 提供轨道 ID、每个 sample-entry FourCC、原始编解码及 HDR 属性、精确 tkhd 矩阵、编码 sample-entry 尺寸，以及音频版本/样本大小声明。`inspect_video_sample_descriptions` 在合计预算内检查独立 MP4/MOV。AAC AudioSpecificConfig 提供对象类型、采样率和声道数。
+`sample_descriptions()` 提供轨道 ID、每个 sample-entry FourCC、原始编解码及 HDR 属性、精确 tkhd 矩阵、编码 sample-entry 尺寸，以及音频版本/样本大小声明。sample-entry 扩展如果不是 box 列表，返回 `UnsupportedLayout`（"sample entry extensions are not a box list"）。这不是动态照片资源区间重叠。`inspect_video_sample_descriptions` 在合计预算内检查独立 MP4/MOV。AAC AudioSpecificConfig 提供对象类型、采样率和声道数。
 
 声道配置为零时，只解释有界 AAC-LC PCE 子集：front/side/back SCE/CPE 与 LFE 声明参与声道计数，data/coupling 元素不参与。原始 ASC/注释字节和声明 tag 被保留。核心编码器依赖、GA 扩展、非 LC/含 SBR 的 PCE 及未知尾部语法不受支持；识别明确的无 SBR 同步后缀。
 

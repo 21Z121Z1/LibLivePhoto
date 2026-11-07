@@ -284,6 +284,33 @@ fn pce_quicktime_v2_wave_and_duplicate_declarations_never_become_false_passes() 
 }
 
 #[test]
+fn a_non_box_sample_entry_extension_is_not_reported_as_overlapping_ranges() {
+    let mut entry = visual(b"avc1", 16, 16);
+    entry.push(0);
+    let len = entry.len() as u32;
+    entry[..4].copy_from_slice(&len.to_be_bytes());
+    // mdat precedes moov, so growing the sample entry does not move sample bytes.
+    let mut movie = common::many_frame_movie(1, 1);
+    replace_entries(&mut movie, 0, &[entry]);
+    let error = inspect_video_sample_descriptions(&movie).unwrap_err();
+    assert!(
+        matches!(error, MotionPhotoReadError::UnsupportedLayout(_)),
+        "{error}"
+    );
+    assert!(!error.to_string().contains("overlap"));
+    let report = validate_google_video_container(&movie, selected()).unwrap();
+    assert!(has(
+        &report,
+        "G08.declarations",
+        FormatIssueKind::Unsupported
+    ));
+    assert!(report
+        .issues
+        .iter()
+        .any(|i| i.message.contains("not a box list")));
+}
+
+#[test]
 fn primary_presence_track_counts_roles_and_order_are_explicit() {
     let mut movie = common::many_frame_movie(1, 1);
     let hdlr = path(&movie, 0, &[b"mdia", b"hdlr"]).pop().unwrap();
