@@ -703,13 +703,15 @@ fn execute(
                 .ok_or("AGTM extraction requires known or explicit photo time")?,
         )),
         "build" => {
-            let target = match v["target"]
+            let requested = v["target"]
                 .as_str()
                 .unwrap_or(match photo.still().mime.as_str() {
                     "image/heic" => "google-heif",
                     "image/avif" => "google-avif",
                     _ => "google-jpeg",
-                }) {
+                });
+            let pvt = requested == "apple-pvt";
+            let target = match if pvt { "apple" } else { requested } {
                 "google-jpeg" => TargetProfile::AndroidJpeg,
                 "google-heif" => TargetProfile::AndroidHeif,
                 "google-avif" => TargetProfile::AndroidAvif,
@@ -744,7 +746,10 @@ fn execute(
                     | TargetProfile::AndroidHeif
                     | TargetProfile::AndroidAvif
             );
-            let metadata = json!({"target":format!("{target:?}"),"canExecute":plan.can_execute(),"blockers":plan.compatibility().blockers,"consumerAcceptance":format!("{:?}",plan.compatibility().target_consumer),"resourceReport":plan.report().resources.iter().map(|r|json!({"resourceId":r.resource.map(|id|id.0),"disposition":format!("{:?}",r.disposition),"reason":r.reason})).collect::<Vec<_>>(),"pairIdentifier":plan.report().pairing.identifier});
+            let mut metadata = json!({"target":format!("{target:?}"),"canExecute":plan.can_execute(),"blockers":plan.compatibility().blockers,"consumerAcceptance":format!("{:?}",plan.compatibility().target_consumer),"resourceReport":plan.report().resources.iter().map(|r|json!({"resourceId":r.resource.map(|id|id.0),"disposition":format!("{:?}",r.disposition),"reason":r.reason})).collect::<Vec<_>>(),"pairIdentifier":plan.report().pairing.identifier});
+            if pvt {
+                metadata["container"] = json!("apple-pvt");
+            }
             if !plan.can_execute() {
                 return Ok(OperationResult {
                     success: false,
@@ -756,6 +761,82 @@ fn execute(
                 return Ok(ok(metadata, Vec::new()));
             }
             let output = plan.execute().map_err(|e| e.to_string())?;
+            if pvt {
+                if v["unmapped"].as_str() == Some("sidecars") {
+                    return Err(
+                        "PVT packages cannot include sidecars; use --allow-drop or target apple"
+                            .into(),
+                    );
+                }
+                let mut still = None;
+                let mut movie_bytes = None;
+                for file in output.files {
+                    if file.sidecar_for.is_some() {
+                        return Err(
+                            "PVT packages contain only the still, movie, and metadata.plist".into(),
+                        );
+                    }
+                    match file.role {
+                        ResourceRole::PrimaryStill if still.is_none() => {
+                            still = Some((file.mime, file.bytes));
+                        }
+                        ResourceRole::PrimaryMotionVideo if movie_bytes.is_none() => {
+                            movie_bytes = Some(file.bytes);
+                        }
+                        _ => {
+                            return Err(
+                                "PVT packages contain only the still, movie, and metadata.plist"
+                                    .into(),
+                            )
+                        }
+                    }
+                }
+                let (Some((still_mime, still_bytes)), Some(movie_file)) = (still, movie_bytes)
+                else {
+                    return Err("PVT output is missing the still or movie".into());
+                };
+                let stem = v["pvtStem"].as_str().unwrap_or("asset");
+                let packaged =
+                    liblivephoto::pvt::package_pair(stem, &still_mime, still_bytes, movie_file)
+                        .map_err(|error| error.to_string())?;
+                metadata["pvt"] = json!({
+                    "still": packaged.still_name,
+                    "movie": packaged.movie_name,
+                    "metadata": packaged.metadata_name,
+                    "metadataKey": "PFVideoComplementMetadataVersionKey",
+                    "metadataVersion": "1",
+                    "contentIdentifier": packaged.content_identifier,
+                    "presentation": {
+                        "value": packaged.presentation.value.to_string(),
+                        "timescale": packaged.presentation.timescale,
+                    },
+                    "stillBytesPreserved": packaged.still == primary,
+                    "movieBytesPreserved": packaged.movie == movie,
+                });
+                return Ok(ok(
+                    metadata,
+                    vec![
+                        OperationFile {
+                            name: packaged.still_name,
+                            mime: still_mime,
+                            resource_id: None,
+                            bytes: packaged.still,
+                        },
+                        OperationFile {
+                            name: packaged.movie_name,
+                            mime: "video/quicktime".into(),
+                            resource_id: None,
+                            bytes: packaged.movie,
+                        },
+                        OperationFile {
+                            name: packaged.metadata_name.into(),
+                            mime: "application/xml".into(),
+                            resource_id: None,
+                            bytes: packaged.metadata.to_vec(),
+                        },
+                    ],
+                ));
+            }
             Ok(ok(
                 metadata,
                 output

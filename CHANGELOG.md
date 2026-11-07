@@ -2,6 +2,13 @@
 
 [简体中文](CHANGELOG.zh-CN.md)
 
+## Unreleased
+
+- `llp build --target apple-pvt` writes an Apple `.pvt` directory from a Live Photo
+  pair or another supported input. `llp parse` and `llp check` read that directory.
+  An existing pair keeps its bytes. A new pair uses `--pair-id` and the existing
+  Apple still/movie writers. Photos import is not claimed.
+
 ## 0.1.0 — 2026-11-06
 
 First ordinary release of the Rust core and `llp` CLI.

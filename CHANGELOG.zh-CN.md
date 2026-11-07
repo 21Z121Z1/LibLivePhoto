@@ -2,6 +2,10 @@
 
 [English](CHANGELOG.md)
 
+## 未发布
+
+- `llp build --target apple-pvt` 可从实况照片配对或其他受支持输入写出 Apple `.pvt` 目录。`llp parse` 和 `llp check` 可以读取该目录。已有配对保留原字节。新配对使用 `--pair-id` 和现有 Apple 静图/视频写入器。不宣称 Photos 可以导入。
+
 ## 0.1.0 — 2026-11-06
 
 Rust 核心和 `llp` CLI 的首个普通版本。GitHub SDK/源码发布与 crates.io 上传分别记录可用状态。

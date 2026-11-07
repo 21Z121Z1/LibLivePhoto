@@ -27,6 +27,7 @@ mod lpex;
 mod media;
 mod model;
 mod providers;
+pub mod pvt;
 mod xmp;
 pub use providers::*;
 pub use xmp::*;

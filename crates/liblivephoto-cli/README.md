@@ -15,7 +15,8 @@ llp check input.jpg
 ```
 
 Output directories must not already exist. `llp --help` lists build/conversion,
-metadata and range options. Exit status 0 means success, 1 means the operation
+metadata and range options. `--target apple-pvt` publishes a `.pvt` directory and
+prints the JSON report on stdout. Exit status 0 means success, 1 means the operation
 reported failure, and 2 means an argument or I/O error. JSON output and error codes
 are for automation; human-readable diagnostic wording may change.
 

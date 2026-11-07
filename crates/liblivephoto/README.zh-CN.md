@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-Apple 配对使用 `Input::ApplePair { still, movie }`。精确照片时间使用整数值与时间尺度组成的 `MediaTime`。转换先调用 `plan` 再调用 `execute`；不支持的布局、无法精确表示的目标时间和无法映射的资源会明确报错。执行前应检查计划。
+Apple 配对使用 `Input::ApplePair { still, movie }`。精确照片时间使用整数值与时间尺度组成的 `MediaTime`。转换先调用 `plan` 再调用 `execute`；不支持的布局、无法精确表示的目标时间和无法映射的资源会明确报错。执行前应检查计划。`pvt::package_pair` 把已验证的 JPEG 或 HEIC 配对组装成内存中的 `.pvt` 目录，不转码，也不表示 Photos 可以导入。
 
 Rust 默认输入预算为 256 MiB，独立的 CLI/共享接口使用 128 MiB。解析不是流式的。原生播放、编辑和相册接收取决于宿主、格式与设备。
 

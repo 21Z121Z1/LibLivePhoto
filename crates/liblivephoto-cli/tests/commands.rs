@@ -127,6 +127,106 @@ fn real_cli_build_check_extract_round_trip_and_refuse_overwrite() {
     assert!(!scratch.0.join("rounded").exists());
 }
 #[test]
+fn apple_pvt_build_round_trip_preserves_report_outside_the_package() {
+    let scratch = Scratch::new();
+    let source = demo("motion-photo.jpg");
+    let package = scratch.0.join("motion.pvt");
+    let built = run(&[
+        "build",
+        s(&source),
+        "--target",
+        "apple-pvt",
+        "--pair-id",
+        "motion-pvt-1",
+        "--out",
+        s(&package),
+    ]);
+    assert!(
+        built.status.success(),
+        "{}",
+        String::from_utf8_lossy(&built.stderr)
+    );
+    let report: serde_json::Value = serde_json::from_slice(&built.stdout).unwrap();
+    assert_eq!(report["metadata"]["container"], "apple-pvt");
+    assert_eq!(
+        report["metadata"]["pvt"]["contentIdentifier"],
+        "MOTION-PVT-1"
+    );
+    let still_name = report["metadata"]["pvt"]["still"].as_str().unwrap();
+    let movie_name = report["metadata"]["pvt"]["movie"].as_str().unwrap();
+    assert_eq!(still_name, "motion.jpg");
+    assert_eq!(movie_name, "motion.mov");
+    assert_eq!(
+        std::fs::read_dir(&package)
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name().into_string().unwrap())
+            .collect::<std::collections::BTreeSet<_>>(),
+        [
+            "metadata.plist".to_string(),
+            still_name.into(),
+            movie_name.into()
+        ]
+        .into_iter()
+        .collect()
+    );
+    assert!(!package.join("report.json").exists());
+    let metadata = std::fs::read(package.join("metadata.plist")).unwrap();
+    let metadata = String::from_utf8(metadata).unwrap();
+    assert!(metadata.contains("<key>PFVideoComplementMetadataVersionKey</key><string>1</string>"));
+    let parsed = run(&["parse", s(&package)]);
+    assert!(
+        parsed.status.success(),
+        "{}",
+        String::from_utf8_lossy(&parsed.stdout)
+    );
+    let parsed: serde_json::Value = serde_json::from_slice(&parsed.stdout).unwrap();
+    assert_eq!(parsed["metadata"]["pairIdentifier"], "MOTION-PVT-1");
+    assert_eq!(parsed["pvt"]["metadata"], "metadata.plist");
+    assert!(run(&["check", s(&package)]).status.success());
+    let again = run(&[
+        "build",
+        s(&source),
+        "--target",
+        "apple-pvt",
+        "--pair-id",
+        "motion-pvt-1",
+        "--out",
+        s(&package),
+    ]);
+    assert_eq!(again.status.code(), Some(2));
+    assert!(package.join("metadata.plist").is_file());
+    let unknown = run(&[
+        "build",
+        s(&demo("cover.jpg")),
+        "--movie",
+        s(&demo("motion.mp4")),
+        "--time",
+        "13/16",
+        "--target",
+        "not-a-target",
+        "--out",
+        s(&scratch.0.join("unused")),
+    ]);
+    assert_eq!(unknown.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&unknown.stdout).contains("unknown target"));
+    assert!(!scratch.0.join("unused").exists());
+    let sidecars = scratch.0.join("sidecars.pvt");
+    let rejected = run(&[
+        "build",
+        s(&source),
+        "--target",
+        "apple-pvt",
+        "--pair-id",
+        "motion-pvt-1",
+        "--sidecars",
+        "--out",
+        s(&sidecars),
+    ]);
+    assert_eq!(rejected.status.code(), Some(2));
+    assert!(!sidecars.exists());
+}
+
+#[test]
 fn metadata_version_ranges_and_invalid_input_have_explicit_exit_results() {
     let version = run(&["--version"]);
     assert!(version.status.success());
