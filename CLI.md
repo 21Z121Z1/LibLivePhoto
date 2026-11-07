@@ -43,6 +43,25 @@ Default building from separate still/movie inputs explicitly declares a parts
 association. `parse` of two files validates an Apple pair unless `--parts` is set.
 A mismatching Apple identifier is not silently re-associated. Exact time uses an
 integer fraction; 1/3 second is refused when a microsecond representation is required.
+
+`apple-pvt` writes a new directory whose path ends in `.pvt`:
+
+```sh
+llp build IMG_0010.HEIC --movie IMG_0010.MOV --target apple-pvt --out IMG_0010.pvt
+llp parse IMG_0010.pvt
+llp build motion.jpg --pair-id 11111111-2222-4333-8444-555555555555 --target apple-pvt --out motion.pvt
+```
+
+The directory contains `{stem}.heic` or `{stem}.jpg`, `{stem}.mov`, and
+`metadata.plist`. The plist stores `PFVideoComplementMetadataVersionKey` as the
+string `"1"`. An existing Apple pair is copied unchanged, including the MakerNote
+identifier, `com.apple.quicktime.content.identifier`, and still-image-time. A
+Motion Photo or `--parts` input uses the Apple pair writer. `--pair-id` injects
+one identifier into the still and the movie; this library does not transcode a
+JPEG still into HEIC. Unmapped resources are omitted only with `--allow-drop`,
+and they are not package members. The package does not contain `report.json`;
+the JSON report is stdout. `parse` and `check` read the directory. A valid
+package does not establish Photos import.
 Use `--dry-run` to inspect a build plan before generating files. Container/codec
 transcoding is not implicit; unsupported targets/metadata/resources are diagnosed.
 

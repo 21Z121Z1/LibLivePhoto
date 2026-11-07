@@ -28,6 +28,16 @@ Google JPEG、HEIC 和 AVIF 构建各输出一个容器，文件名是 `assetMP.
 
 从独立静图和视频构建时，默认明确声明组成部分关联。使用 `parse` 解析两个文件时会验证 Apple 配对，除非设置 `--parts`。Apple 标识符不匹配时不会静默重新关联。精确时间使用整数分数；目标要求微秒表示时拒绝 1/3 秒。使用 `--dry-run` 在生成文件前检查构建计划。不隐式转码容器或编解码格式，不支持的目标、元数据或资源会返回诊断。
 
+`apple-pvt` 把结果写成以 `.pvt` 结尾的新目录：
+
+```sh
+llp build IMG_0010.HEIC --movie IMG_0010.MOV --target apple-pvt --out IMG_0010.pvt
+llp parse IMG_0010.pvt
+llp build motion.jpg --pair-id 11111111-2222-4333-8444-555555555555 --target apple-pvt --out motion.pvt
+```
+
+目录内是 `{stem}.heic` 或 `{stem}.jpg`、`{stem}.mov` 和 `metadata.plist`。plist 中 `PFVideoComplementMetadataVersionKey` 的值是字符串 `"1"`。已有 Apple 配对按原字节复制，包括 MakerNote 标识、`com.apple.quicktime.content.identifier` 和 still-image-time。Motion Photo 或 `--parts` 输入走 Apple 配对写入器。`--pair-id` 把同一个标识写入静图和视频；本库不把 JPEG 静图转码成 HEIC。只有 `--allow-drop` 会省略无法映射的资源，这些资源不会进入包内。包内没有 `report.json`，JSON 报告在标准输出。`parse` 和 `check` 可以读取该目录。包结构有效不代表 Photos 可以导入。
+
 JPEG/HEIC/AVIF、已有 Apple 支持、提供者过滤、明确的侧车/丢弃策略及支持的轨道操作，都与 Rust/JNI 共用库代码。CLI 提供 `--disable-3p`、`--enable-provider`、`--strict`、源 `--range OFFSET:LENGTH`、选定资源 ID 和 `--options-json`。区间针对所选快照，`inputRanges` 单独保留外层文件偏移。使用 `-` 读取有大小限制的标准输入。独立 AGTM 必须明确提供时间，不会伪造零值；其输出是元数据，不是渲染像素，也没有 Moments 构造参数。
 
 `conformance` 是可选的只读配置查询，独立于默认保留/检查行为。视频轨道 ID 明确指定主角色与可选次角色。报告区分必要规则违反、不支持的事实及建议，只覆盖列出的规则。详见[配置边界](CORE_INTEGRATION.zh-CN.md)，包括 AAC 声明和公开文本中 44 kHz/44100 Hz 的歧义。通过报告不代表解码器、完整格式或原生相册认证。

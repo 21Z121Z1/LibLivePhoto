@@ -80,7 +80,7 @@ The table covers implemented operations and tested file layouts. See [Format sup
 | Android Motion Photo JPEG | Yes | Yes | `google-jpeg` |
 | Android HEIF (`mpvd`) | Yes | Yes | `google-heif` |
 | Android AVIF (`mpvd`) | Limited samples | Limited samples | `google-avif` |
-| Apple Live Photo (JPEG/HEIF + MOV) | Yes | Yes | `apple` pair |
+| Apple Live Photo (JPEG/HEIF + MOV) | Yes | Yes | `apple` pair or `apple-pvt` directory |
 | Samsung SEF JPEG (106/107) | Yes | Yes¹ | `samsung-jpeg-sef`² |
 | Legacy Google MicroVideo | Synthetic samples | Synthetic samples | Android format or source copy |
 | Selected OPlus, Xiaomi, vivo, and Honor extensions | Partial | Partial | Standard format or sidecars; no native writer |
