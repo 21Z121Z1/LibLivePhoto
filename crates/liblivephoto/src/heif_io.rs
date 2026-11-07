@@ -259,6 +259,17 @@ fn replace_metadata(data: &[u8], packet: &[u8], exif: bool) -> Result<Vec<u8>> {
             &payload,
         ))?);
     }
+    if !exif {
+        // Photos 8.0 returns the first application/rdf+xml infe and does not
+        // follow cdsc. The primary item's XMP has to occupy that position.
+        if let Some(primary_at) = info.entries.iter().position(|item| item.item_id == id) {
+            if let Some(first_xmp) = info.entries.iter().position(|item| mime_xmp(data, item)) {
+                if primary_at != first_xmp {
+                    infe.swap(primary_at, first_xmp);
+                }
+            }
+        }
+    }
     locations.entries.retain(|e| e.item_id != id);
     locations.entries.push(IlocEntry {
         item_id: id,

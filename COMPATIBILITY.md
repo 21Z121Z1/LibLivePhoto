@@ -85,7 +85,10 @@ requirements. A static read of Google Photos 8.0.0.1011730683 (versionCode
 52642432) is not device playback. In that APK, JPEG motion detection reads an
 APP1 Adobe XMP packet; HEIC detection requires major brand `heic`, one
 `meta/iinf` `mime` item whose content type is `application/rdf+xml`, and a final
-top-level `mpvd`. Its HEIC video locator accepts major brands `mp42` and `qt  `
+top-level `mpvd`. That HEIC scan returns the first `application/rdf+xml` `infe`
+and does not follow `cdsc`. The HEIF XMP writer places the primary item's XMP
+`infe` first among those items. It keeps item IDs and the other XMP items'
+`iref` links. The APK's HEIC video locator accepts major brands `mp42` and `qt  `
 only. The same APK's traced local scanner and player have no AVIF Motion Photo
 branch. `google-avif` follows the container rules and does not claim Photos
 playback. Default builds keep the video bytes. `relabel_video_major_brand` /

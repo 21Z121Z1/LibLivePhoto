@@ -1,7 +1,13 @@
 //! Byte-level Motion Photo 1.0 writer contracts. These do not certify Photos playback.
 mod common;
 use liblivephoto::*;
-use liblivephoto_format::isobmff::parse_boxes;
+use liblivephoto_format::exif::read_item_payload;
+use liblivephoto_format::isobmff::{
+    make_full_box, make_iinf_box, make_iloc_box, make_infe_box, make_ipma_box, make_iref_box,
+    make_ispe_box, make_pitm_box, parse_boxes, parse_meta_box, IlocEntry, IlocExtent,
+    IpmaAssociation, IpmaEntry, IrefEntry, ItemInfo, ParsedMeta,
+};
+use liblivephoto_format::FourCC;
 
 fn build(still: &[u8], movie: &[u8], target: TargetProfile, relabel: bool) -> ComposedAsset {
     let photo = MotionPhoto::parse(
@@ -198,4 +204,197 @@ fn qt_major_brand_is_not_relabeled() {
         .report
         .evidence
         .contains(&PreservationEvidence::VideoContainerBytesEqual));
+}
+
+fn mime_infe(item_id: u16) -> Vec<u8> {
+    let mut payload = item_id.to_be_bytes().to_vec();
+    payload.extend_from_slice(&[0, 0]);
+    payload.extend_from_slice(b"mime\0application/rdf+xml\0\0");
+    make_full_box(FourCC::new(*b"infe"), 2, 0, &payload).unwrap()
+}
+
+fn parsed_meta(bytes: &[u8]) -> ParsedMeta {
+    let top = parse_boxes(bytes, 0..bytes.len()).unwrap();
+    let meta = top.iter().find(|b| b.kind.as_bytes() == b"meta").unwrap();
+    parse_meta_box(bytes, meta).unwrap()
+}
+
+fn is_rdf_xml(bytes: &[u8], item: &ItemInfo) -> bool {
+    item.item_type == Some(FourCC::new(*b"mime"))
+        && bytes[item.box_range.clone()]
+            .windows(b"application/rdf+xml\0".len())
+            .any(|w| w == b"application/rdf+xml\0")
+}
+
+fn payload(bytes: &[u8], parsed: &ParsedMeta, item_id: u32) -> Vec<u8> {
+    let entry = parsed
+        .iloc
+        .entries
+        .iter()
+        .find(|e| e.item_id == item_id)
+        .unwrap();
+    read_item_payload(bytes, entry, parsed.idat.as_ref()).unwrap()
+}
+
+/// Gain-map XMP is declared before the primary item's XMP, with another item
+/// between them. Photos 8.0 keeps whichever rdf+xml infe comes first.
+fn heif_with_leading_auxiliary_xmp(aux_xmp: &[u8], primary_xmp: &[u8]) -> Vec<u8> {
+    let image = b"synthetic-encoded-item";
+    let gain = b"synthetic-gain-map-item";
+    let mut offset = 0u64;
+    let mut extent = |len: usize| {
+        let value = IlocExtent {
+            index: None,
+            offset,
+            length: len as u64,
+        };
+        offset += len as u64;
+        value
+    };
+    let image_extent = extent(image.len());
+    let gain_extent = extent(gain.len());
+    let aux_extent = extent(aux_xmp.len());
+    let primary_extent = extent(primary_xmp.len());
+    let entry = |item_id, extent| IlocEntry {
+        item_id,
+        construction_method: 1,
+        data_reference_index: 0,
+        base_offset: 0,
+        extents: vec![extent],
+    };
+    let iinf = make_iinf_box(
+        1,
+        &[
+            make_infe_box(1, FourCC::new(*b"hvc1"), 0).unwrap(),
+            mime_infe(3),
+            make_infe_box(2, FourCC::new(*b"hvc1"), 0).unwrap(),
+            mime_infe(4),
+        ],
+    )
+    .unwrap();
+    let iloc = make_iloc_box(
+        1,
+        4,
+        4,
+        0,
+        0,
+        &[
+            entry(1, image_extent),
+            entry(3, aux_extent),
+            entry(2, gain_extent),
+            entry(4, primary_extent),
+        ],
+    )
+    .unwrap();
+    let iref = make_iref_box(
+        1,
+        &[
+            IrefEntry {
+                kind: FourCC::new(*b"cdsc"),
+                from_item_id: 3,
+                to_item_ids: vec![2],
+            },
+            IrefEntry {
+                kind: FourCC::new(*b"cdsc"),
+                from_item_id: 4,
+                to_item_ids: vec![1],
+            },
+        ],
+    )
+    .unwrap();
+    let iprp = common::boxed(
+        b"iprp",
+        &[
+            common::boxed(b"ipco", &make_ispe_box(2, 3).unwrap()),
+            make_ipma_box(
+                0,
+                0,
+                &[IpmaEntry {
+                    item_id: 1,
+                    associations: vec![IpmaAssociation {
+                        property_index: 1,
+                        essential: true,
+                    }],
+                }],
+            )
+            .unwrap(),
+        ]
+        .concat(),
+    );
+    let idat = common::boxed(
+        b"idat",
+        &[image.as_slice(), gain, aux_xmp, primary_xmp].concat(),
+    );
+    let meta = common::full(
+        b"meta",
+        &[make_pitm_box(0, 1).unwrap(), iinf, iloc, iref, iprp, idat].concat(),
+    );
+    let ftyp = common::boxed(b"ftyp", &[b"heic".as_slice(), &[0; 4], b"mif1"].concat());
+    [ftyp, meta].concat()
+}
+
+#[test]
+fn primary_motion_xmp_becomes_the_first_rdf_xml_infe() {
+    let aux_xmp = br#"<x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description xmlns:hdrgm="http://ns.adobe.com/hdr-gain-map/1.0/" hdrgm:Version="1.0"/></rdf:RDF></x:xmpmeta>"#;
+    let primary_xmp = br#"<x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description xmlns:Vendor="urn:llp:test" Vendor:keep="yes"/></rdf:RDF></x:xmpmeta>"#;
+    let still = heif_with_leading_auxiliary_xmp(aux_xmp, primary_xmp);
+    let before = parsed_meta(&still);
+    assert_eq!(
+        before
+            .iinf
+            .entries
+            .iter()
+            .map(|item| item.item_id)
+            .collect::<Vec<_>>(),
+        vec![1, 3, 2, 4]
+    );
+    assert_eq!(
+        before
+            .iinf
+            .entries
+            .iter()
+            .filter(|item| is_rdf_xml(&still, item))
+            .map(|item| item.item_id)
+            .collect::<Vec<_>>(),
+        vec![3, 4]
+    );
+    let movie = common::movie(1000, 1);
+    let out = build(&still, &movie, TargetProfile::AndroidHeif, false);
+    let bytes = &out.files[0].bytes;
+    let after = parsed_meta(bytes);
+    let ids: Vec<_> = after.iinf.entries.iter().map(|item| item.item_id).collect();
+    assert_eq!(ids, vec![1, 4, 2, 3]);
+    let rdf: Vec<_> = after
+        .iinf
+        .entries
+        .iter()
+        .filter(|item| is_rdf_xml(bytes, item))
+        .map(|item| item.item_id)
+        .collect();
+    assert_eq!(rdf, vec![4, 3]);
+    assert_eq!(after.primary_item_id, 1);
+    let cdsc = |from: u32| {
+        after
+            .iref
+            .as_ref()
+            .unwrap()
+            .entries
+            .iter()
+            .find(|e| e.kind.as_bytes() == b"cdsc" && e.from_item_id == from)
+            .unwrap()
+            .to_item_ids
+            .clone()
+    };
+    assert_eq!(cdsc(4), vec![1]);
+    assert_eq!(cdsc(3), vec![2]);
+    let motion_text = String::from_utf8(payload(bytes, &after, 4)).unwrap();
+    assert!(motion_text.contains("Camera:MotionPhoto=\"1\""));
+    assert!(motion_text.contains("Vendor:keep=\"yes\""));
+    assert!(!motion_text.contains("hdrgm:Version"));
+    assert_eq!(payload(bytes, &after, 3), aux_xmp);
+    assert_eq!(payload(bytes, &after, 1), b"synthetic-encoded-item");
+    assert_eq!(payload(bytes, &after, 2), b"synthetic-gain-map-item");
+    let parsed = MotionPhoto::parse(Input::SingleFile(bytes), ParseOptions::strict()).unwrap();
+    assert_eq!(parsed.motion_video_bytes().unwrap(), movie);
+    assert!(xmp_of(bytes).contains("Camera:MotionPhoto=\"1\""));
 }
